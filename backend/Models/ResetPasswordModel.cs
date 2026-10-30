@@ -1,0 +1,13 @@
+﻿namespace TalentSphereAPI.Models
+{
+    public class ResetPasswordModel
+    {
+        public string Email { get; set; } = string.Empty;
+
+        public string OTP { get; set; } = string.Empty;
+
+        public string NewPassword { get; set; } = string.Empty;
+
+        public string ConfirmPassword { get; set; } = string.Empty;
+    }
+}

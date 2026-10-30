@@ -1,0 +1,371 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   APP DENSITY — desktop density system (v16)
+   ───────────────────────────────────────────────────────────────────────
+   ROOT CAUSE
+   Windows laptops ship with 125–150% display scaling. A 1920×1080 panel at
+   150% gives Chrome a CSS viewport of only ~1280×553 at 100% zoom (75% zoom
+   gives ~1707×737). Every component — sidebar, header, heroes, cards,
+   tiles, buttons — was sized in fixed px/rem, so it kept its desktop size
+   no matter how little room there was; the page only got narrower.
+
+   APPROACH
+   No zoom, no transform: scale, no root font-size change. The design uses
+   two unitless density tokens, and every shared kit sizes itself from them:
+     --ui-space    spacing, control heights, icon boxes, gaps, rails
+     --ui-text     body/UI text (xs … lg)
+     --ui-display  headings (xl and up) — shrink a little more than body
+   Tailwind v4 utilities already resolve through --spacing and --text-*, so
+   mapping those tokens here retunes every Tailwind page. The student kit
+   (kini-student-*.css) and the org/mentor kits multiply their lengths by
+   the same tokens. Loaded last (main.jsx) so it wins over legacy layers.
+
+   Tiers (desktop = ≥ 1024px wide). The compact design IS the desktop
+   design (v16); the original full-size values now only apply below 1024px.
+   Each short-screen tier is ~0.9× the one above it, text included:
+     desktop  : any desktop      → 1920×1080 at 100% (~1920×940)
+     compact  : ≤ 880 tall       → 1366×768, 1440×900, 1536×864 at 100%,
+                                   1920×1080 at 125%, any short wide window
+     tight    : ≤ 640 tall       → 1920×1080 at 135–150% (~1280–1422 × ~560–620)
+   Sidebar width follows horizontal room: 188px; 184px at ≤ 1600 wide or
+   compact; 180px at ≤ 1366 wide or tight. Mobile (< 1024) is unchanged.
+   Text below ~10.5px never shrinks further (readability floor).
+   ═══════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --ui-space: 1;
+  --ui-text: 1;
+  --ui-display: 1;
+  --app-header-h: 5.25rem;
+  --app-brand-h: 6.5rem;
+  --app-nav-item-py: 0.625rem;
+  --app-hero-min-h: clamp(220px, 18vw, 272px);
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --ui-space: 0.9;
+    --ui-text: 0.92;
+    --ui-display: 0.9;
+    --app-header-h: 3rem;
+    --app-brand-h: 3rem;
+    --app-nav-item-py: 0.5rem;
+    --app-hero-min-h: clamp(190px, 15vw, 236px);
+    --app-sidebar-w: 188px;
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 880px) {
+  :root {
+    --ui-space: 0.78;
+    --ui-text: 0.86;
+    --ui-display: 0.8;
+    --app-header-h: 2.875rem;
+    --app-brand-h: 2.875rem;
+    --app-nav-item-py: 0.45rem;
+    --app-hero-min-h: 158px;
+  }
+}
+
+@media (min-width: 1024px) and (max-height: 640px) {
+  :root {
+    --ui-space: 0.68;
+    --ui-text: 0.81;
+    --ui-display: 0.72;
+    --app-header-h: 2.8rem;
+    --app-brand-h: 2.8rem;
+    --app-nav-item-py: 0.36rem;
+    --app-hero-min-h: 132px;
+  }
+}
+
+/* Sidebar width follows horizontal room (or density on short screens). */
+@media (min-width: 1024px) and (max-width: 1600px), (min-width: 1024px) and (max-height: 880px) {
+  :root { --app-sidebar-w: 184px; }
+}
+@media (min-width: 1024px) and (max-width: 1366px), (min-width: 1024px) and (max-height: 640px) {
+  :root { --app-sidebar-w: 180px; }
+}
+
+/* ── 0. Tailwind design tokens (dashboard only; marketing pages untouched) */
+:root:has([data-dashboard-role]) {
+  --spacing: calc(0.25rem * var(--ui-space));
+  --text-xs: max(0.66rem, calc(0.75rem * var(--ui-text)));
+  --text-sm: calc(0.875rem * var(--ui-text));
+  --text-base: calc(1rem * var(--ui-text));
+  --text-lg: calc(1.125rem * var(--ui-text));
+  --text-xl: calc(1.25rem * var(--ui-display));
+  --text-2xl: calc(1.5rem * var(--ui-display));
+  --text-3xl: calc(1.875rem * var(--ui-display));
+  --text-4xl: calc(2.25rem * var(--ui-display));
+  --text-5xl: calc(3rem * var(--ui-display));
+}
+
+/* Arbitrary text sizes in JSX (text-[13px], sm:text-[34px], …) bypass the
+   --text-* tokens. Every one >= 12px follows the density tokens: body sizes
+   on --ui-text, >= 18px on --ui-display. Smaller captions stay fixed
+   (readability floor). One list, in breakpoint order, so responsive
+   variants still win. Built from the sizes used in the JSX under src/; add
+   a line here if a new size appears. */
+:root:has([data-dashboard-role]) .text-\[12px\] { font-size: calc(12px * var(--ui-text)); }
+:root:has([data-dashboard-role]) .text-\[13px\] { font-size: calc(13px * var(--ui-text)); }
+:root:has([data-dashboard-role]) .text-\[14px\] { font-size: calc(14px * var(--ui-text)); }
+:root:has([data-dashboard-role]) .text-\[15px\] { font-size: calc(15px * var(--ui-text)); }
+:root:has([data-dashboard-role]) .text-\[16px\] { font-size: calc(16px * var(--ui-text)); }
+:root:has([data-dashboard-role]) .text-\[17px\] { font-size: calc(17px * var(--ui-text)); }
+:root:has([data-dashboard-role]) .text-\[18px\] { font-size: calc(18px * var(--ui-display)); }
+:root:has([data-dashboard-role]) .text-\[20px\] { font-size: calc(20px * var(--ui-display)); }
+:root:has([data-dashboard-role]) .text-\[22px\] { font-size: calc(22px * var(--ui-display)); }
+:root:has([data-dashboard-role]) .text-\[24px\] { font-size: calc(24px * var(--ui-display)); }
+:root:has([data-dashboard-role]) .text-\[25px\] { font-size: calc(25px * var(--ui-display)); }
+:root:has([data-dashboard-role]) .text-\[1\.6rem\] { font-size: calc(1.6rem * var(--ui-display)); }
+:root:has([data-dashboard-role]) .text-\[26px\] { font-size: calc(26px * var(--ui-display)); }
+:root:has([data-dashboard-role]) .text-\[28px\] { font-size: calc(28px * var(--ui-display)); }
+:root:has([data-dashboard-role]) .text-\[30px\] { font-size: calc(30px * var(--ui-display)); }
+:root:has([data-dashboard-role]) .text-\[1\.9rem\] { font-size: calc(1.9rem * var(--ui-display)); }
+:root:has([data-dashboard-role]) .text-\[32px\] { font-size: calc(32px * var(--ui-display)); }
+:root:has([data-dashboard-role]) .text-\[34px\] { font-size: calc(34px * var(--ui-display)); }
+:root:has([data-dashboard-role]) .text-\[36px\] { font-size: calc(36px * var(--ui-display)); }
+:root:has([data-dashboard-role]) .text-\[40px\] { font-size: calc(40px * var(--ui-display)); }
+:root:has([data-dashboard-role]) .text-\[64px\] { font-size: calc(64px * var(--ui-display)); }
+:root:has([data-dashboard-role]) .text-\[120px\] { font-size: calc(120px * var(--ui-display)); }
+@media (min-width: 640px) {
+  :root:has([data-dashboard-role]) .sm\:text-\[13px\] { font-size: calc(13px * var(--ui-text)); }
+  :root:has([data-dashboard-role]) .sm\:text-\[15px\] { font-size: calc(15px * var(--ui-text)); }
+  :root:has([data-dashboard-role]) .sm\:text-\[22px\] { font-size: calc(22px * var(--ui-display)); }
+  :root:has([data-dashboard-role]) .sm\:text-\[1\.65rem\] { font-size: calc(1.65rem * var(--ui-display)); }
+  :root:has([data-dashboard-role]) .sm\:text-\[28px\] { font-size: calc(28px * var(--ui-display)); }
+  :root:has([data-dashboard-role]) .sm\:text-\[30px\] { font-size: calc(30px * var(--ui-display)); }
+  :root:has([data-dashboard-role]) .sm\:text-\[32px\] { font-size: calc(32px * var(--ui-display)); }
+  :root:has([data-dashboard-role]) .sm\:text-\[34px\] { font-size: calc(34px * var(--ui-display)); }
+  :root:has([data-dashboard-role]) .sm\:text-\[2\.2rem\] { font-size: calc(2.2rem * var(--ui-display)); }
+  :root:has([data-dashboard-role]) .sm\:text-\[38px\] { font-size: calc(38px * var(--ui-display)); }
+  :root:has([data-dashboard-role]) .sm\:text-\[56px\] { font-size: calc(56px * var(--ui-display)); }
+}
+@media (min-width: 768px) {
+  :root:has([data-dashboard-role]) .md\:text-\[72px\] { font-size: calc(72px * var(--ui-display)); }
+  :root:has([data-dashboard-role]) .md\:text-\[180px\] { font-size: calc(180px * var(--ui-display)); }
+}
+@media (min-width: 1024px) {
+  :root:has([data-dashboard-role]) .lg\:text-\[36px\] { font-size: calc(36px * var(--ui-display)); }
+  :root:has([data-dashboard-role]) .lg\:text-\[64px\] { font-size: calc(64px * var(--ui-display)); }
+  :root:has([data-dashboard-role]) .lg\:text-\[72px\] { font-size: calc(72px * var(--ui-display)); }
+}
+
+/* Hand-sized tables. Most pages build their own table with a fixed
+   min-w-[Npx] and fixed <col w-[Npx]> widths tuned to their text, so they
+   ignored the density tiers and overflowed laptops (Actions pushed off the
+   edge). Scale those widths with the text token, the same factor as the
+   text inside them, so columns shrink exactly as much as their content.
+   Built from the JSX under src/; add a line if a new fixed width appears. */
+:root:has([data-dashboard-role]) table.min-w-\[540px\] { min-width: calc(540px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[560px\] { min-width: calc(560px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[620px\] { min-width: calc(620px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[640px\] { min-width: calc(640px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[650px\] { min-width: calc(650px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[660px\] { min-width: calc(660px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[680px\] { min-width: calc(680px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[700px\] { min-width: calc(700px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[720px\] { min-width: calc(720px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[760px\] { min-width: calc(760px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[780px\] { min-width: calc(780px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[820px\] { min-width: calc(820px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[850px\] { min-width: calc(850px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[860px\] { min-width: calc(860px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[880px\] { min-width: calc(880px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[900px\] { min-width: calc(900px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[960px\] { min-width: calc(960px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[980px\] { min-width: calc(980px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[1030px\] { min-width: calc(1030px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[1040px\] { min-width: calc(1040px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[1050px\] { min-width: calc(1050px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[1060px\] { min-width: calc(1060px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[1080px\] { min-width: calc(1080px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[1120px\] { min-width: calc(1120px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[1150px\] { min-width: calc(1150px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[1230px\] { min-width: calc(1230px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[1240px\] { min-width: calc(1240px * var(--ui-text)); }
+:root:has([data-dashboard-role]) table.min-w-\[1250px\] { min-width: calc(1250px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[34px\] { width: calc(34px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[48px\] { width: calc(48px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[72px\] { width: calc(72px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[84px\] { width: calc(84px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[90px\] { width: calc(90px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[92px\] { width: calc(92px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[96px\] { width: calc(96px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[100px\] { width: calc(100px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[104px\] { width: calc(104px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[105px\] { width: calc(105px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[106px\] { width: calc(106px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[110px\] { width: calc(110px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[112px\] { width: calc(112px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[115px\] { width: calc(115px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[120px\] { width: calc(120px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[125px\] { width: calc(125px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[135px\] { width: calc(135px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[140px\] { width: calc(140px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[145px\] { width: calc(145px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[150px\] { width: calc(150px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[155px\] { width: calc(155px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[170px\] { width: calc(170px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[180px\] { width: calc(180px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[190px\] { width: calc(190px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[198px\] { width: calc(198px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[210px\] { width: calc(210px * var(--ui-text)); }
+:root:has([data-dashboard-role]) col.w-\[217px\] { width: calc(217px * var(--ui-text)); }
+
+/* Tailwind's leading-N is calc(var(--spacing) * N). Line height belongs to
+   the text scale, not the spacing scale — otherwise leading-4 under an
+   arbitrary text-[13px] drops below the glyph height and lines overlap. */
+:root:has([data-dashboard-role]) :is(.leading-3, .leading-4, .leading-5, .leading-6, .leading-7, .leading-8, .leading-9, .leading-10) {
+  --ui-leading-scale: var(--ui-text);
+}
+:root:has([data-dashboard-role]) .leading-3 { line-height: calc(0.75rem * var(--ui-leading-scale)); }
+:root:has([data-dashboard-role]) .leading-4 { line-height: calc(1rem * var(--ui-leading-scale)); }
+:root:has([data-dashboard-role]) .leading-5 { line-height: calc(1.25rem * var(--ui-leading-scale)); }
+:root:has([data-dashboard-role]) .leading-6 { line-height: calc(1.5rem * var(--ui-leading-scale)); }
+:root:has([data-dashboard-role]) .leading-7 { line-height: calc(1.75rem * var(--ui-leading-scale)); }
+:root:has([data-dashboard-role]) .leading-8 { line-height: calc(2rem * var(--ui-leading-scale)); }
+:root:has([data-dashboard-role]) .leading-9 { line-height: calc(2.25rem * var(--ui-leading-scale)); }
+:root:has([data-dashboard-role]) .leading-10 { line-height: calc(2.5rem * var(--ui-leading-scale)); }
+@media (min-width: 640px) {
+  :root:has([data-dashboard-role]) .sm\:leading-6 { line-height: calc(1.5rem * var(--ui-text)); }
+  :root:has([data-dashboard-role]) .sm\:leading-10 { line-height: calc(2.5rem * var(--ui-text)); }
+}
+
+/* ── 1. Application shell ─────────────────────────────────────────────── */
+
+/* Top header: one height token for every role. */
+@media (min-width: 1024px) {
+  html body [data-dashboard-role] header[data-ui="dashboard-header"] {
+    height: var(--app-header-h) !important;
+    min-height: var(--app-header-h) !important;
+  }
+}
+
+/* Sidebar width. Each role used to hard-code its rail width in 3–5 places
+   (Sidebar.jsx, DashboardLayout.jsx margins, kini-student.css,
+   dashboard-polish.css, sidebar-navigation.css). On laptops one token now
+   drives both the rail and the content offset for every role. The
+   collapsed rail keeps its own width. */
+@media (min-width: 1024px) {
+  html body [data-dashboard-role][data-sidebar-collapsed="false"] aside[data-ui="dashboard-sidebar"][data-ui],
+  html body [data-dashboard-role][data-sidebar-collapsed="false"] .mentor-sidebar-shell.mentor-sidebar-shell {
+    width: var(--app-sidebar-w) !important;
+    min-width: var(--app-sidebar-w) !important;
+  }
+  html body [data-dashboard-role][data-sidebar-collapsed="false"] > div.mentor-content-shell.mentor-content-shell {
+    margin-left: var(--app-sidebar-w) !important;
+    width: calc(100% - var(--app-sidebar-w)) !important;
+  }
+}
+
+/* Sidebar logo block + nav items (expanded sidebar only; the collapsed rail
+   keeps its own sizing). Applies whenever the rail is narrowed; on short
+   screens the logo block lines up with the header. */
+@media (min-width: 1024px) {
+  html body [data-dashboard-role] aside[data-ui="dashboard-sidebar"] .sidebar-brand-header:not(:has(.sidebar-brand-card.w-12)) {
+    height: var(--app-brand-h) !important;
+    min-height: var(--app-brand-h) !important;
+    padding-top: 3px !important;
+    padding-bottom: 3px !important;
+    overflow: hidden;
+  }
+  html body [data-dashboard-role] aside[data-ui="dashboard-sidebar"] .sidebar-brand-card:not(.w-12) {
+    height: calc(var(--app-brand-h) - 6px) !important;
+    min-height: 0 !important;
+    max-height: calc(var(--app-brand-h) - 6px) !important;
+  }
+  /* The logo JPEG has wide blank margins and is rendered at 204px inside an
+     88px window (≈2.32). A short window needs a little more room around the
+     tagline, so crop slightly less (2.1). */
+  html body [data-dashboard-role] aside[data-ui="dashboard-sidebar"] .sidebar-brand-card:not(.w-12) .brand-logo-image {
+    width: calc((var(--app-brand-h) - 6px) * 2.1) !important;
+    min-width: 0 !important;
+    height: calc((var(--app-brand-h) - 6px) * 2.1) !important;
+    max-width: none !important;
+    max-height: none !important;
+  }
+  html body [data-dashboard-role] aside[data-ui="dashboard-sidebar"] .mentor-sidebar-item {
+    height: auto !important;
+    min-height: 0 !important;
+    padding-top: var(--app-nav-item-py) !important;
+    padding-bottom: var(--app-nav-item-py) !important;
+  }
+  html body [data-dashboard-role] aside[data-ui="dashboard-sidebar"] .mentor-sidebar-item :is(span, p) {
+    font-size: calc(0.875rem * var(--ui-text)) !important;
+  }
+  html body [data-dashboard-role] aside[data-ui="dashboard-sidebar"] .mentor-sidebar-item svg {
+    width: calc(1.25rem * var(--ui-space)) !important;
+    height: calc(1.25rem * var(--ui-space)) !important;
+  }
+  html body [data-dashboard-role] aside[data-ui="dashboard-sidebar"] nav > div:not(:first-child) {
+    margin-top: 0.5rem !important;
+  }
+
+  /* Header profile block */
+  html body [data-dashboard-role] [data-header-profile] > button > div:first-child {
+    width: calc(2.5rem * var(--ui-space)) !important;
+    height: calc(2.5rem * var(--ui-space)) !important;
+    font-size: calc(0.95rem * var(--ui-text)) !important;
+  }
+  html body [data-dashboard-role] [data-header-profile] > button p:first-child { font-size: calc(0.98rem * var(--ui-text)) !important; }
+  html body [data-dashboard-role] [data-header-profile] > button p + p { font-size: calc(0.8rem * var(--ui-text)) !important; }
+}
+
+/* ── 2. Page content ────────────────────────────────────────────────── */
+/* Grid / flex children that hold tables or charts must be allowed to shrink. */
+html body [data-dashboard-role] main :is(.grid, [class*="grid-cols"]) > * { min-width: 0; }
+
+/* ── 3. Dialogs never exceed the viewport ────────────────────────────── */
+html body [role="dialog"][aria-modal="true"]:not([class*="inset-0"]) {
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+}
+
+/* ── 4. Student hero banner (StudentPageBanner) ──────────────────────── */
+/* Sizes come from the tokens (kini-student-*.css); only the hero height and
+   layout-level choices live here. */
+html body .ksl-page .ksl-banner { min-height: var(--app-hero-min-h) !important; }
+
+@media (min-width: 1024px) and (max-height: 640px) {
+  html body .ksl-page .ksl-banner { padding-top: calc(1rem * var(--ui-space)) !important; padding-bottom: calc(1rem * var(--ui-space)) !important; }
+  html body .ksl-page .ksl-banner__eyebrow { margin-bottom: calc(0.5rem * var(--ui-space)) !important; }
+  html body .ksl-page .ksl-banner__text br { display: none; }
+  html body .ksl-page .ksl-banner__features--divided .ksl-banner__feature { flex-direction: row; align-items: center; }
+  html body .ksl-page .ksl-banner__features--stacked .ksl-banner__feature { flex-direction: row; text-align: left; }
+  html body .ksl-page .ksl-banner__features--stacked .ksl-banner__feature-text strong { max-width: none; }
+}
+
+/* Narrow content area (sidebar + ≤1440px screen): give the copy more room
+   and keep the four feature chips on one line. */
+@media (min-width: 1024px) and (max-width: 1440px) {
+  html body .ksl-page .ksl-banner__copy { max-width: min(62%, 44rem); }
+  html body .ksl-page .ksl-banner__art { max-width: 44% !important; }
+  html body .ksl-page .ksl-banner__features { flex-wrap: nowrap; gap: 0.6rem 1rem; }
+  html body .ksl-page .ksl-banner__feature { flex: 0 1 auto; min-width: 0; }
+  html body .ksl-page .ksl-banner__feature-text { white-space: nowrap; }
+  html body .ksl-page .ksl-banner__features--divided .ksl-banner__feature { padding: 0 0.8rem; }
+  html body .ksl-page .ksl-banner__title { font-size: clamp(calc(1.45rem * var(--ui-display)), calc(2.4vw * var(--ui-display)), calc(2.2rem * var(--ui-display))) !important; }
+  html body .ksl-page .ksl-banner__features--divided .ksl-banner__feature-text strong { font-size: calc(0.82rem * var(--ui-text)); }
+  html body .ksl-page .ksl-banner__feature-text small { font-size: 0.74rem; }
+  html body .ksl-page .ksl-meta { padding-right: 1.2rem; margin-right: 1.2rem; }
+}
+
+/* ── 5. Mentor page hero (MentorPageHeader) ──────────────────────────── */
+@media (min-width: 1024px) and (max-width: 1440px) {
+  html body [data-dashboard-role] header.mentor-page-header.mentor-hero { flex-wrap: wrap !important; row-gap: 10px !important; }
+  html body [data-dashboard-role] header.mentor-hero .mentor-hero__tagline { display: none !important; }
+  html body [data-dashboard-role] header.mentor-hero .mentor-hero__copy { flex: 1 1 18rem !important; min-width: 16rem !important; }
+  html body [data-dashboard-role] header.mentor-hero .mentor-hero__art { width: calc(160px * var(--ui-space)); height: calc(88px * var(--ui-space)); margin-bottom: -18px; }
+}
+/* Short screens: the hero sizes itself from the tokens (mentor-hero.css);
+   only drop its fixed minimum height and tighten the outer rhythm. */
+@media (min-width: 1024px) and (max-height: 880px) {
+  html body [data-dashboard-role] header.mentor-page-header.mentor-hero {
+    min-height: 0 !important;
+    gap: calc(16px * var(--ui-space)) !important;
+    padding: calc(12px * var(--ui-space)) calc(18px * var(--ui-space)) !important;
+    margin-bottom: calc(10px * var(--ui-space)) !important;
+  }
+  html body [data-dashboard-role] header.mentor-hero .mentor-hero__art { margin-top: -4px; margin-bottom: -12px; }
+}

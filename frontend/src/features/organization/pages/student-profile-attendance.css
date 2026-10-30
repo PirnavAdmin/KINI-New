@@ -1,0 +1,21 @@
+/* Preserve attendance header accents independently of column positions. */
+html body [data-dashboard-role] table.student-profile-attendance:not(#kth) > thead > tr > th[data-th-variant="purple"] {
+  --kth-bg: var(--kth-purple-bg);
+  --kth-fg: var(--kth-purple-fg);
+}
+html body [data-dashboard-role] table.student-profile-attendance:not(#kth) > thead > tr > th[data-th-variant="blue"] {
+  --kth-bg: var(--kth-blue-bg);
+  --kth-fg: var(--kth-blue-fg);
+}
+html body [data-dashboard-role] table.student-profile-attendance:not(#kth) > thead > tr > th[data-th-variant="orange"] {
+  --kth-bg: var(--kth-orange-bg);
+  --kth-fg: var(--kth-orange-fg);
+}
+html body [data-dashboard-role] table.student-profile-attendance:not(#kth) > thead > tr > th[data-th-variant="green"] {
+  --kth-bg: var(--kth-green-bg);
+  --kth-fg: var(--kth-green-fg);
+}
+html body [data-dashboard-role] table.student-profile-attendance:not(#kth) > thead > tr > th[data-th-variant="red"] {
+  --kth-bg: var(--kth-red-bg);
+  --kth-fg: var(--kth-red-fg);
+}

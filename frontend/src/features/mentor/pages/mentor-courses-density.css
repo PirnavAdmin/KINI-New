@@ -1,0 +1,137 @@
+/* Mentor › My Courses — desktop density at 100% zoom (~1280px view).
+   Scoped to .mentor-courses-page and desktop widths; the shared .mph hero and
+   .mv17 card styles are only adjusted here. The overridden rules are plain
+   (no !important), so one extra page class out-ranks them. */
+
+@media (min-width: 1100px) {
+  /* Hero: keep "Teach · Inspire · Empower" (mentor-page-hero.css hides it at
+     ≤1280px), smaller, beside a slightly narrower illustration. */
+  html body [data-dashboard-role] .mentor-courses-page .mph {
+    --mph-art-w: 240px;
+    gap: 18px;
+    min-height: 0;
+    padding: 14px 24px;
+  }
+  html body [data-dashboard-role] .mentor-courses-page .mph .mph__script {
+    display: flex;
+  }
+  html body [data-dashboard-role] .mentor-courses-page .mph .mph__script em {
+    font-size: 24px;
+  }
+  html body [data-dashboard-role] .mentor-courses-page .mph .mph__icon {
+    width: 68px;
+    height: 68px;
+    border-radius: 20px;
+  }
+  html body [data-dashboard-role] .mentor-courses-page .mph .mph__subtitle {
+    margin-top: 6px;
+    font-size: 14px !important;
+  }
+
+  /* Tabs (~50px bar). */
+  html body .mentor-courses-page.mv17 .mv17-tabbar {
+    gap: 6px;
+    padding: 6px;
+    border-radius: 16px;
+  }
+  html body .mentor-courses-page.mv17 .mv17-tabbar button {
+    height: 38px;
+    padding: 0 20px;
+    font-size: 13.5px;
+  }
+
+  /* Course list: compact items. */
+  html body .mentor-courses-page.mv17 .mv17-course-list {
+    padding: 14px 12px 12px;
+  }
+  html body .mentor-courses-page.mv17 .mv17-course-list h2 {
+    margin-bottom: 10px;
+    font-size: 17px;
+  }
+  html body .mentor-courses-page.mv17 .mv17-course-list__items > button {
+    gap: 10px;
+    padding: 8px;
+  }
+  html body .mentor-courses-page.mv17 .mv17-course-list__items b {
+    font-size: 14px;
+  }
+
+  /* Course header and KPI cards: labels on one line. */
+  html body .mentor-courses-page.mv17 .mv17-course-detail__head {
+    margin-bottom: 12px;
+  }
+  html body .mentor-courses-page.mv17 .mv17-kpi-row {
+    gap: 10px;
+  }
+  html body .mentor-courses-page.mv17 .mv17-kpi {
+    gap: 10px;
+    min-height: 0;
+    padding: 12px;
+  }
+  html body .mentor-courses-page.mv17 .mv17-kpi__icon {
+    width: 40px;
+    height: 40px;
+  }
+  html body .mentor-courses-page.mv17 .mv17-kpi__icon svg {
+    width: 20px;
+    height: 20px;
+  }
+  html body .mentor-courses-page.mv17 .mv17-kpi b {
+    font-size: 22px;
+  }
+  html body .mentor-courses-page.mv17 .mv17-kpi small {
+    margin-top: 2px;
+    font-size: 12.5px;
+    white-space: nowrap;
+  }
+
+  /* Start Date / Course Duration / Next Class. */
+  html body .mentor-courses-page.mv17 .mv17-info {
+    gap: 10px;
+    padding: 10px 12px;
+  }
+  html body .mentor-courses-page.mv17 .mv17-info__icon {
+    width: 40px;
+    height: 40px;
+  }
+  html body .mentor-courses-page.mv17 .mv17-info__label {
+    font-size: 12.5px;
+  }
+  html body .mentor-courses-page.mv17 .mv17-info__value {
+    font-size: 15px;
+  }
+
+  /* Recent Batches: all seven columns fit the card (no horizontal scroll). */
+  html body .mentor-courses-page.mv17 .mv17-table--compact {
+    min-width: 0;
+  }
+  html body .mentor-courses-page.mv17 .mv17-table--compact thead th {
+    padding: 9px 10px !important;
+    white-space: nowrap;
+  }
+  html body .mentor-courses-page.mv17 .mv17-table--compact tbody td {
+    padding: 8px 10px;
+  }
+
+  html body .mentor-courses-page.mv17 .mv17-table--compact .mv17-progress {
+    min-width: 120px;
+    width: 120px;
+  }
+
+  /* Today's Topic / Next Topic. */
+  html body .mentor-courses-page.mv17 .mv17-topic {
+    gap: 12px;
+    min-height: 0;
+    padding: 12px 14px;
+  }
+  html body .mentor-courses-page.mv17 .mv17-topic__icon {
+    width: 40px;
+    height: 40px;
+  }
+  html body .mentor-courses-page.mv17 .mv17-topic h3 {
+    font-size: 16px;
+  }
+  html body .mentor-courses-page.mv17 .mv17-topic p {
+    font-size: 13px;
+  }
+}

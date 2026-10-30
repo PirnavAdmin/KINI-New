@@ -1,0 +1,173 @@
+/* ==========================================================================
+   Organization → Invoices — compact desktop density.
+   Real sizes (heights, padding, font sizes), no zoom/scale. Scoped to
+   .invoice-management-page so the other org-page-kit pages (Payroll,
+   Revenue, Course Materials) keep their own styling.
+   Fixed px on purpose: a 1280×585 laptop viewport (1920×1080 at 150%)
+   should get the same one-row layout a 1920 monitor gets.
+   ========================================================================== */
+
+@media (min-width: 1024px) {
+  /* ── Page rhythm ───────────────────────────────────────────────────── */
+  html body .invoice-management-page.kx-page { gap: 10px; padding: 10px 16px 20px; }
+  html body .invoice-management-page > section > div:first-child { gap: 10px !important; }
+  html body .invoice-management-page .kx-grid { gap: 10px; }
+
+  /* ── Hero (both invoice variants) ──────────────────────────────────── */
+  .invoice-management-page .mentor-banner:is(.mentor-banner--invoice, .mentor-banner--invoiceGenerate) {
+    --mb-h: 204px;
+    --mb-padding: 16px 24px 16px 22px;
+    --mb-bottom-gap: 0px;
+    --mb-copy: 52%;
+    --mb-art-left: 57%;
+    --mb-art-right: auto;
+    --mb-art-w: 30%;
+    --mb-art-h: 100%;
+    --mb-badge-gap: 6px;
+    --mb-subtitle-gap: 6px;
+    --mb-features-gap: 12px;
+    --mb-script-top: 66px;
+    --mb-script-right: 2%;
+    --mb-script-size: 24px;
+    --mb-script-step: 5px;
+    --mb-swoosh-w: 84px;
+  }
+  html body .invoice-management-page .mentor-banner:is(.mentor-banner--invoice, .mentor-banner--invoiceGenerate) {
+    flex-wrap: nowrap !important;
+  }
+  html body .invoice-management-page .mentor-banner .mentor-banner__leading { margin-right: 18px; }
+  html body .invoice-management-page .mentor-banner .mentor-banner__tile { width: 72px; height: 72px; border-radius: 18px; }
+  html body .invoice-management-page .mentor-banner .mentor-banner__tile svg { width: 32px; height: 32px; }
+  html body .invoice-management-page .mentor-banner .mentor-banner__eyebrow--text { font-size: 11px !important; }
+  html body .invoice-management-page .mentor-banner .mentor-banner__title { font-size: clamp(34px, 2.6vw, 44px) !important; line-height: 1.06 !important; }
+  html body .invoice-management-page .mentor-banner .mentor-banner__subtitle { max-width: none; font-size: 13.5px !important; line-height: 1.4 !important; }
+  html body .invoice-management-page .mentor-banner .mentor-banner__features--chip { flex-wrap: nowrap; gap: 8px; }
+  html body .invoice-management-page .mentor-banner .mentor-banner__features--chip .mentor-banner__feature { flex: none; gap: 5px; height: 30px; padding: 0 11px 0 8px; }
+  html body .invoice-management-page .mentor-banner .mentor-banner__features--chip .mentor-banner__feature-icon { width: 18px; height: 18px; }
+  html body .invoice-management-page .mentor-banner .mentor-banner__features--chip .mentor-banner__feature-icon svg { width: 15px; height: 15px; }
+  html body .invoice-management-page .mentor-banner .mentor-banner__features--chip .mentor-banner__feature-text b { font-size: 12px; white-space: nowrap; }
+
+  /* Art sits in the right part of the hero, anchored to the bottom, and
+     never adds height; the handwritten script stays visible on laptops. */
+  html body .invoice-management-page .mentor-banner .mentor-banner__art { top: auto; bottom: 0; }
+  html body .invoice-management-page .mentor-banner .mentor-banner__script { display: flex; }
+  html body .invoice-management-page .mentor-banner .mentor-banner__script em { font-size: var(--mb-script-size); }
+
+  html body .invoice-management-page .mentor-banner--invoice .mentor-banner__actions { top: 14px; right: 18px; }
+  html body .invoice-management-page .mentor-banner--invoice .mentor-banner__actions .mentor-hero-btn { gap: 6px; height: 38px; padding: 0 18px; font-size: 13px; border-radius: 10px; }
+  html body .invoice-management-page .mentor-banner--invoice .mentor-banner__actions .mentor-hero-btn svg { width: 15px; height: 15px; }
+
+  /* ── Tabs ──────────────────────────────────────────────────────────── */
+  html body .invoice-management-page .kx-tabs { gap: 2px; padding: 4px; border-radius: 11px; }
+  html body .invoice-management-page .kx-tab { height: 30px; padding: 0 16px; border-radius: 8px; font-size: 12px; }
+
+  /* ── KPI cards (shared KPI component) ──────────────────────────────── */
+  html body .invoice-management-page [data-ui="kpi"] { min-height: 60px; border-radius: 14px; }
+  html body .invoice-management-page [data-ui="kpi"] .kpi-content { gap: 10px; padding: 8px 12px; }
+  html body .invoice-management-page [data-ui="kpi"] .kpi-icon { width: 32px; height: 32px; border-radius: 10px; }
+  html body .invoice-management-page [data-ui="kpi"] .kpi-icon svg { width: 16px; height: 16px; }
+  html body .invoice-management-page [data-ui="kpi"] .kpi-value { font-size: 19px; }
+  html body .invoice-management-page [data-ui="kpi"] .kpi-content p:not(.kpi-value):not(.kpi-description) { margin-top: 3px; font-size: 11.5px; line-height: 1.2; }
+  html body .invoice-management-page [data-ui="kpi"] .kpi-description { margin-top: 1px; font-size: 10px; line-height: 1.25; }
+
+  /* ── Panels (Financial Overview, Invoice Status, Monthly Revenue …) ── */
+  html body .invoice-management-page .kx-panel { padding: 10px 12px 12px; border-radius: 14px; }
+  html body .invoice-management-page .kx-panel__head { gap: 10px; margin-bottom: 8px; min-height: 32px; }
+  html body .invoice-management-page .kx-panel__title { gap: 8px; }
+  html body .invoice-management-page .kx-panel__title-icon svg { width: 17px; height: 17px; }
+  html body .invoice-management-page .kx-panel .kx-panel__heading { font-size: 15px; }
+  html body .invoice-management-page .kx-grid--fin { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  /* Invoice Status · Monthly Revenue · Quick Actions on one row. */
+  html body .invoice-management-page .kx-grid--overview { grid-template-columns: minmax(0, .9fr) minmax(0, 1.2fr) minmax(0, .8fr); }
+  html body .invoice-management-page .kx-grid--overview > :last-child { grid-column: auto; }
+}
+
+/* Narrower desktops: less room between copy and art. */
+@media (min-width: 1024px) and (max-width: 1440px) {
+  .invoice-management-page .mentor-banner:is(.mentor-banner--invoice, .mentor-banner--invoiceGenerate) {
+    --mb-copy: 56%;
+    --mb-art-left: 65%;
+    --mb-art-w: 22%;
+    --mb-script-size: 21px;
+  }
+  html body .invoice-management-page .mentor-banner .mentor-banner__title { font-size: 38px !important; }
+}
+/* 1024–1279px: the script and the art don't both fit next to the copy. */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  html body .invoice-management-page .mentor-banner .mentor-banner__script { display: none; }
+  .invoice-management-page .mentor-banner:is(.mentor-banner--invoice, .mentor-banner--invoiceGenerate) { --mb-copy: 62%; --mb-art-left: auto; --mb-art-right: 1%; --mb-art-w: 30%; --mb-art-h: 78%; }
+  html body .invoice-management-page .mentor-banner .mentor-banner__features--chip { flex-wrap: wrap; }
+  html body .invoice-management-page .kx-grid--overview { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  html body .invoice-management-page .kx-grid--overview > :last-child { grid-column: 1 / -1; }
+}
+
+/* ── Lower panels: Invoice Status · Monthly Revenue · Quick Actions ─── */
+@media (min-width: 1024px) {
+  html body [data-dashboard-role] .invoice-management-page .kx-select--compact select { height: 32px; padding: 0 30px 0 12px; font-size: 12px; border-radius: 8px !important; }
+  html body .invoice-management-page .kx-select--compact { min-width: 112px; }
+  html body .invoice-management-page .kx-select > .kx-select__chev { right: 10px; width: 14px; height: 14px; }
+
+  html body .invoice-management-page .kx-donut { width: 124px; height: 124px; }
+  html body .invoice-management-page .kx-donut__center strong { font-size: 20px; }
+  html body .invoice-management-page .kx-donut__center span { font-size: 11px; }
+  html body .invoice-management-page .kx-legend { gap: 8px; min-width: 130px; }
+  html body .invoice-management-page .kx-legend__row { grid-template-columns: 9px 1fr auto; gap: 8px; font-size: 12px; }
+  html body .invoice-management-page .kx-legend__dot { width: 9px; height: 9px; }
+  html body .invoice-management-page .kx-status-breakdown { gap: 14px !important; }
+
+  html body .invoice-management-page .kx-revenue-chart { height: 150px !important; }
+
+  html body .invoice-management-page .kx-actions { gap: 6px; }
+  html body .invoice-management-page .kx-action { gap: 10px; min-height: 40px; padding: 5px 10px 5px 6px; border-radius: 9px; font-size: 12.5px; }
+  html body .invoice-management-page .kx-action__icon { width: 28px; height: 28px; border-radius: 8px; }
+  html body .invoice-management-page .kx-action__icon svg { width: 15px; height: 15px; }
+  html body .invoice-management-page .kx-action > svg:last-child { width: 15px; height: 15px; }
+
+  html body .invoice-management-page .kx-note { padding-top: 8px; padding-bottom: 8px; font-size: 12.5px; }
+}
+
+/* ── Short desktop screens (≤ 640px tall: 1920×1080 at 150%, ~1280×585) ──
+   The 1536×864 layout above leaves only the lower panel headings in view
+   here, so the stack tightens further; text stays ≥ 10px. */
+@media (min-width: 1024px) and (max-height: 640px) {
+  html body .invoice-management-page.kx-page { gap: 8px; padding-top: 8px; }
+  html body .invoice-management-page > section > div:first-child { gap: 8px !important; }
+  html body .invoice-management-page .kx-grid { gap: 8px; }
+
+  .invoice-management-page .mentor-banner:is(.mentor-banner--invoice, .mentor-banner--invoiceGenerate) {
+    --mb-h: 176px;
+    --mb-padding: 12px 20px 12px 18px;
+    --mb-subtitle-gap: 4px;
+    --mb-features-gap: 10px;
+    --mb-script-top: 58px;
+    --mb-script-size: 19px;
+  }
+  html body .invoice-management-page .mentor-banner .mentor-banner__tile { width: 64px; height: 64px; border-radius: 16px; }
+  html body .invoice-management-page .mentor-banner .mentor-banner__tile svg { width: 28px; height: 28px; }
+  html body .invoice-management-page .mentor-banner .mentor-banner__leading { margin-right: 14px; }
+  html body .invoice-management-page .mentor-banner .mentor-banner__title { font-size: 34px !important; }
+  html body .invoice-management-page .mentor-banner .mentor-banner__subtitle { font-size: 13px !important; }
+  html body .invoice-management-page .mentor-banner .mentor-banner__features--chip .mentor-banner__feature { height: 28px; }
+  html body .invoice-management-page .mentor-banner .mentor-banner__features--chip .mentor-banner__feature-text b { font-size: 11.5px; }
+  html body .invoice-management-page .mentor-banner--invoice .mentor-banner__actions { top: 10px; right: 14px; }
+  html body .invoice-management-page .mentor-banner--invoice .mentor-banner__actions .mentor-hero-btn { height: 34px; padding: 0 16px; font-size: 12px; }
+
+  html body .invoice-management-page .kx-tabs { padding: 3px; }
+  html body .invoice-management-page .kx-tab { height: 28px; padding: 0 14px; font-size: 11.5px; }
+
+  html body .invoice-management-page [data-ui="kpi"] { min-height: 56px; }
+  html body .invoice-management-page [data-ui="kpi"] .kpi-content { padding: 6px 12px; }
+  html body .invoice-management-page [data-ui="kpi"] .kpi-icon { width: 30px; height: 30px; }
+  html body .invoice-management-page [data-ui="kpi"] .kpi-value { font-size: 18px; }
+  html body .invoice-management-page [data-ui="kpi"] .kpi-content p:not(.kpi-value):not(.kpi-description) { margin-top: 2px; font-size: 11px; }
+
+  html body .invoice-management-page .kx-panel { padding: 8px 12px 10px; }
+  html body .invoice-management-page .kx-panel__head { margin-bottom: 6px; min-height: 28px; }
+  html body .invoice-management-page .kx-panel .kx-panel__heading { font-size: 14px; }
+  html body [data-dashboard-role] .invoice-management-page .kx-select--compact select { height: 28px; }
+  html body .invoice-management-page .kx-revenue-chart { height: 136px !important; }
+  html body .invoice-management-page .kx-donut { width: 112px; height: 112px; }
+  html body .invoice-management-page .kx-action { min-height: 36px; }
+  html body .invoice-management-page .kx-action__icon { width: 26px; height: 26px; }
+}

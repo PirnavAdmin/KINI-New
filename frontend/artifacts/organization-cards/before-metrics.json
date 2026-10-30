@@ -1,0 +1,33 @@
+{
+  "report": [
+    {
+      "scenario": "empty",
+      "width": 1249.25,
+      "columns": "409.75px 409.75px 409.75px",
+      "gap": "10px",
+      "cards": [
+        {
+          "width": 409.75,
+          "height": 290.75,
+          "radius": "14px",
+          "heading": "14.5px"
+        },
+        {
+          "width": 409.75,
+          "height": 290.75,
+          "radius": "14px",
+          "heading": "14.5px"
+        },
+        {
+          "width": 409.75,
+          "height": 290.75,
+          "radius": "14px",
+          "heading": "14.5px"
+        }
+      ],
+      "donut": 140,
+      "images": []
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,288 @@
+/* ==========================================================================
+   Mentor page hero — soft blue banner shared by every mentor module page.
+   Selectors are deliberately strong (html body [role] header.x.y) because
+   kini-mentor.css / brand-theme.css force the legacy compact header to be
+   transparent with !important.
+   ========================================================================== */
+
+.mentor-hero,
+html body [data-dashboard-role] header.mentor-page-header.mentor-hero {
+  --mh-navy: #0f2a4a;
+  --mh-text: #5b6f88;
+  --mh-ink: #27508a;
+  --mh-orange: #f28a1e;
+  --mh-hand: "Caveat", "Segoe Script", "Bradley Hand", cursive;
+
+  position: relative !important;
+  isolation: isolate;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: calc(22px * var(--ui-space)) !important;
+  min-height: calc(124px * var(--ui-space));
+  margin: 0 0 calc(14px * var(--ui-space)) !important;
+  padding: calc(18px * var(--ui-space)) calc(24px * var(--ui-space)) !important;
+  border: 1px solid #dfe9f5 !important;
+  border-radius: 18px !important;
+  background: linear-gradient(100deg, #f4f8fd 0%, #eef4fc 48%, #e4eefb 100%) !important;
+  background-image: linear-gradient(100deg, #f4f8fd 0%, #eef4fc 48%, #e4eefb 100%) !important;
+  box-shadow: 0 4px 16px rgba(15, 42, 74, 0.05) !important;
+}
+
+html body [data-dashboard-role] header.mentor-hero .mentor-hero__bg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+html body [data-dashboard-role] header.mentor-hero .mentor-hero__bg svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Icon tile */
+html body [data-dashboard-role] header.mentor-hero .mentor-hero__icon {
+  display: grid !important;
+  place-items: center;
+  flex: 0 0 auto;
+  width: calc(76px * var(--ui-space));
+  height: calc(76px * var(--ui-space));
+  border-radius: 20px;
+  background: linear-gradient(145deg, #dcebff 0%, #c9defb 100%) !important;
+  color: #2f6fe4 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.8), 0 8px 18px rgba(47, 111, 228, 0.14);
+}
+html body [data-dashboard-role] header.mentor-hero .mentor-hero__icon svg {
+  width: calc(36px * var(--ui-space));
+  height: calc(36px * var(--ui-space));
+  stroke-width: 1.8;
+  color: #2f6fe4 !important;
+}
+
+/* Title + subtitle */
+html body [data-dashboard-role] header.mentor-hero .mentor-hero__copy {
+  flex: 1 1 280px;
+  min-width: 0;
+}
+html body [data-dashboard-role] header.mentor-hero .mentor-hero__copy h1 {
+  margin: 0;
+  font-size: clamp(calc(24px * var(--ui-display)), calc(2.2vw * var(--ui-display)), calc(32px * var(--ui-display))) !important;
+  font-weight: 800 !important;
+  line-height: 1.15 !important;
+  letter-spacing: -0.02em;
+  color: var(--mh-navy) !important;
+  -webkit-text-fill-color: var(--mh-navy) !important;
+}
+html body [data-dashboard-role] header.mentor-hero .mentor-hero__copy p {
+  margin: calc(6px * var(--ui-space)) 0 0;
+  max-width: 64ch;
+  font-size: calc(15px * var(--ui-text)) !important;
+  line-height: 1.5 !important;
+  color: var(--mh-text) !important;
+  -webkit-text-fill-color: var(--mh-text) !important;
+}
+
+/* Handwritten tagline */
+html body [data-dashboard-role] header.mentor-hero .mentor-hero__tagline {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  transform: rotate(-8deg);
+  padding: 0 4px;
+}
+html body [data-dashboard-role] header.mentor-hero .mentor-hero__tagline em {
+  display: block;
+  font-family: var(--mh-hand);
+  font-style: normal;
+  font-weight: 600;
+  font-size: calc(28px * var(--ui-display));
+  line-height: 1.02;
+  color: var(--mh-ink) !important;
+  -webkit-text-fill-color: var(--mh-ink) !important;
+  white-space: nowrap;
+}
+html body [data-dashboard-role] header.mentor-hero .mentor-hero__tagline em:nth-child(2) {
+  margin-left: calc(18px * var(--ui-space));
+}
+html body [data-dashboard-role] header.mentor-hero .mentor-hero__tagline em:nth-child(3) {
+  margin-left: calc(34px * var(--ui-space));
+}
+html body [data-dashboard-role] header.mentor-hero .mentor-hero__tagline em.is-accent {
+  color: var(--mh-orange) !important;
+  -webkit-text-fill-color: var(--mh-orange) !important;
+}
+html body [data-dashboard-role] header.mentor-hero .mentor-hero__tagline em.is-accent::after {
+  content: "";
+  display: block;
+  width: 70%;
+  height: 3px;
+  margin-top: 2px;
+  border-radius: 3px;
+  background: var(--mh-orange);
+}
+
+/* Artwork */
+html body [data-dashboard-role] header.mentor-hero .mentor-hero__art {
+  flex: 0 0 auto;
+  align-self: flex-end;
+  width: calc(220px * var(--ui-space));
+  height: calc(116px * var(--ui-space));
+  margin: calc(-6px * var(--ui-space)) 0 calc(-18px * var(--ui-space));
+}
+html body [data-dashboard-role] header.mentor-hero .mentor-hero__art svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Actions */
+html body [data-dashboard-role] header.mentor-hero .mentor-hero__actions {
+  flex: 0 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: calc(10px * var(--ui-space));
+}
+
+/* Shared hero action buttons */
+.mentor-hero-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(8px * var(--ui-space));
+  height: calc(44px * var(--ui-space));
+  padding: 0 calc(18px * var(--ui-space));
+  border-radius: 12px;
+  font-size: calc(14px * var(--ui-text));
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+.mentor-hero-btn:disabled { cursor: not-allowed; opacity: 0.55; }
+.mentor-hero-btn svg { width: calc(17px * var(--ui-space)); height: calc(17px * var(--ui-space)); }
+html body [data-dashboard-role] .mentor-hero-btn--primary {
+  background: #f39924 !important;
+  color: #ffffff !important;
+  border: 1px solid #f39924 !important;
+  box-shadow: 0 8px 18px -10px rgba(243, 153, 36, 0.9);
+}
+html body [data-dashboard-role] .mentor-hero-btn--primary:hover:not(:disabled) { background: #e2860f !important; }
+html body [data-dashboard-role] .mentor-hero-btn--success {
+  background: #13a36b !important;
+  color: #ffffff !important;
+  border: 1px solid #13a36b !important;
+  box-shadow: 0 8px 18px -10px rgba(19, 163, 107, 0.9);
+}
+html body [data-dashboard-role] .mentor-hero-btn--success:hover:not(:disabled) { background: #0f8c5b !important; }
+html body [data-dashboard-role] .mentor-hero-btn--ghost {
+  background: #ffffff !important;
+  color: #133b5d !important;
+  border: 1px solid #d7e1ec !important;
+}
+html body [data-dashboard-role] .mentor-hero-btn--ghost:hover:not(:disabled) { background: #f6f9fd !important; }
+html body [data-dashboard-role] .mentor-hero-btn :is(svg, span) { color: inherit !important; }
+
+/* White pill used for small facts in the hero (e.g. "2 assigned") */
+.mentor-hero-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(8px * var(--ui-space));
+  height: calc(40px * var(--ui-space));
+  padding: 0 calc(16px * var(--ui-space));
+  border-radius: 12px;
+  border: 1px solid #e3eaf3;
+  background: #ffffff;
+  color: #133b5d;
+  font-size: calc(13px * var(--ui-text));
+  font-weight: 700;
+  box-shadow: 0 4px 12px rgba(15, 42, 74, 0.05);
+}
+.mentor-hero-pill svg { width: calc(16px * var(--ui-space)); height: calc(16px * var(--ui-space)); color: #133b5d; }
+
+/* Select placed in the hero (Reports batch filter) */
+html body [data-dashboard-role] header.mentor-hero select {
+  height: calc(44px * var(--ui-space));
+  min-width: calc(190px * var(--ui-space));
+  border-radius: 12px !important;
+  border: 1px solid #dfe7f1 !important;
+  background-color: #ffffff !important;
+  padding: 0 calc(14px * var(--ui-space));
+  font-size: calc(14px * var(--ui-text));
+  font-weight: 600;
+  color: #133b5d !important;
+  box-shadow: 0 4px 12px rgba(15, 42, 74, 0.05);
+}
+
+/* Responsive */
+@media (max-width: 1360px) {
+  html body [data-dashboard-role] header.mentor-hero .mentor-hero__tagline em { font-size: calc(24px * var(--ui-display)); }
+}
+@media (max-width: 1180px) {
+  html body [data-dashboard-role] header.mentor-hero .mentor-hero__tagline { display: none; }
+  html body [data-dashboard-role] header.mentor-hero .mentor-hero__art { width: calc(180px * var(--ui-space)); height: calc(96px * var(--ui-space)); }
+}
+@media (max-width: 900px) {
+  html body [data-dashboard-role] header.mentor-hero .mentor-hero__art { display: none; }
+}
+@media (max-width: 720px) {
+  html body [data-dashboard-role] header.mentor-page-header.mentor-hero {
+    flex-wrap: wrap !important;
+    gap: calc(14px * var(--ui-space)) !important;
+    padding: calc(16px * var(--ui-space)) !important;
+  }
+  html body [data-dashboard-role] header.mentor-hero .mentor-hero__icon { width: calc(56px * var(--ui-space)); height: calc(56px * var(--ui-space)); border-radius: 16px; }
+  html body [data-dashboard-role] header.mentor-hero .mentor-hero__icon svg { width: calc(28px * var(--ui-space)); height: calc(28px * var(--ui-space)); }
+  html body [data-dashboard-role] header.mentor-hero .mentor-hero__actions { width: 100%; justify-content: stretch; }
+  html body [data-dashboard-role] header.mentor-hero .mentor-hero__actions > * { flex: 1 1 auto; }
+}
+
+/* Dark mode */
+html.dark body [data-dashboard-role] header.mentor-page-header.mentor-hero,
+.dark header.mentor-page-header.mentor-hero {
+  background: linear-gradient(100deg, #122036, #15294a) !important;
+  background-image: linear-gradient(100deg, #122036, #15294a) !important;
+  border-color: #243249 !important;
+}
+html.dark body [data-dashboard-role] header.mentor-hero .mentor-hero__bg { opacity: 0.25; }
+html.dark body [data-dashboard-role] header.mentor-hero .mentor-hero__copy h1 {
+  color: #f1f5f9 !important;
+  -webkit-text-fill-color: #f1f5f9 !important;
+}
+html.dark body [data-dashboard-role] header.mentor-hero .mentor-hero__copy p {
+  color: #a9b8cc !important;
+  -webkit-text-fill-color: #a9b8cc !important;
+}
+html.dark body [data-dashboard-role] header.mentor-hero .mentor-hero__tagline em:not(.is-accent) {
+  color: #9cc0ef !important;
+  -webkit-text-fill-color: #9cc0ef !important;
+}
+html.dark body [data-dashboard-role] header.mentor-hero .mentor-hero__icon {
+  background: #1b3358 !important;
+}
+
+/* Section heading variant (compact header with a blue accent bar) */
+html body [data-dashboard-role] header.mentor-page-header.mentor-section-heading {
+  position: relative;
+  padding: 2px 0 calc(14px * var(--ui-space)) calc(16px * var(--ui-space)) !important;
+  align-items: center !important;
+}
+html body [data-dashboard-role] header.mentor-page-header.mentor-section-heading::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 4px;
+  bottom: calc(18px * var(--ui-space));
+  width: 4px;
+  border-radius: 4px;
+  background: #1f6fe5;
+}
+html body [data-dashboard-role] header.mentor-page-header.mentor-section-heading h1 {
+  font-size: calc(24px * var(--ui-display)) !important;
+  color: #0f2a4a !important;
+  -webkit-text-fill-color: #0f2a4a !important;
+}

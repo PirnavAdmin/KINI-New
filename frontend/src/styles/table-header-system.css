@@ -1,0 +1,179 @@
+/* ==========================================================================
+   Kini EduHub — Global Table Header System
+   --------------------------------------------------------------------------
+   Every data table rendered inside the dashboard shell gets spaced, pastel,
+   subtly slanted header blocks. Pure presentation: no markup, sorting,
+   selection or column logic is touched.
+
+   Variants (auto-assigned by column position, override per <th>):
+     <th data-th-variant="purple|blue|orange|green|red"> … </th>
+   Opt a table out (print/invoice/markdown tables):
+     <table data-table-header="plain"> … </table>
+
+   The `:not(#kth)` pseudo-class adds ID-level specificity so this layer wins
+   over the older page-level !important thead/th overrides without editing them.
+   ========================================================================== */
+
+[data-dashboard-role] {
+  --kth-purple-bg: #EDE4FF; --kth-purple-fg: #7C3AED;
+  --kth-blue-bg:   #E3EEFF; --kth-blue-fg:   #2563EB;
+  --kth-orange-bg: #FFEED8; --kth-orange-fg: #EA8A0B;
+  --kth-green-bg:  #DDF5EA; --kth-green-fg:  #059669;
+  --kth-red-bg:    #FFE4E7; --kth-red-fg:    #EF4444;
+}
+.dark [data-dashboard-role],
+[data-dashboard-role].dark {
+  --kth-purple-bg: rgba(124, 58, 237, .20); --kth-purple-fg: #C4B5FD;
+  --kth-blue-bg:   rgba(37, 99, 235, .20);  --kth-blue-fg:   #93C5FD;
+  --kth-orange-bg: rgba(245, 158, 11, .18); --kth-orange-fg: #FCD34D;
+  --kth-green-bg:  rgba(5, 150, 105, .20);  --kth-green-fg:  #6EE7B7;
+  --kth-red-bg:    rgba(239, 68, 68, .20);  --kth-red-fg:    #FCA5A5;
+}
+
+/* ---- Header row: white, no bar, no dividers ---------------------------- */
+html body [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > thead,
+html body [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > thead > tr {
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+
+/* ---- Header cell: text layer ------------------------------------------- */
+html body [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > thead > tr > th {
+  --kth-bg: var(--kth-purple-bg);
+  --kth-fg: var(--kth-purple-fg);
+  isolation: isolate;
+  height: var(--hr-standard-header-height, auto) !important;
+  /* 12px inline padding matches the body cell rule below, so every header
+     label starts directly above its column's values. */
+  padding: var(--hr-standard-head-padding, calc(18px * var(--ui-space)) 12px) !important;
+  border: 0 !important;
+  border-bottom: 1px solid #E2E8F0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  background-image: none !important;
+  color: var(--kth-fg) !important;
+  -webkit-text-fill-color: var(--kth-fg) !important;
+  font-size: calc(12px * var(--ui-text)) !important;
+  font-weight: 700 !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.04em !important;
+  text-transform: uppercase !important;
+  white-space: nowrap;
+  vertical-align: middle !important;
+}
+html body [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > thead > tr > th:not(.sticky) {
+  position: relative;
+}
+/* Sticky header cells must stay opaque while rows scroll beneath them. */
+html body [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > thead.sticky > tr > th,
+html body [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > thead > tr > th.sticky {
+  background: #FFFFFF !important;
+}
+.dark [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > thead > tr > th.sticky,
+.dark [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > thead.sticky > tr > th {
+  background: #0F172A !important;
+}
+
+/* Sort buttons, labels and icons inside a header inherit the block colour. */
+html body [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > thead > tr > th :is(span, button, a, div, p, svg):not([role="menu"]):not([role="menu"] *) {
+  color: inherit !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+/* ---- Header cell: pastel block (behind the text) -----------------------
+   Straight (unslanted) so its left edge sits in a clean line over the body
+   content; 4px in from the column edge leaves the label 8px of room. */
+html body [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > thead > tr > th::before {
+  content: "";
+  position: absolute;
+  inset: var(--hr-standard-head-inset, calc(8px * var(--ui-space))) 4px;
+  z-index: -1;
+  border-radius: 6px;
+  background: var(--kth-bg);
+  pointer-events: none;
+}
+/* Multi-row headers (grouped columns) keep blocks tight to each row. */
+html body [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > thead > tr + tr > th::before {
+  inset: 4px 4px calc(8px * var(--ui-space));
+}
+
+/* ---- Colour rhythm (matches reference: # NAME ID EMAIL TYPE … ACTIONS) - */
+html body [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > thead > tr > th:nth-child(8n + 3),
+html body [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > thead > tr > th:nth-child(8n + 7) {
+  --kth-bg: var(--kth-blue-bg); --kth-fg: var(--kth-blue-fg);
+}
+html body [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > thead > tr > th:nth-child(8n + 4) {
+  --kth-bg: var(--kth-orange-bg); --kth-fg: var(--kth-orange-fg);
+}
+html body [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > thead > tr > th:nth-child(8n + 5) {
+  --kth-bg: var(--kth-green-bg); --kth-fg: var(--kth-green-fg);
+}
+html body [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > thead > tr > th:nth-child(8n + 6) {
+  --kth-bg: var(--kth-red-bg); --kth-fg: var(--kth-red-fg);
+}
+/* Last column (usually Actions) always closes in purple, like the reference. */
+html body [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > thead > tr > th:last-child:not(:first-child) {
+  --kth-bg: var(--kth-purple-bg); --kth-fg: var(--kth-purple-fg);
+}
+
+/* Explicit per-column variants win over the rhythm. */
+html body [data-dashboard-role] table:not(#kth) > thead > tr > th[data-th-variant="purple"] { --kth-bg: var(--kth-purple-bg); --kth-fg: var(--kth-purple-fg); }
+html body [data-dashboard-role] table:not(#kth) > thead > tr > th[data-th-variant="blue"]   { --kth-bg: var(--kth-blue-bg);   --kth-fg: var(--kth-blue-fg); }
+html body [data-dashboard-role] table:not(#kth) > thead > tr > th[data-th-variant="orange"] { --kth-bg: var(--kth-orange-bg); --kth-fg: var(--kth-orange-fg); }
+html body [data-dashboard-role] table:not(#kth) > thead > tr > th[data-th-variant="green"]  { --kth-bg: var(--kth-green-bg);  --kth-fg: var(--kth-green-fg); }
+html body [data-dashboard-role] table:not(#kth) > thead > tr > th[data-th-variant="red"]    { --kth-bg: var(--kth-red-bg);    --kth-fg: var(--kth-red-fg); }
+
+/* Empty header cells (e.g. spacer/expand columns) show no block. */
+html body [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > thead > tr > th:empty::before {
+  display: none;
+}
+
+/* ---- Body: 12px cell padding, subtle dividers, hover --------------------
+   Not !important, so a page's own !important cell rules (bespoke designs)
+   still win, but ordinary px-* utilities are normalised to the standard. */
+html body [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > tbody > tr > td {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+html body [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > tbody > tr {
+  border-bottom-color: #E2E8F0;
+}
+html body [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > tbody > tr:last-child {
+  border-bottom-color: transparent;
+}
+.dark [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > thead > tr > th {
+  border-bottom-color: #334155 !important;
+}
+.dark [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > tbody > tr:not(:last-child) {
+  border-bottom-color: #1E293B;
+}
+
+/* Narrow checkbox / # columns: 8px in header and body so they line up.
+   Marked explicitly with data-compact (ListTable), or detected as a cell
+   whose only content is a checkbox. */
+html body [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > thead > tr > th:is([data-compact], :has(> input[type="checkbox"]:only-child)) {
+  padding-left: 8px !important;
+  padding-right: 8px !important;
+}
+html body [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > tbody > tr > td:is([data-compact], :has(> input[type="checkbox"]:only-child)) {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+html body [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > tbody > tr:hover > td {
+  background-color: rgba(248, 250, 252, .9);
+}
+.dark [data-dashboard-role] table:not(#kth):not([data-table-header="plain"]) > tbody > tr:hover > td {
+  background-color: rgba(30, 41, 59, .5);
+}
+
+/* ---- Container: standard table card (matches listTableStyles.js) ------- */
+html body [data-dashboard-role] [data-table-card] {
+  overflow: hidden;
+  border: 1px solid #E2E8F0;
+  border-radius: 14px;
+  background: #FFFFFF;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .05);
+}

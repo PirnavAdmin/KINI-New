@@ -1,0 +1,44 @@
+.student-management-page .student-list-table thead th {
+  position: relative;
+  padding: 9px 12px;
+  border-bottom: 1px solid #dbe5f1;
+  color: #17365d;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  background: #eef4ff !important;
+  border-radius: 8px;
+}
+
+.student-management-page .student-list-table thead th::before {
+  position: absolute;
+  inset: 4px 5px;
+  z-index: -1;
+  border-radius: 8px;
+  background: #eef4ff;
+  content: "";
+}
+
+.student-management-page .student-list-table thead th:nth-child(2) { background: #e9efff !important; }
+.student-management-page .student-list-table thead th:nth-child(3) { background: #eee9ff !important; }
+.student-management-page .student-list-table thead th:nth-child(4) { background: #e7f6ef !important; }
+.student-management-page .student-list-table thead th:nth-child(5) { background: #fff1dc !important; }
+.student-management-page .student-list-table thead th:nth-child(6) { background: #f2eaff !important; }
+.student-management-page .student-list-table thead th:nth-child(7) { background: #e5f7f5 !important; }
+.student-management-page .student-list-table thead th:nth-child(8) { background: #ffe9ee !important; }
+.student-management-page .student-list-table thead th:nth-child(9) { background: #eef0f5 !important; }
+
+.student-management-page .student-list-table thead th > div {
+  min-height: 24px;
+  padding: 5px 9px;
+  border-radius: 6px;
+  background: #e9efff !important;
+}
+.student-management-page .student-list-table thead th:nth-child(3) > div { background: #eee9ff !important; }
+.student-management-page .student-list-table thead th:nth-child(4) > div { background: #e7f6ef !important; }
+.student-management-page .student-list-table thead th:nth-child(5) > div { background: #fff1dc !important; }
+.student-management-page .student-list-table thead th:nth-child(6) > div { background: #f2eaff !important; }
+.student-management-page .student-list-table thead th:nth-child(7) > div { background: #e5f7f5 !important; }
+.student-management-page .student-list-table thead th:nth-child(8) > div { background: #ffe9ee !important; }
+.student-management-page .student-list-table thead th:nth-child(9) > div { background: #eef0f5 !important; }

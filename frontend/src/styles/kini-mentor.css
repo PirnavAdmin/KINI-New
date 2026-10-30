@@ -1,0 +1,668 @@
+/* ═══════════════════════════════════════════════════════════════
+   KINI MENTOR MODULE — ENTERPRISE DESIGN LAYER
+   ═══════════════════════════════════════════════════════════════
+   Single visual system for every Mentor screen. Loaded last (after the
+   legacy theme sheets) so these rules are the final word for the Mentor
+   role only. This file changes presentation only — no logic, no APIs,
+   no routing, no event handlers.
+
+   Palette:
+     navy #133B5D  — page titles, secondary actions, accents
+     orange #F39924 — primary actions, active states, focus
+     canvas #F5F1E8 — main content background
+     surfaces stay #FFFFFF with #DFE7EE borders; semantic states keep
+     their colors (success/emerald, danger/red, warning/amber...).
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-dashboard-role="mentor"] {
+  --kini-navy: #133b5d;
+  --kini-navy-soft: #e8eff5;
+  --kini-orange: #f39924;
+  --kini-orange-dark: #d97f0d;
+  --kini-orange-soft: #fff1dc;
+  --kini-page: #f5f1e8;
+  --kini-surface: #ffffff;
+  --kini-surface-alt: #fbfbfb;
+  --kini-border: #dfe7ee;
+  --kini-border-strong: #cfd8e0;
+  --kini-border-light: #eef0f3;
+  --kini-table-border: #e8ebef;
+  --kini-input-border: #d9e0e7;
+  --kini-text: #17324a;
+  --kini-text-muted: #5f7180;
+  --kini-heading: #133b5d;
+}
+
+/* Note: semantic chips (emerald/red/amber statuses, orange accents) are left
+   untouched — selectors below explicitly avoid those classes. */
+
+/* ── Main content canvas: warm almond everywhere in the module ── */
+[data-dashboard-role="mentor"] main,
+[data-dashboard-role="mentor"] .mentor-content-shell > main,
+[data-dashboard-role="mentor"] .organization-workspace,
+[data-dashboard-role="mentor"] .dashboard-home-workspace {
+  background-color: var(--kini-page) !important;
+  background-image: none !important;
+}
+
+/* The layout shell + scroll canvas are always almond for the Mentor role. */
+html body [data-dashboard-role="mentor"] .mentor-content-shell,
+html body [data-dashboard-role="mentor"] .mentor-content-shell > main,
+html body [data-dashboard-role="mentor"] .mentor-content-shell > main > div,
+html body [data-dashboard-role="mentor"] .organization-workspace,
+html body [data-dashboard-role="mentor"] .dashboard-home-workspace {
+  background-color: var(--kini-page) !important;
+  background-image: none !important;
+}
+
+/* Page wrappers that shipped with their own off-white shades are pulled
+   back to the single shared canvas color. */
+html body [data-dashboard-role="mentor"] main.mentor-courses-page,
+html body [data-dashboard-role="mentor"] main.mentor-attendance-page,
+html body [data-dashboard-role="mentor"] main.mentor-calendar-page,
+html body [data-dashboard-role="mentor"] main.mentor-students-page,
+html body [data-dashboard-role="mentor"] main.mentor-profile-page,
+html body [data-dashboard-role="mentor"] main.mentor-assessments-page,
+html body [data-dashboard-role="mentor"] main.mentor-reports-page,
+html body [data-dashboard-role="mentor"] main.mentor-batches-page,
+html body [data-dashboard-role="mentor"] main.mentor-dashboard-home,
+html body [data-dashboard-role="mentor"] .mentor-courses-page,
+html body [data-dashboard-role="mentor"] .mentor-attendance-page,
+html body [data-dashboard-role="mentor"] .mentor-calendar-page,
+html body [data-dashboard-role="mentor"] .mentor-students-page,
+html body [data-dashboard-role="mentor"] .mentor-profile-page,
+html body [data-dashboard-role="mentor"] .mentor-assessments-page,
+html body [data-dashboard-role="mentor"] .mentor-reports-page,
+html body [data-dashboard-role="mentor"] .mentor-batches-page,
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home {
+  background-color: var(--kini-page) !important;
+  background-image: none !important;
+}
+
+/* ── Shared compact page header ───────────────────────────────── */
+.mentor-page-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: calc(0.75rem * var(--ui-space)) calc(1.5rem * var(--ui-space));
+  padding: calc(0.125rem * var(--ui-space)) 0 calc(0.9rem * var(--ui-space));
+  background: transparent;
+  background-image: none !important;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.mentor-page-header-copy {
+  min-width: 0;
+}
+
+.mentor-page-header h1 {
+  margin: 0;
+  font-size: calc(1.375rem * var(--ui-display));
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--kini-heading);
+  -webkit-text-fill-color: var(--kini-heading);
+}
+
+.mentor-page-header p {
+  margin: calc(0.3rem * var(--ui-space)) 0 0;
+  font-size: calc(0.85rem * var(--ui-text));
+  line-height: 1.45;
+  color: var(--kini-text-muted);
+  -webkit-text-fill-color: var(--kini-text-muted);
+}
+
+.mentor-page-header-actions {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: calc(0.5rem * var(--ui-space));
+}
+
+@media (max-width: 640px) {
+  .mentor-page-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
+
+/* Shared MentorPageHeader must always render as a compact transparent
+   header, regardless of generic/legacy rules aimed at [data-ui] hooks. */
+html body [data-dashboard-role="mentor"] .mentor-page-header {
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: calc(0.125rem * var(--ui-space)) 0 calc(0.9rem * var(--ui-space)) !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-page-header h1 {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-page-header p {
+  color: var(--kini-text-muted) !important;
+  -webkit-text-fill-color: var(--kini-text-muted) !important;
+}
+
+/* Neutralize leftover decorative hero surfaces used as page headers
+   (legacy navy/blue/cyan/orange panels). Text flips to KINI navy. */
+html body [data-dashboard-role="mentor"] :is(
+  .mentor-page-hero,
+  .mentor-students-hero,
+  .mentor-batches-hero,
+  .mentor-courses-hero
+) {
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: calc(0.125rem * var(--ui-space)) 0 calc(0.9rem * var(--ui-space)) !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-page-hero h1 {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+  font-size: calc(1.375rem * var(--ui-display)) !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-page-hero p {
+  color: var(--kini-text-muted) !important;
+  -webkit-text-fill-color: var(--kini-text-muted) !important;
+}
+
+html body [data-dashboard-role="mentor"] :is(
+  .mentor-page-hero,
+  .mentor-students-hero,
+  .mentor-batches-hero,
+  .mentor-courses-hero
+) > div > :is(h1, p, span, small),
+html body [data-dashboard-role="mentor"] :is(
+  .mentor-page-hero,
+  .mentor-students-hero,
+  .mentor-batches-hero,
+  .mentor-courses-hero
+) :is(h1, h2, p) {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+  opacity: 1 !important;
+}
+
+html body [data-dashboard-role="mentor"] :is(
+  .mentor-page-hero,
+  .mentor-students-hero,
+  .mentor-batches-hero,
+  .mentor-courses-hero
+) > div > p,
+html body [data-dashboard-role="mentor"] :is(
+  .mentor-page-hero,
+  .mentor-students-hero,
+  .mentor-batches-hero,
+  .mentor-courses-hero
+) p {
+  color: var(--kini-text-muted) !important;
+  -webkit-text-fill-color: var(--kini-text-muted) !important;
+}
+
+/* Decorative kickers above page titles are hidden on standardized pages. */
+html body [data-dashboard-role="mentor"] :is(.mentor-page-hero, .mentor-students-hero, .mentor-batches-hero) > div > p:first-child:not([class*="text-[1"]):not([class*="text-sm"]),
+html body [data-dashboard-role="mentor"] .mentor-page-hero > div > p:first-child {
+  display: none !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-page-hero > div > h1 {
+  font-size: calc(1.375rem * var(--ui-display)) !important;
+}
+
+/* Profile hero title/subtitle already adopt header metrics above. */
+
+/* ── White surfaces: cards, panels, tables, modals ─────────────── */
+html body [data-dashboard-role="mentor"] main :is(section, article, div, aside)[class*="bg-white"] {
+  background-color: #ffffff !important;
+  border-color: var(--kini-border) !important;
+}
+
+html body [data-dashboard-role="mentor"] main :is(section, article, div, aside)[class*="border-slate-200"],
+html body [data-dashboard-role="mentor"] main :is(section, article, div, aside)[class*="border-slate-300"] {
+  border-color: var(--kini-border) !important;
+}
+
+html body [data-dashboard-role="mentor"] main [class*="divide-slate-100"] > *,
+html body [data-dashboard-role="mentor"] main table tbody tr,
+html body [data-dashboard-role="mentor"] main table tbody td {
+  border-color: var(--kini-table-border) !important;
+}
+
+html body [data-dashboard-role="mentor"] main table thead {
+  background: var(--kini-surface-alt) !important;
+}
+
+html body [data-dashboard-role="mentor"] main :is(input, select, textarea):not([class*="bg-rose-"]):not([class*="bg-emerald-"]) {
+  background-color: #ffffff !important;
+  border-color: var(--kini-input-border) !important;
+}
+
+html body [data-dashboard-role="mentor"] main :is(input, select, textarea):focus {
+  border-color: var(--kini-orange) !important;
+  box-shadow: 0 0 0 3px rgba(243, 153, 36, 0.16) !important;
+  outline: none;
+}
+
+/* ── Action hierarchy: orange primary, navy secondary, white neutral ─ */
+html body [data-dashboard-role="mentor"] main button[class*="bg-[#0F55F7]"],
+html body [data-dashboard-role="mentor"] main button[class*="bg-[#0f55f7]"],
+html body [data-dashboard-role="mentor"] main button[class*="bg-[#0866E9]"],
+html body [data-dashboard-role="mentor"] main button[class*="from-blue-600"],
+html body [data-dashboard-role="mentor"] main button[class*="from-purple-600"],
+html body [data-dashboard-role="mentor"] main button[class*="from-violet-600"],
+html body [data-dashboard-role="mentor"] main button[class*="from-indigo-600"],
+html body [data-dashboard-role="mentor"] main button[class*="bg-blue-600"],
+html body [data-dashboard-role="mentor"] main button[class*="bg-blue-700"],
+html body [data-dashboard-role="mentor"] main button[class*="bg-purple-600"],
+html body [data-dashboard-role="mentor"] main button[class*="bg-violet-600"],
+html body [data-dashboard-role="mentor"] main button[class*="bg-indigo-600"],
+html body [data-dashboard-role="mentor"] main a[class*="bg-[#0F55F7]"],
+html body [data-dashboard-role="mentor"] main a[class*="bg-[#0f55f7]"] {
+  background: var(--kini-orange) !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+  box-shadow: 0 1px 2px rgba(19, 59, 93, 0.12), 0 4px 10px -6px rgba(243, 153, 36, 0.45) !important;
+}
+
+html body [data-dashboard-role="mentor"] main button[class*="bg-blue-600"]:hover,
+html body [data-dashboard-role="mentor"] main button[class*="bg-blue-700"]:hover,
+html body [data-dashboard-role="mentor"] main button[class*="bg-purple-600"]:hover,
+html body [data-dashboard-role="mentor"] main button[class*="bg-violet-600"]:hover,
+html body [data-dashboard-role="mentor"] main button[class*="bg-indigo-600"]:hover,
+html body [data-dashboard-role="mentor"] main button[class*="from-blue-600"]:hover,
+html body [data-dashboard-role="mentor"] main button[class*="from-purple-600"]:hover,
+html body [data-dashboard-role="mentor"] main button[class*="from-violet-600"]:hover,
+html body [data-dashboard-role="mentor"] main button[class*="from-indigo-600"]:hover {
+  background: var(--kini-orange-dark) !important;
+  color: var(--kini-navy) !important;
+}
+
+/* Secondary navy actions (existing dark navy primary buttons stay navy). */
+html body [data-dashboard-role="mentor"] main button[class*="bg-[#0b3558]"],
+html body [data-dashboard-role="mentor"] main button[class*="bg-[#133b5d]"] {
+  background: var(--kini-navy) !important;
+  color: #ffffff !important;
+}
+
+/* White/neutral bordered buttons. */
+html body [data-dashboard-role="mentor"] main button[class*="border-slate-200"]:not([class*="bg-blue-"]),
+html body [data-dashboard-role="mentor"] main button[class*="border-slate-300"] {
+  background-color: #ffffff !important;
+  border-color: var(--kini-border-strong) !important;
+  color: var(--kini-navy) !important;
+}
+
+/* Accent links and row actions read in KINI navy/orange. */
+html body [data-dashboard-role="mentor"] main :is(a, button)[class*="text-[#0F55F7]"],
+html body [data-dashboard-role="mentor"] main :is(a, button)[class*="text-[#0f55f7]"],
+html body [data-dashboard-role="mentor"] main :is(a, button)[class*="text-purple-600"],
+html body [data-dashboard-role="mentor"] main :is(a, button)[class*="text-violet-600"],
+html body [data-dashboard-role="mentor"] main :is(a, button)[class*="text-indigo-600"] {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="mentor"] main :is(a, button)[class*="text-[#0F55F7]"]:hover,
+html body [data-dashboard-role="mentor"] main :is(a, button)[class*="text-[#0f55f7]"]:hover,
+html body [data-dashboard-role="mentor"] main :is(a, button)[class*="text-purple-600"]:hover,
+html body [data-dashboard-role="mentor"] main :is(a, button)[class*="text-violet-600"]:hover,
+html body [data-dashboard-role="mentor"] main :is(a, button)[class*="text-indigo-600"]:hover {
+  color: var(--kini-orange-dark) !important;
+}
+
+/* Icon chips that previously used strong blue/purple/violet washes. */
+html body [data-dashboard-role="mentor"] main :is(span, div)[class*="bg-blue-50"]:not([class*="bg-blue-500"]),
+html body [data-dashboard-role="mentor"] main :is(span, div)[class*="bg-purple-50"],
+html body [data-dashboard-role="mentor"] main :is(span, div)[class*="bg-violet-50"],
+html body [data-dashboard-role="mentor"] main :is(span, div)[class*="bg-indigo-50"] {
+  background-color: var(--kini-navy-soft) !important;
+  background-image: none !important;
+}
+
+html body [data-dashboard-role="mentor"] main :is(span, div)[class*="bg-blue-50"]:not([class*="bg-blue-500"]) :is(svg, i),
+html body [data-dashboard-role="mentor"] main :is(span, div)[class*="bg-purple-50"] :is(svg, i),
+html body [data-dashboard-role="mentor"] main :is(span, div)[class*="bg-violet-50"] :is(svg, i),
+html body [data-dashboard-role="mentor"] main :is(span, div)[class*="bg-indigo-50"] :is(svg, i),
+html body [data-dashboard-role="mentor"] main :is(span, div)[class*="bg-blue-100"] :is(svg, i),
+html body [data-dashboard-role="mentor"] main :is(span, div)[class*="bg-purple-100"] :is(svg, i),
+html body [data-dashboard-role="mentor"] main :is(span, div)[class*="bg-violet-100"] :is(svg, i) {
+  color: var(--kini-navy) !important;
+}
+
+/* Gradient progress/stat bars and translucent purple icon wells. */
+html body [data-dashboard-role="mentor"] main :is(div, span)[class*="from-purple-500/10 to-indigo-500/10"],
+html body [data-dashboard-role="mentor"] main :is(div, span)[class*="from-purple-500/15 to-indigo-500/15"] {
+  background: var(--kini-navy-soft) !important;
+  background-image: none !important;
+}
+
+html body [data-dashboard-role="mentor"] main div[class*="from-purple-600 to-indigo-600"],
+html body [data-dashboard-role="mentor"] main div[class*="from-purple-500 to-indigo-500"],
+html body [data-dashboard-role="mentor"] main div[class*="from-blue-500 to-cyan-400"],
+html body [data-dashboard-role="mentor"] main div[class*="from-blue-600 to-cyan-500"] {
+  background: linear-gradient(90deg, var(--kini-navy) 0%, #3e6684 100%) !important;
+}
+
+/* Active tabs / pills in blue/purple become KINI orange pills. */
+html body [data-dashboard-role="mentor"] main button[class*="bg-blue-600"],
+html body [data-dashboard-role="mentor"] main button[class*="bg-purple-600"] {
+  background: var(--kini-orange) !important;
+  color: var(--kini-navy) !important;
+  border-color: transparent !important;
+}
+
+/* ── Dashboard hero: compact white card, no decorative gradient ── */
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"] {
+  background: #ffffff !important;
+  background-image: none !important;
+  border: 1px solid var(--kini-border) !important;
+  border-radius: 0.875rem !important;
+  box-shadow: 0 1px 2px rgba(19, 59, 93, 0.05) !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"]::after,
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"] > span {
+  display: none !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"] h1 {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+  font-size: calc(1.4rem * var(--ui-display)) !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"] :is(p, span, small) {
+  color: var(--kini-text-muted) !important;
+  -webkit-text-fill-color: var(--kini-text-muted) !important;
+}
+
+/* Dashboard section headers: quiet, neutral, no navy band. */
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="mentor-section-header"] {
+  background: transparent !important;
+  border: 0 !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="mentor-section-header"] h2 {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="mentor-section-header"] p {
+  color: var(--kini-text-muted) !important;
+  -webkit-text-fill-color: var(--kini-text-muted) !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="mentor-section-header"] button {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+/* ── Attendance panel + check-in hero become a white card ─────── */
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-panel"] {
+  background: #ffffff !important;
+  border: 1px solid var(--kini-border) !important;
+  box-shadow: 0 1px 2px rgba(19, 59, 93, 0.05) !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-hero"] {
+  background: #ffffff !important;
+  background-image: none !important;
+  border-bottom: 1px solid var(--kini-border-light) !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-hero"] > div {
+  align-items: flex-start !important;
+  text-align: left !important;
+  max-width: none !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-hero"] .mentor-attendance-identity {
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-name"],
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-title"],
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-date"] {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-role"],
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-status"] {
+  color: var(--kini-text-muted) !important;
+  -webkit-text-fill-color: var(--kini-text-muted) !important;
+}
+
+/* Attendance KPI strip keeps the white surface. */
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-panel"] > div:last-child {
+  background: #ffffff !important;
+  background-image: none !important;
+  border-color: var(--kini-border) !important;
+  box-shadow: 0 1px 2px rgba(19, 59, 93, 0.05) !important;
+}
+
+/* Attendance history: one clean card — title + segmented period filter on a
+   single row, plain text column headers, divider-only rows, pill statuses. */
+html body [data-dashboard-role="mentor"] .mentor-attendance-page section[data-ui="mentor-attendance-history"] {
+  background: #ffffff !important;
+  background-image: none !important;
+  border: 1px solid var(--kini-border) !important;
+  box-shadow: 0 1px 3px rgba(19, 59, 93, 0.06) !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-history-header"] {
+  background: transparent !important;
+  border: 0 !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-history-header"] h2 {
+  color: var(--kini-heading) !important;
+  -webkit-text-fill-color: var(--kini-heading) !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-history-icon"] {
+  color: #14a38b !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-history-range"] {
+  color: var(--kini-text-muted) !important;
+  -webkit-text-fill-color: var(--kini-text-muted) !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-period-filter"] {
+  background: #f1f6f6 !important;
+  border-color: var(--kini-border-light) !important;
+  box-shadow: none !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-period-filter"] button {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+  color: var(--kini-text-muted) !important;
+  -webkit-text-fill-color: var(--kini-text-muted) !important;
+  opacity: 1 !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-period-filter"] button:hover {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-period-filter"] button[aria-pressed="true"] {
+  background: #ffffff !important;
+  border-color: var(--kini-border) !important;
+  color: var(--kini-heading) !important;
+  -webkit-text-fill-color: var(--kini-heading) !important;
+  box-shadow: 0 1px 4px rgba(19, 59, 93, 0.1) !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-history-table"] thead,
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-history-table"] tbody tr {
+  background: #ffffff !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-history-table"] th {
+  background: #ffffff !important;
+  border-bottom: 1px solid #d5ece8 !important;
+  color: var(--kini-text) !important;
+  -webkit-text-fill-color: var(--kini-text) !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-history-table"] td {
+  background: transparent !important;
+  border-bottom: 1px solid #e3f0ee !important;
+  color: var(--kini-text);
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-history-table"] tbody tr:last-child td {
+  border-bottom: 0 !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-history-table"] tbody tr:hover td,
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-history-table"] tbody tr[data-today] td {
+  background: #f6faf9 !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-day"] {
+  color: #0f1c2e;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-day-date"] {
+  color: #6b7f99;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-badge"] {
+  background: #eef1f4;
+  color: #64748b;
+}
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-badge"][data-tone="present"] { background: #e3f7ea; color: #1faa55; }
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-badge"][data-tone="working"] { background: #e6effb; color: #2563eb; }
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-badge"][data-tone="late"]    { background: #fff1dc; color: #d97f0d; }
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-badge"][data-tone="absent"]  { background: #ffe8ea; color: #dc2f3f; }
+
+/* Keep the dashboard schedule shortcut visibly button-shaped across theme layers. */
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"] [data-ui="view-schedule-action"] {
+  border: 1px solid #b9cde0 !important;
+  background: #eef6fc !important;
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+  box-shadow: 0 2px 6px rgba(19, 59, 93, 0.1) !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"] [data-ui="view-schedule-action"]:hover {
+  border-color: var(--kini-navy) !important;
+  background: #dfeefa !important;
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"] [data-ui="view-schedule-action"]:focus-visible {
+  outline: 3px solid rgba(15, 85, 247, 0.25) !important;
+  outline-offset: 2px !important;
+}
+
+
+/* ── Calendar hero: compact header directly on the canvas ─────── */
+html body [data-dashboard-role="mentor"] .mentor-calendar-page [data-ui="mentor-calendar-workspace"],
+html body [data-dashboard-role="mentor"] [data-ui="mentor-calendar-page"] .mentor-calendar-hero {
+  background: var(--kini-page) !important;
+  background-image: none !important;
+}
+
+html body [data-dashboard-role="mentor"] [data-ui="mentor-calendar-page"] .calendar-readable-hero {
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding-left: 0 !important;
+}
+
+html body [data-dashboard-role="mentor"] [data-ui="mentor-calendar-page"] .calendar-readable-hero h1 {
+  font-size: calc(1.375rem * var(--ui-display)) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="mentor"] [data-ui="mentor-calendar-page"] .calendar-readable-hero p {
+  color: var(--kini-text-muted) !important;
+  -webkit-text-fill-color: var(--kini-text-muted) !important;
+}
+
+html body [data-dashboard-role="mentor"] [data-ui="mentor-calendar-page"] .calendar-readable-hero nav button:not([aria-current="page"]) {
+  color: var(--kini-text-muted) !important;
+  -webkit-text-fill-color: var(--kini-text-muted) !important;
+}
+
+html body [data-dashboard-role="mentor"] [data-ui="mentor-calendar-page"] .calendar-readable-hero nav button[aria-current="page"] {
+  background: var(--kini-orange) !important;
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+/* Neutral pill navs used across mentor pages keep KINI navy underline. */
+html body [data-dashboard-role="mentor"] main [class*="border-b-2 border-blue-600"],
+html body [data-dashboard-role="mentor"] main [class*="border-b-2 border-purple-600"] {
+  border-color: var(--kini-navy) !important;
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+/* Focus ring uses the KINI orange accent for keyboard users. */
+html body [data-dashboard-role="mentor"] main :is(button, a, input, select, textarea):focus-visible {
+  outline: 3px solid rgba(243, 153, 36, 0.45) !important;
+  outline-offset: 2px;
+}
+
+/* Light neutral fills (subtle headers, info chips) use one soft surface. */
+html body [data-dashboard-role="mentor"] main :is(
+  [class~="bg-slate-50"], [class*="bg-slate-50/"],
+  [class~="bg-slate-100"], [class*="bg-slate-100/"],
+  [class~="bg-slate-50"], [class*="bg-slate-50/"]
+) {
+  background-color: var(--kini-surface-alt) !important;
+  background-image: none !important;
+}
+
+/* Mentor dashboard: consistent compact cards and a true mobile drawer. */
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home {
+  min-width: 0;
+}
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"] {
+  padding: calc(20px * var(--ui-space)) !important;
+}
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"] h1 {
+  font-size: calc(24px * var(--ui-display)) !important;
+  line-height: 1.25 !important;
+}
+@media (max-width: 1023px) {
+  html body :is([data-dashboard-role="mentor"], [data-sidebar-design="mentor"]) .mentor-sidebar-shell {
+    display: none !important;
+  }
+  html body :is([data-dashboard-role="mentor"], [data-sidebar-design="mentor"]) .mentor-content-shell {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"] {
+    padding: calc(16px * var(--ui-space)) !important;
+  }
+}

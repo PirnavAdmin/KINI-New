@@ -1,0 +1,94 @@
+/* HR › Training Batches (v21) */
+html body [data-dashboard-role] .hrb-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 12px; padding: 10px; border: 1px solid #e6edf6; border-radius: 16px; background: #fff; }
+html body [data-dashboard-role] .hrb-filters select { height: var(--hr-control-height, 42px); min-width: var(--hr-batch-filter-min-width, 170px); padding: 0 12px; border: 1px solid #dfe6ef; border-radius: 10px; background-color: #fff; color: #0f2a4a; font-size: 14px; font-weight: 600; }
+html body [data-dashboard-role] .hrb-search { position: relative; flex: 1 1 280px; }
+html body [data-dashboard-role] .hrb-search > svg { position: absolute; left: 14px; top: 50%; width: 17px; height: 17px; transform: translateY(-50%); color: #3b5270; }
+html body [data-dashboard-role] .hrb-search input { width: 100%; height: var(--hr-control-height, 42px); padding: 0 36px 0 40px; border: 1px solid #dfe6ef; border-radius: 10px; background: #fff; color: #0f2a4a; font-size: 14px; outline: none; }
+html body [data-dashboard-role] .hrb-search button { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: #64748b; }
+html body [data-dashboard-role] .hrb-search button svg { width: 16px; height: 16px; }
+html body [data-dashboard-role] .hrb-date { position: relative; display: inline-flex; align-items: center; }
+html body [data-dashboard-role] .hrb-date > svg { position: absolute; left: 12px; width: 17px; height: 17px; color: #0f2a4a; pointer-events: none; }
+html body [data-dashboard-role] .hrb-date select { min-width: 200px; padding-left: 38px !important; font-weight: 500; }
+html body [data-dashboard-role] .hrb-sort { display: inline-flex; align-items: center; gap: 6px; height: var(--hr-control-height, 42px); padding: 0 14px; border: 1px solid #dfe6ef; border-radius: 10px; background: #fff; color: #0f2a4a; font-size: 13px; font-weight: 700; }
+html body [data-dashboard-role] .hrb-sort svg { width: 15px; height: 15px; }
+html body [data-dashboard-role] .hrb-card { display: flex; min-width: 0; flex-direction: column; gap: 10px; padding: 14px 16px; border: 1px solid #e6edf6; border-radius: 16px; background: #fff; box-shadow: 0 4px 14px rgba(15,42,74,.05); }
+.hrb-card.is-blue { --hb-ink: #1d63d8; --hb-soft: #e3edfd; --hb-btn: #1d63d8; }
+.hrb-card.is-purple { --hb-ink: #7c3aed; --hb-soft: #efe6fe; --hb-btn: #7c3aed; }
+.hrb-card.is-green { --hb-ink: #16a34a; --hb-soft: #dcf5e7; --hb-btn: #0f9f5a; }
+.hrb-card.is-orange { --hb-ink: #f58a0b; --hb-soft: #ffeedd; --hb-btn: #f58a0b; }
+.hrb-card.is-red { --hb-ink: #e5484d; --hb-soft: #ffe4e6; --hb-btn: #e5484d; }
+html body [data-dashboard-role] .hrb-card__head { display: flex; align-items: flex-start; gap: 12px; }
+html body [data-dashboard-role] .hrb-card__icon { display: grid; flex-shrink: 0; place-items: center; width: 46px; height: 46px; border-radius: 13px; background: var(--hb-soft); color: var(--hb-ink); }
+html body [data-dashboard-role] .hrb-card__icon svg { width: 24px; height: 24px; fill: currentColor; fill-opacity: .25; }
+html body [data-dashboard-role] .hrb-card__head h3 { margin: 4px 0 0; overflow: hidden; color: #0b1f3f !important; font-size: 17px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+html body [data-dashboard-role] .hrb-card__head p { margin: 2px 0 0; color: #4f6583 !important; font-size: 13.5px; }
+html body [data-dashboard-role] .hrb-status { flex-shrink: 0; padding: 4px 12px; border-radius: 999px; font-size: 13px; font-weight: 700; }
+.hrb-status.is-green { background: #dcf5e7; color: #15803d; } .hrb-status.is-orange { background: #fff1de; color: #ea8a0b; } .hrb-status.is-blue { background: #e3edfd; color: #1d63d8; } .hrb-status.is-red { background: #ffe4e6; color: #e11d48; }
+html body [data-dashboard-role] .hrb-more { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; color: #0f2a4a; }
+html body [data-dashboard-role] .hrb-more:hover { background: #f1f5fa; }
+html body [data-dashboard-role] .hrb-more svg { width: 18px; height: 18px; }
+html body [data-dashboard-role] .hrb-menu { position: absolute; right: 0; top: 34px; z-index: 20; min-width: 150px; padding: 6px; border: 1px solid #e6edf6; border-radius: 10px; background: #fff; box-shadow: 0 14px 30px -12px rgba(15,42,74,.35); }
+html body [data-dashboard-role] .hrb-menu button { display: block; width: 100%; padding: 7px 10px; border-radius: 7px; color: #1c3553; font-size: 13px; text-align: left; }
+html body [data-dashboard-role] .hrb-menu button:hover { background: #f3f6fb; }
+html body [data-dashboard-role] .hrb-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 0; padding: 0; list-style: none; color: #4f6583; font-size: 12.5px; }
+html body [data-dashboard-role] .hrb-meta li { display: inline-flex; align-items: center; gap: 5px; }
+html body [data-dashboard-role] .hrb-meta svg { width: 14px; height: 14px; }
+html body [data-dashboard-role] .hrb-mode { padding: 2px 8px; border: 1px solid #ddd0fb; border-radius: 6px; background: #f6f2ff; color: #6d28d9 !important; font-weight: 600; }
+html body [data-dashboard-role] .hrb-progress > div { display: flex; justify-content: space-between; margin-bottom: 6px; color: #0f2a4a; font-size: 13px; font-weight: 600; }
+html body [data-dashboard-role] .hrb-bar { display: block; height: 7px; overflow: hidden; border-radius: 999px; background: color-mix(in srgb, var(--hb-soft) 70%, #eef2f7); }
+html body [data-dashboard-role] .hrb-bar i { display: block; height: 100%; min-width: 8%; border-radius: 999px; background: var(--hb-ink); opacity: .55; }
+html body [data-dashboard-role] .hrb-att { display: flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: 10px; background: color-mix(in srgb, var(--hb-soft) 55%, #fff); color: #1c3553; font-size: 13px; }
+html body [data-dashboard-role] .hrb-att svg { width: 16px; height: 16px; color: var(--hb-ink); }
+html body [data-dashboard-role] .hrb-att b { color: #f58a0b; }
+html body [data-dashboard-role] .hrb-actions { display: grid; gap: 10px; grid-template-columns: 1fr 1fr; }
+html body [data-dashboard-role] .hrb-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 36px; border-radius: 9px; font-size: 13px; font-weight: 700; }
+html body [data-dashboard-role] .hrb-btn svg { width: 15px; height: 15px; }
+html body [data-dashboard-role] .hrb-btn--outline { border: 1px solid #d5dfeb; background: #fff; color: #1d4f91 !important; }
+html body [data-dashboard-role] .hrb-btn--fill { background: var(--hb-btn) !important; color: #fff !important; }
+html body [data-dashboard-role] .hrb-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; }
+html body [data-dashboard-role] .hrb-foot p { margin: 0; color: #3b5270; font-size: 14px; }
+html body [data-dashboard-role] .hrb-pager { display: flex; gap: 8px; }
+html body [data-dashboard-role] .hrb-pager button { display: grid; place-items: center; min-width: 40px; height: 40px; border: 1px solid #e0e8f2; border-radius: 10px; background: #fff; color: #0f2a4a; font-weight: 700; }
+html body [data-dashboard-role] .hrb-pager button[aria-current="page"] { border-color: #1d63d8; background: #1d63d8; color: #fff; }
+html body [data-dashboard-role] .hrb-pager button:disabled { opacity: .45; }
+html body [data-dashboard-role] .hrb-pager svg { width: 16px; height: 16px; }
+html.dark body [data-dashboard-role] :is(.hrb-card, .hrb-filters) { background: #0f1c2e; border-color: #22324a; }
+
+/* Desktop composition (>=1200px viewport). At 100% zoom a 1280px viewport
+   leaves ~1070px of content, which tripped the shared <=1280px rules in
+   hr-portal.css (3-column KPIs, wrapped hero chips) and wrapped the filters.
+   Scoped to .hrb-page so other HR pages keep their own layout. */
+@media (min-width: 1200px) {
+  html body [data-dashboard-role] .hrb-page .hrp-crumbs { margin-bottom: 6px; }
+
+  /* Hero: copy left, one row of chips, art right below the corner buttons */
+  html body [data-dashboard-role] .hrb-page .hrp-hero--v24.hrp-hero--noscript:has(.hrp-hero__actions) { min-height: 0; padding: 20px 28px; }
+  html body [data-dashboard-role] .hrb-page .hrp-hero--v24 .hrp-hero__copy { max-width: 56%; }
+  html body [data-dashboard-role] .hrb-page .hrp-hero--v24.hrp-hero--noscript:has(.hrp-hero__actions) .hrp-hero__art--v24 { top: 58px; left: 58%; right: 1%; width: auto; }
+  html body [data-dashboard-role] .hrb-page .hrp-hero__features { flex-wrap: nowrap; gap: 6px; margin-top: 14px; }
+  html body [data-dashboard-role] .hrb-page .hrp-hero__features li { gap: 6px; padding: 4px 9px 4px 4px; }
+
+  /* KPIs: all five in one row */
+  html body [data-dashboard-role] .hrb-page .hrp-kpis { gap: 10px; margin-top: 10px; grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  html body [data-dashboard-role] .hrb-page .hrp-kpi { min-width: 0; min-height: 80px; gap: 9px; padding: 12px 8px 14px 10px; }
+  html body [data-dashboard-role] .hrb-page .hrp-kpi__icon { width: 42px; height: 42px; }
+  html body [data-dashboard-role] .hrb-page .hrp-kpi__icon svg { width: 22px; height: 22px; }
+  html body [data-dashboard-role] .hrb-page .hrp-kpi__value { font-size: 23px; }
+  html body [data-dashboard-role] .hrb-page .hrp-kpi__label { font-size: 13px; }
+
+  /* Filters: one row, search takes the slack */
+  html body [data-dashboard-role] .hrb-filters { display: grid; gap: 8px; grid-template-columns: minmax(0, 1fr) repeat(3, 122px) 192px auto; }
+  html body [data-dashboard-role] .hrb-filters select,
+  html body [data-dashboard-role] .hrb-date select { width: 100%; min-width: 0; }
+  html body [data-dashboard-role] .hrb-search,
+  html body [data-dashboard-role] .hrb-date { min-width: 0; }
+  html body [data-dashboard-role] .hrb-search input { padding-right: 30px; }
+
+  /* Batch cards: 3 x 2, meta + mode on one line */
+  html body [data-dashboard-role] .hrb-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  html body [data-dashboard-role] .hrb-card { padding: 14px; }
+  html body [data-dashboard-role] .hrb-meta { gap: 6px; font-size: 12px; }
+  html body [data-dashboard-role] .hrb-meta li { gap: 4px; }
+  html body [data-dashboard-role] .hrb-meta svg { width: 13px; height: 13px; }
+  html body [data-dashboard-role] .hrb-mode { padding: 2px 6px; }
+}

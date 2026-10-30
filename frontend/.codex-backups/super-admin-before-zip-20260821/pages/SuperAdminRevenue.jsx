@@ -1,0 +1,195 @@
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  CreditCard,
+  DollarSign,
+  Eye,
+  RefreshCcw,
+  TrendingUp,
+  Wallet,
+} from "lucide-react";
+import {
+  subscriptionApi,
+  getApiErrorMessage,
+} from "@shared/services/apiServices";
+import { SUBSCRIPTION_RECORDS } from "@shared/data/subscriptionMockData";
+
+export default function SuperAdminRevenue() {
+  const navigate = useNavigate();
+  const [rows, setRows] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+  const load = () => {
+    setLoading(true);
+    setError("");
+    subscriptionApi
+      .list()
+      .then((data) => {
+        const liveRows = Array.isArray(data) ? data : [];
+        setRows(liveRows.length ? liveRows : SUBSCRIPTION_RECORDS);
+      })
+      .catch((e) => {
+        setRows(SUBSCRIPTION_RECORDS);
+        setError(getApiErrorMessage(e, "Live revenue unavailable. Showing demo data."));
+      })
+      .finally(() => setLoading(false));
+  };
+  useEffect(load, []);
+  const summary = useMemo(() => {
+    const total = rows.reduce(
+      (sum, row) => sum + Number(row.price ?? row.amount ?? 0),
+      0,
+    );
+    const active = rows.filter((row) =>
+      Boolean(row.isActive ?? String(row.status).toLowerCase() === "active"),
+    ).length;
+    return { total, active };
+  }, [rows]);
+  return (
+    <div className="space-y-3 p-2 sm:p-3 lg:p-4">
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-xs font-extrabold uppercase tracking-[.2em] text-blue-600">
+            Finance · Platform revenue
+          </p>
+          <h1 className="mt-1 text-2xl font-black text-slate-950">
+            Revenue Management
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Subscription income and transaction visibility across organizations.
+          </p>
+        </div>
+        <button
+          onClick={load}
+          className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold shadow-sm"
+        >
+          <RefreshCcw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />{" "}
+          Refresh
+        </button>
+      </header>
+      {error && (
+        <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm font-semibold text-red-700">
+          {error}
+        </div>
+      )}
+      <div className="grid gap-2 sm:grid-cols-3">
+        <Card
+          icon={Wallet}
+          label="Platform Revenue"
+          value={`₹${summary.total.toLocaleString("en-IN")}`}
+          color="blue"
+        />
+        <Card
+          icon={CreditCard}
+          label="Subscriptions"
+          value={rows.length}
+          color="violet"
+        />
+        <Card
+          icon={TrendingUp}
+          label="Active Plans"
+          value={summary.active}
+          color="emerald"
+        />
+      </div>
+      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+            <div className="border-b border-slate-100 px-4 py-3">
+          <h2 className="font-extrabold">Revenue Transactions</h2>
+          <p className="text-xs text-slate-500">
+            Subscription-backed platform transactions
+          </p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full min-w-[760px] text-left">
+            <thead>
+              <tr className="bg-slate-50 text-[11px] uppercase tracking-wider text-slate-500">
+                <th className="px-5 py-3">Transaction</th>
+                <th className="px-5 py-3">Organization</th>
+                <th className="px-5 py-3">Plan</th>
+                <th className="px-5 py-3">Amount</th>
+                <th className="px-5 py-3">Status</th>
+                <th className="px-5 py-3 text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row, index) => {
+                const id = row.subscriptionId ?? row.id ?? index;
+                const active = Boolean(
+                  row.isActive ?? String(row.status).toLowerCase() === "active",
+                );
+                return (
+                  <tr key={id} className="border-t border-slate-100 text-sm">
+                    <td className="px-5 py-4 font-mono text-xs font-bold">
+                      TXN-{String(id).padStart(5, "0")}
+                    </td>
+                    <td className="px-5 py-4 font-bold">
+                      {row.organizationName ??
+                        row.organization?.name ??
+                        "Platform"}
+                    </td>
+                    <td className="px-5 py-4 text-slate-500">
+                      {row.planName ?? row.plan ?? "—"}
+                    </td>
+                    <td className="px-5 py-4 font-black">
+                      ₹
+                      {Number(row.price ?? row.amount ?? 0).toLocaleString(
+                        "en-IN",
+                      )}
+                    </td>
+                    <td className="px-5 py-4">
+                      <span
+                        className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${active ? "bg-emerald-50 text-emerald-700" : "bg-slate-100 text-slate-600"}`}
+                      >
+                        {active ? "Completed" : "Inactive"}
+                      </span>
+                    </td>
+                    <td className="px-5 py-4 text-right">
+                      <button
+                        onClick={() =>
+                          navigate(`/super-admin/revenue/transactions/${id}`, {
+                            state: { transaction: row },
+                          })
+                        }
+                        className="rounded-lg p-2 text-blue-600 hover:bg-blue-50"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+              {!loading && !rows.length && (
+                <tr>
+                  <td
+                    colSpan="6"
+                    className="px-5 py-9 text-center text-sm text-slate-400"
+                  >
+                    No revenue transactions available.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  );
+}
+function Card({ icon: Icon, label, value, color }) {
+  const colors = {
+    blue: "bg-blue-50 text-blue-600",
+    violet: "bg-violet-50 text-violet-600",
+    emerald: "bg-emerald-50 text-emerald-600",
+  };
+  return (
+    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <span className={`inline-flex rounded-xl p-2 ${colors[color]}`}>
+        <Icon className="h-5 w-5" />
+      </span>
+      <p className="mt-3 text-xs font-bold uppercase tracking-wider text-slate-400">
+        {label}
+      </p>
+      <p className="mt-1 text-2xl font-black text-slate-950">{value}</p>
+    </section>
+  );
+}

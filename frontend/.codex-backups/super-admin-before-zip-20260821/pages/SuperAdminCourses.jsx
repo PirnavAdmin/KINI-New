@@ -1,0 +1,160 @@
+import { useEffect, useMemo, useState } from "react";
+import {
+  AlertCircle,
+  BookOpen,
+  CheckCircle2,
+  RefreshCw,
+  Search,
+  Users,
+} from "lucide-react";
+import { courseApi, getApiErrorMessage } from "@shared/services/apiServices";
+import coursesData from "@shared/data/coursesData";
+
+const normalize = (course = {}) => ({
+  ...course,
+  id: course.courseId ?? course.id ?? course.slug,
+  title: course.title ?? course.name ?? "Untitled course",
+  instructor:
+    course.instructorName ?? course.instructor ?? course.trainer ?? "—",
+  students: Number(
+    course.studentCount ?? course.enrolledStudents ?? course.students ?? 0,
+  ),
+  status: String(
+    course.status ?? course.publishStatus ?? "published",
+  ).toLowerCase(),
+  price: Number(course.price ?? course.courseFee ?? course.fees ?? 0),
+});
+export default function SuperAdminCourses() {
+  const [courses, setCourses] = useState([]);
+  const [query, setQuery] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [notice, setNotice] = useState("");
+  const load = () => {
+    setLoading(true);
+    setNotice("");
+    courseApi
+      .list()
+      .then((rows) =>
+        setCourses((Array.isArray(rows) ? rows : []).map(normalize)),
+      )
+      .catch((e) => {
+        setCourses(coursesData.map(normalize));
+        setNotice(
+          `${getApiErrorMessage(e, "Course API unavailable")}. Showing demo catalogue.`,
+        );
+      })
+      .finally(() => setLoading(false));
+  };
+  useEffect(load, []);
+  const filtered = useMemo(
+    () =>
+      courses.filter((c) =>
+        `${c.title} ${c.instructor}`
+          .toLowerCase()
+          .includes(query.toLowerCase()),
+      ),
+    [courses, query],
+  );
+  return (
+    <div className="space-y-3 p-2 sm:p-3 lg:p-4">
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className="text-xs font-extrabold uppercase tracking-[.2em] text-blue-600">
+            Learning · Global catalogue
+          </p>
+          <h1 className="mt-1 text-2xl font-black text-slate-950">
+            Super Admin Courses
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
+            Monitor courses published across the platform.
+          </p>
+        </div>
+        <button
+          onClick={load}
+          className="inline-flex items-center gap-2 rounded-xl border bg-white px-4 py-2.5 text-sm font-bold shadow-sm"
+        >
+          <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />{" "}
+          Refresh
+        </button>
+      </header>
+      {notice && (
+        <div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm font-semibold text-amber-700">
+          <AlertCircle className="h-4 w-4" />
+          {notice}
+        </div>
+      )}
+      <div className="grid gap-2 sm:grid-cols-3">
+        <Metric icon={BookOpen} label="Total Courses" value={courses.length} />
+        <Metric
+          icon={CheckCircle2}
+          label="Published"
+          value={
+            courses.filter(
+              (c) => c.status === "published" || c.status === "active",
+            ).length
+          }
+        />
+        <Metric
+          icon={Users}
+          label="Enrollments"
+          value={courses.reduce((s, c) => s + c.students, 0).toLocaleString()}
+        />
+      </div>
+      <section className="rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="m-3 flex items-center gap-3 rounded-xl border border-slate-200 px-4 py-2.5">
+          <Search className="h-4 w-4 text-slate-400" />
+          <input
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search course or instructor…"
+            className="w-full bg-transparent text-sm outline-none"
+          />
+        </div>
+        <div className="grid gap-2 p-3 pt-0 md:grid-cols-2 xl:grid-cols-3">
+          {filtered.map((course) => (
+            <article
+              key={course.id}
+              className="rounded-2xl border border-slate-200 p-3 transition hover:-translate-y-0.5 hover:border-blue-200 hover:shadow-md"
+            >
+              <div className="flex items-start justify-between gap-3">
+                  <span className="rounded-xl bg-blue-50 p-2 text-blue-600">
+                  <BookOpen className="h-5 w-5" />
+                </span>
+                <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold uppercase text-emerald-700">
+                  {course.status}
+                </span>
+              </div>
+                <h2 className="mt-3 font-extrabold text-slate-900">
+                {course.title}
+              </h2>
+              <p className="mt-1 text-xs text-slate-500">
+                Instructor: {course.instructor}
+              </p>
+                <div className="mt-3 flex justify-between border-t pt-2.5 text-xs">
+                <span className="font-semibold text-slate-500">
+                  {course.students} students
+                </span>
+                <span className="font-black text-slate-900">
+                  ₹{course.price.toLocaleString("en-IN")}
+                </span>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+function Metric({ icon: Icon, label, value }) {
+  return (
+    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <span className="inline-flex rounded-xl bg-blue-50 p-2 text-blue-600">
+        <Icon className="h-5 w-5" />
+      </span>
+      <p className="mt-3 text-xs font-bold uppercase tracking-wider text-slate-400">
+        {label}
+      </p>
+      <p className="mt-1 text-2xl font-black">{value}</p>
+    </section>
+  );
+}

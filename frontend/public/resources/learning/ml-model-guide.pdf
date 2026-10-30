@@ -1,0 +1,431 @@
+%PDF-1.3
+%ºß¬à
+3 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Annots [
+<</Type /Annot /Subtype /Link /Rect [51.0236220472441033 267.0238582677163777 538.5826771653544256 252.8506299212597241] /Border [0 0 0] /A <</S /URI /URI (https://scikit-learn.org/stable/common_pitfalls.html) >> >>
+]
+/Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 4419
+>>
+stream
+0.5670000000000001 w
+0 G
+0.07 0.23 0.36 rg
+0. 841.8899999999999864 595.2755905511811534 -34.0157480314960665 re
+f
+BT
+/F1 23 Tf
+26.4499999999999993 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 759.6852755905511003 Td
+(ML Model Guide) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 734.1734645669291695 Td
+(AI & ML | Built-in learning library) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 694.4884251968503577 Td
+(Build a repeatable evaluation) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 671.8112598425196893 Td
+(Define the prediction target and how you will measure success. Split training and test data before) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 655.9372440944881646 Td
+(learning transformations. Fit preprocessing only on training data. A pipeline helps apply the same) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 640.0632283464567536 Td
+(transformation during training and prediction. Keep the final test set separate from model selection.) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 601.5120472440944468 Td
+(Classification example) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 578.8348818897637784 Td
+(from sklearn.datasets import load_iris) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 565.2285826771653774 Td
+(from sklearn.model_selection import train_test_split) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 551.6222834645669764 Td
+(from sklearn.pipeline import make_pipeline) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 538.0159842519685753 Td
+(from sklearn.preprocessing import StandardScaler) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 524.4096850393700606 Td
+(from sklearn.linear_model import LogisticRegression) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 510.8033858267717164 Td
+(from sklearn.metrics import accuracy_score) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 483.5907874015748575 Td
+(X, y = load_iris\(return_X_y=True\)) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 469.9844881889764565 Td
+(X_train, X_test, y_train, y_test = train_test_split\() Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 456.3781889763779986 Td
+(    X, y, test_size=0.2, random_state=42, stratify=y) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 442.7718897637795408 Td
+(\)) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 429.1655905511810829 Td
+(model = make_pipeline\(StandardScaler\(\), LogisticRegression\(\)\)) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 415.559291338582625 Td
+(model.fit\(X_train, y_train\)) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 401.9529921259841672 Td
+(print\(accuracy_score\(y_test, model.predict\(X_test\)\)\)) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 365.6695275590549841 Td
+(Practice) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 342.9923622047242588 Td
+(Compare against a simple baseline. Record your split, metric and parameters. Inspect mistakes) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 327.1183464566927341 Td
+(rather than reporting only one score. Accuracy alone may hide poor results on an uncommon class.) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 311.2443307086613231 Td
+(Avoid including information that would not exist when a real prediction is made.) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 272.69314960629913 Td
+(Further reading \(official documentation\):) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.09 0.361 0.729 rg
+51.0236220472441033 255.6852755905511003 Td
+(https://scikit-learn.org/stable/common_pitfalls.html) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.392 0.455 0.545 rg
+51.0236220472441033 34.0159842519684616 Td
+(Kini | Starter study guide | 1 / 1) Tj
+ET
+endstream
+endobj
+1 0 obj
+<</Type /Pages
+/Kids [3 0 R ]
+/Count 1
+>>
+endobj
+5 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+6 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+7 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+8 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+9 0 obj
+<<
+/Type /Font
+/BaseFont /Courier
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+10 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+11 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+12 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+13 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Roman
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+14 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+15 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Italic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+16 0 obj
+<<
+/Type /Font
+/BaseFont /Times-BoldItalic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+17 0 obj
+<<
+/Type /Font
+/BaseFont /ZapfDingbats
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+18 0 obj
+<<
+/Type /Font
+/BaseFont /Symbol
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+2 0 obj
+<<
+/ProcSet [/PDF /Text /ImageB /ImageC /ImageI]
+/Font <<
+/F1 5 0 R
+/F2 6 0 R
+/F3 7 0 R
+/F4 8 0 R
+/F5 9 0 R
+/F6 10 0 R
+/F7 11 0 R
+/F8 12 0 R
+/F9 13 0 R
+/F10 14 0 R
+/F11 15 0 R
+/F12 16 0 R
+/F13 17 0 R
+/F14 18 0 R
+>>
+/XObject <<
+>>
+>>
+endobj
+19 0 obj
+<<
+/Producer (jsPDF 4.2.1)
+/Title (ML Model Guide)
+/Subject (Original starter study guide)
+/Author (Kini learning library)
+/CreationDate (D:20260917184913+05'30')
+>>
+endobj
+20 0 obj
+<<
+/Type /Catalog
+/Pages 1 0 R
+/OpenAction [3 0 R /FitH null]
+/PageLayout /OneColumn
+>>
+endobj
+xref
+0 21
+0000000000 65535 f 
+0000004851 00000 n 
+0000006668 00000 n 
+0000000015 00000 n 
+0000000380 00000 n 
+0000004908 00000 n 
+0000005033 00000 n 
+0000005163 00000 n 
+0000005296 00000 n 
+0000005433 00000 n 
+0000005556 00000 n 
+0000005685 00000 n 
+0000005817 00000 n 
+0000005953 00000 n 
+0000006081 00000 n 
+0000006208 00000 n 
+0000006337 00000 n 
+0000006470 00000 n 
+0000006572 00000 n 
+0000006916 00000 n 
+0000007098 00000 n 
+trailer
+<<
+/Size 21
+/Root 20 0 R
+/Info 19 0 R
+/ID [ <B96BB15B22EEF2D43B8CA84D5FC8EB01> <B96BB15B22EEF2D43B8CA84D5FC8EB01> ]
+>>
+startxref
+7202
+%%EOF

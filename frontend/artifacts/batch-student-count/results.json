@@ -1,0 +1,44 @@
+[
+  {
+    "width": 1440,
+    "before": {
+      "Roster Morning": "2",
+      "Shared Evening": "0",
+      "Restricted Batch": "0",
+      "Empty Weekend": "0"
+    },
+    "after": {
+      "Roster Morning": "2",
+      "Shared Evening": "3",
+      "Restricted Batch": "—",
+      "Empty Weekend": "0"
+    },
+    "refreshed": {
+      "Roster Morning": "2",
+      "Shared Evening": "3",
+      "Restricted Batch": "—",
+      "Empty Weekend": "1"
+    }
+  },
+  {
+    "width": 390,
+    "before": {
+      "Roster Morning": "2",
+      "Shared Evening": "0",
+      "Restricted Batch": "0",
+      "Empty Weekend": "0"
+    },
+    "after": {
+      "Roster Morning": "2",
+      "Shared Evening": "3",
+      "Restricted Batch": "—",
+      "Empty Weekend": "0"
+    },
+    "refreshed": {
+      "Roster Morning": "2",
+      "Shared Evening": "3",
+      "Restricted Batch": "—",
+      "Empty Weekend": "1"
+    }
+  }
+]

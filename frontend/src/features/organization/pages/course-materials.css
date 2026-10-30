@@ -1,0 +1,185 @@
+/* ==========================================================================
+   Organization → Course Materials → Upload Material dialog — compact
+   desktop density. Real sizes, no zoom/scale. Scoped to .kum-dialog so other
+   KiniDialogs and the Generate Invoice form (same kgi-* field classes) keep
+   their styling. Beats kini-org-v16.css via the extra .kini-dialog class
+   (inputs keep the :not(#k16) id trick that file uses).
+   ========================================================================== */
+
+@media (min-width: 1024px) {
+  /* ── Frame: narrower, header · scrolling form · fixed footer ─────────── */
+  html body .kini-dialog.kum-dialog { padding: 20px; }
+  html body .kini-dialog.kum-dialog [role="dialog"] { width: min(1015px, calc(100vw - 40px)); max-width: 1015px !important; max-height: min(730px, calc(100dvh - 40px)); border-radius: 18px; }
+
+  /* ── Header ────────────────────────────────────────────────────────── */
+  html body .kini-dialog.kum-dialog .kum-dialog__header { min-height: 0; gap: 14px; padding: 16px 20px 16px; }
+  html body .kini-dialog.kum-dialog .kum-dialog__header > span:first-of-type { width: 64px; height: 64px; border-radius: 16px; }
+  html body .kini-dialog.kum-dialog .kum-dialog__header > span:first-of-type svg { width: 30px; height: 30px; }
+  html body .kini-dialog.kum-dialog .kum-dialog__header h2 { margin-top: 0; font-size: 32px !important; line-height: 1.1; }
+  html body .kini-dialog.kum-dialog .kum-dialog__header h2 + p { margin-top: 3px; font-size: 13.5px; line-height: 1.4; }
+  html body .kini-dialog.kum-dialog .kum-dialog__header h2 ~ div { margin-top: 10px; }
+  html body .kini-dialog.kum-dialog .kum-dialog__header > div.flex-1 { padding-right: 380px; }
+  html body .kini-dialog.kum-dialog .kum-dialog__art { right: 52px; width: 360px; height: 160px; }
+  html body .kini-dialog.kum-dialog .kum-dialog__header > button { top: 12px; right: 12px; width: 34px; height: 34px; }
+  html body .kini-dialog.kum-dialog .kum-dialog__header > button svg { width: 16px; height: 16px; }
+
+  html body .kini-dialog.kum-dialog .kum-features { flex-wrap: nowrap; gap: 8px 20px; margin-top: 0; }
+  html body .kini-dialog.kum-dialog .kum-features li { gap: 8px; }
+  html body .kini-dialog.kum-dialog .kum-features__icon { width: 38px; height: 38px; }
+  html body .kini-dialog.kum-dialog .kum-features__icon svg { width: 17px; height: 17px; }
+  html body .kini-dialog.kum-dialog .kum-features b { font-size: 12.5px; white-space: nowrap; }
+  html body .kini-dialog.kum-dialog .kum-features small { font-size: 10.5px; white-space: nowrap; }
+
+  /* ── Form body ─────────────────────────────────────────────────────── */
+  html body .kini-dialog.kum-dialog [role="dialog"] > div.overflow-y-auto { padding: 14px 20px; }
+  html body .kini-dialog.kum-dialog .kum-form { gap: 12px; }
+  html body .kini-dialog.kum-dialog .kum-grid { gap: 12px 20px; }
+  html body .kini-dialog.kum-dialog .kgi-field { gap: 6px; }
+  html body .kini-dialog.kum-dialog :is(.kgi-field > label, .kgi-field .kgi-field__label) { font-size: 12.5px; }
+
+  html body .kini-dialog.kum-dialog .kgi-control { gap: 10px; min-height: 42px; padding: 0 12px; border-radius: 10px; }
+  html body .kini-dialog.kum-dialog .kgi-control .kgi-control__icon { width: 17px; height: 17px; }
+  html body .kini-dialog.kum-dialog .kgi-control::before { left: 38px; top: 10px; bottom: 10px; }
+  html body .kini-dialog.kum-dialog .kgi-control :is(input, select, textarea):not(#k16),
+  html body .kini-dialog.kum-dialog .kgi-control :is(input, select, textarea):not(#k16):focus { height: 40px; margin-left: 6px; font-size: 13px; }
+  html body .kini-dialog.kum-dialog .kgi-control textarea:not(#k16) { height: 66px; min-height: 48px; padding: 10px 0; }
+  html body .kini-dialog.kum-dialog .kgi-control--area .kgi-control__icon { margin-top: 11px; }
+  html body .kini-dialog.kum-dialog .kgi-control--area::before { top: 9px; height: 24px; }
+  html body .kini-dialog.kum-dialog .kum-status-dot { width: 18px; height: 18px; border-width: 4px; }
+  html body .kini-dialog.kum-dialog .kum-counter { margin-top: -2px; font-size: 11px; }
+
+  html body .kini-dialog.kum-dialog .kum-types { flex-wrap: nowrap; gap: 6px; }
+  html body .kini-dialog.kum-dialog .kum-type { gap: 6px; height: 42px; padding: 0 10px; border-radius: 10px; font-size: 12px; }
+  html body .kini-dialog.kum-dialog .kum-type > span { width: 22px; height: 22px; border-radius: 6px; }
+  html body .kini-dialog.kum-dialog .kum-type > span svg { width: 15px; height: 15px; }
+  html body .kini-dialog.kum-dialog .kum-type__check { width: 15px; height: 15px; }
+
+  html body .kini-dialog.kum-dialog .kum-drop { gap: 2px; padding: 14px 16px; border-radius: 12px; }
+  html body .kini-dialog.kum-dialog .kum-drop__cloud { width: 40px; height: 40px; }
+  html body .kini-dialog.kum-dialog .kum-drop__title { font-size: 14px; }
+  html body .kini-dialog.kum-dialog .kum-drop__hint { font-size: 12.5px; }
+  html body .kini-dialog.kum-dialog .kum-drop__formats { margin-top: 4px; font-size: 11px; }
+  html body .kini-dialog.kum-dialog .kum-drop__file { width: 38px; height: 46px; border-radius: 8px; font-size: 11px; }
+
+  /* ── Footer ────────────────────────────────────────────────────────── */
+  html body .kini-dialog.kum-dialog [role="dialog"] > footer { gap: 10px; padding: 10px 20px; }
+  html body .kini-dialog.kum-dialog .kum-footnote { gap: 10px; font-size: 12px; }
+  html body .kini-dialog.kum-dialog .kum-footnote > span { width: 32px; height: 32px; }
+  html body .kini-dialog.kum-dialog .kum-footnote > span svg { width: 16px; height: 16px; }
+  html body .kini-dialog.kum-dialog .kgi-btn { gap: 7px; height: 40px; padding: 0 18px; border-radius: 10px; font-size: 13.5px; }
+  html body .kini-dialog.kum-dialog .kgi-btn svg { width: 16px; height: 16px; }
+}
+
+/* Short desktop screens (1920×1080 at 150% ≈ 1280×585, 1366×768): tighten
+   further so the drop zone and footer fit without much scrolling. */
+@media (min-width: 1024px) and (max-height: 700px) {
+  html body .kini-dialog.kum-dialog { padding: 12px 20px; }
+  html body .kini-dialog.kum-dialog [role="dialog"] { max-height: calc(100dvh - 24px); }
+  html body .kini-dialog.kum-dialog .kum-dialog__header { padding: 12px 18px; }
+  html body .kini-dialog.kum-dialog .kum-dialog__header > span:first-of-type { width: 56px; height: 56px; border-radius: 14px; }
+  html body .kini-dialog.kum-dialog .kum-dialog__header > span:first-of-type svg { width: 26px; height: 26px; }
+  html body .kini-dialog.kum-dialog .kum-dialog__header h2 { font-size: 28px !important; }
+  html body .kini-dialog.kum-dialog .kum-dialog__header h2 + p { font-size: 13px; }
+  html body .kini-dialog.kum-dialog .kum-dialog__header h2 ~ div { margin-top: 8px; }
+  html body .kini-dialog.kum-dialog .kum-dialog__header > div.flex-1 { padding-right: 300px; }
+  html body .kini-dialog.kum-dialog .kum-dialog__art { right: 48px; width: 262px; height: 110px; }
+  html body .kini-dialog.kum-dialog .kum-features__icon { width: 32px; height: 32px; }
+  html body .kini-dialog.kum-dialog .kum-features__icon svg { width: 15px; height: 15px; }
+
+  html body .kini-dialog.kum-dialog [role="dialog"] > div.overflow-y-auto { padding: 10px 18px; }
+  html body .kini-dialog.kum-dialog .kum-form { gap: 10px; }
+  html body .kini-dialog.kum-dialog .kum-grid { gap: 10px 18px; }
+  html body .kini-dialog.kum-dialog .kgi-field { gap: 5px; }
+  html body .kini-dialog.kum-dialog .kgi-control { min-height: 38px; }
+  html body .kini-dialog.kum-dialog .kgi-control :is(input, select, textarea):not(#k16),
+  html body .kini-dialog.kum-dialog .kgi-control :is(input, select, textarea):not(#k16):focus { height: 36px; }
+  html body .kini-dialog.kum-dialog .kgi-control textarea:not(#k16) { height: 54px; padding: 8px 0; }
+  html body .kini-dialog.kum-dialog .kum-type { height: 38px; }
+  html body .kini-dialog.kum-dialog .kum-drop { padding: 10px 16px; }
+  html body .kini-dialog.kum-dialog .kum-drop__cloud { width: 32px; height: 32px; }
+
+  html body .kini-dialog.kum-dialog [role="dialog"] > footer { padding: 8px 18px; }
+  html body .kini-dialog.kum-dialog .kgi-btn { height: 36px; }
+}
+
+/* Keep KPI cards readable and clickable at compact desktop widths. */
+.course-materials-page [data-ui="kpi"] {
+  min-height: 86px;
+}
+
+.course-materials-page [data-ui="kpi"] .kpi-content {
+  min-height: 86px;
+  padding: 12px 16px;
+}
+
+/* Scope search cleanup and visible focus to this page's materials toolbar. */
+html body [data-dashboard-role] .course-materials-page .kx-toolbar[role="search"] .kx-search {
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+html body [data-dashboard-role] .course-materials-page .kx-toolbar[role="search"] .kx-input:focus {
+  outline: 2px solid rgba(242, 138, 30, .35);
+  outline-offset: 2px;
+  box-shadow: none !important;
+}
+
+/* Reserve a right-side artwork area and let the summary cards flow below the
+   hero, so neither can cover the other at any viewport size. */
+html body [data-dashboard-role] .course-materials-page .course-materials-hero {
+  --osh-copy: 57%;
+  --osh-art-w: 39%;
+  --osh-art-right: 2%;
+  isolation: isolate;
+  overflow: hidden;
+}
+html body [data-dashboard-role] .course-materials-page .course-materials-hero .osh__art {
+  right: 2%;
+  width: 39%;
+  height: 82%;
+  bottom: 0;
+  pointer-events: none;
+}
+html body [data-dashboard-role] .course-materials-page .course-materials-hero .osh__main,
+#course-materials-list .kx-table {
+  table-layout: fixed;
+}
+#course-materials-list .kx-table tbody td {
+  padding: 8px 12px;
+}
+#course-materials-list .kx-table thead th {
+  padding-left: 12px;
+  padding-right: 12px;
+}
+#course-materials-list .kx-cell-actions {
+  min-width: 0;
+  gap: 8px;
+}
+#course-materials-list .kx-file-tile {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+#course-materials-list .kx-table-foot {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+html body [data-dashboard-role] .course-materials-page .course-materials-hero .osh__copy {
+  min-width: 0;
+}
+html body [data-dashboard-role] .course-materials-page .course-materials-summary {
+  position: relative;
+  z-index: 1;
+  margin-top: 14px;
+}
+@media (max-width: 960px) {
+  html body [data-dashboard-role] .course-materials-page .course-materials-hero { --osh-copy: 100%; --osh-art-w: 100%; }
+  html body [data-dashboard-role] .course-materials-page .course-materials-hero .osh__art {
+    right: auto;
+    width: 100%;
+    height: auto;
+    pointer-events: none;
+  }
+}
+

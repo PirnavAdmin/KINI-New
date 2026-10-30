@@ -1,0 +1,13 @@
+/* Keep the Attendance hero content near the top of its banner and close the
+   gap between its summary cards and list. */
+@media (min-width: 961px) {
+  html body [data-dashboard-role] .osh.osh--v14.osh-v14--attendance-compact {
+    justify-content: flex-start;
+    padding-top: 18px;
+    padding-bottom: 18px;
+  }
+}
+
+html body [data-dashboard-role] .organization-attendance-page > section {
+  margin-top: 0;
+}

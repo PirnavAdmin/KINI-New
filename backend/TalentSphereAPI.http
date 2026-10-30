@@ -1,0 +1,6 @@
+@TalentSphereAPI_HostAddress = http://localhost:5148
+
+GET {{TalentSphereAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

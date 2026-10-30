@@ -1,0 +1,75 @@
+/* ═══════════════════════════════════════════════════════════════
+   KINI EDUHUB — DESIGN SYSTEM TOKENS
+   ═══════════════════════════════════════════════════════════════
+   This file defines the centralized design tokens that should be
+   used across the entire application. Import in main.jsx.
+   ═══════════════════════════════════════════════════════════════ */
+
+@layer base {
+  :root {
+    /* ── Colors ─────────────────────────────────────────────── */
+    --color-primary: #ff8800;
+    --color-primary-light: #ffad4d;
+    --color-primary-dark: #e97800;
+    --color-secondary: #0a3d64;
+    --color-secondary-light: #3e6f94;
+    --color-secondary-dark: #072f4e;
+    --color-success: #10B981;
+    --color-warning: #F59E0B;
+    --color-danger: #EF4444;
+    --color-info: #0a3d64;
+
+    /* ── Gradients ──────────────────────────────────────────── */
+    --gradient-primary: linear-gradient(135deg, #0a3d64, #164f79);
+    --gradient-primary-hover: linear-gradient(135deg, #072f4e, #0a3d64);
+    --gradient-accent: linear-gradient(135deg, #ff8800, #e97800);
+    --gradient-success: linear-gradient(135deg, #10B981, #059669);
+    --gradient-warning: linear-gradient(135deg, #F59E0B, #D97706);
+    --gradient-danger: linear-gradient(135deg, #EF4444, #DC2626);
+
+    /* ── Typography Scale ────────────────────────────────────── */
+    --font-sans: 'Sora', -apple-system, BlinkMacSystemFont, 'SF Pro Display',
+      'Segoe UI', Roboto, sans-serif;
+
+    /* Font sizes (in px for reference, use Tailwind classes in components) */
+    --text-xs: 0.75rem;    /* 12px */
+    --text-sm: 0.875rem;   /* 14px */
+    --text-base: 1rem;     /* 16px */
+    --text-lg: 1.125rem;   /* 18px */
+    --text-xl: 1.25rem;    /* 20px */
+    --text-2xl: 1.5rem;    /* 24px */
+    --text-3xl: 1.875rem;  /* 30px */
+
+    /* ── Border Radius ───────────────────────────────────────── */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-2xl: 24px;
+    --radius-full: 9999px;
+
+    /* ── Shadows ─────────────────────────────────────────────── */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+    --shadow-glow-primary: 0 4px 24px rgba(255, 136, 0, 0.2);
+
+    /* ── Spacing (via Tailwind, provided as reference) ───────── */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 20px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --space-10: 40px;
+    --space-12: 48px;
+
+    /* ── Transitions ─────────────────────────────────────────── */
+    --transition-fast: 150ms ease;
+    --transition-base: 200ms ease;
+    --transition-slow: 300ms ease;
+    --transition-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+}

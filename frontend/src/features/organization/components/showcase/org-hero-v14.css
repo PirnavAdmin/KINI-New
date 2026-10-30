@@ -1,0 +1,155 @@
+/* OrgShowcaseHero — v14 layout (variant="v14").
+   Used by the Organization Assessments, Attendance, Course Materials,
+   Employees, Mentors, Students and Batches pages. Matches the v14 design:
+   copy on the left (badge or eyebrow, two-tone title, subtitle, four
+   feature chips) and the page's illustration filling the right side.
+   The older per-page variant rules in org-showcase-hero.css key off
+   `.osh--<variant>`, so none of them apply to `.osh--v14`.
+   Page actions (Add / Export / Upload) live in each page's toolbar. */
+
+html body [data-dashboard-role] .osh.osh--v14 {
+  --osh-min-h: 268px;
+  --osh-copy: 47%;
+  --osh-art-w: 57%;
+  --osh-art-h: 96%;
+  --osh-art-right: 1.2%;
+  --osh-art-bottom: 0px;
+  justify-content: center;
+  padding: 24px 34px;
+  border-radius: 20px;
+}
+html body [data-dashboard-role] .osh.osh--v14 .osh__art img { object-position: right bottom; }
+html body [data-dashboard-role] .osh.osh--v14 .osh__lead,
+html body [data-dashboard-role] .osh.osh--v14 .osh__script { display: none; }
+html body [data-dashboard-role] .osh.osh--v14 .osh__main { max-width: var(--osh-copy); gap: 0; }
+
+/* Badge chip ("Assessments", "Batch Management") */
+html body [data-dashboard-role] .osh.osh--v14 .osh__badge {
+  gap: 10px; margin-bottom: 12px; padding: 6px 14px 6px 7px; border-radius: 11px; font-size: 14px;
+  background: rgba(214, 229, 251, .8);
+}
+html body [data-dashboard-role] .osh.osh--v14 .osh__badge > span { width: 28px; height: 28px; border-radius: 8px; }
+html body [data-dashboard-role] .osh.osh--v14 .osh__badge svg { width: 17px; height: 17px; }
+
+/* Eyebrow: "— EMPOWER EDUCATORS" */
+html body [data-dashboard-role] .osh.osh--v14 .osh__eyebrow {
+  display: flex; align-items: center; gap: 10px; margin: 0 0 8px;
+  color: #d9770a !important; font-size: 12.5px; letter-spacing: .16em;
+}
+html body [data-dashboard-role] .osh.osh--v14 .osh__eyebrow::before {
+  content: ""; width: 26px; height: 2px; border-radius: 2px; background: #f28a1e;
+}
+html body [data-dashboard-role] .osh.osh--v14.osh-v14--plain-eyebrow .osh__eyebrow::before { display: none; }
+
+html body [data-dashboard-role] .osh.osh--v14 .osh__title {
+  font-size: clamp(30px, 3.15vw, 50px) !important; line-height: 1.05 !important; white-space: nowrap;
+}
+html body [data-dashboard-role] .osh.osh--v14 .osh__subtitle {
+  margin-top: 10px; max-width: 54ch; font-size: 16px !important; line-height: 1.45 !important;
+}
+
+/* Feature chips */
+html body [data-dashboard-role] .osh.osh--v14 .osh__features { flex-wrap: wrap; gap: 8px 10px; margin-top: 18px; }
+html body [data-dashboard-role] .osh.osh--v14 .osh__features li {
+  flex: none; gap: 9px; padding: 6px 12px 6px 6px; border: 1px solid #e1eaf7; border-radius: 12px;
+  background: rgba(255, 255, 255, .72); font-size: 12.5px; line-height: 1.25;
+  box-shadow: 0 4px 12px -8px rgba(15, 42, 74, .25);
+}
+html body [data-dashboard-role] .osh.osh--v14 .osh__ficon { width: 34px; height: 34px; border-radius: 10px; }
+html body [data-dashboard-role] .osh.osh--v14 .osh__ficon svg { width: 18px; height: 18px; }
+
+@media (max-width: 1440px) {
+  html body [data-dashboard-role] .osh.osh--v14 { --osh-copy: 52%; --osh-art-w: 52%; padding: 22px 26px; }
+  html body [data-dashboard-role] .osh.osh--v14 .osh__subtitle { font-size: 15px !important; }
+  html body [data-dashboard-role] .osh.osh--v14 .osh__features { gap: 6px; }
+  html body [data-dashboard-role] .osh.osh--v14 .osh__features li { gap: 6px; padding: 4px 9px 4px 4px; font-size: 11px; }
+  html body [data-dashboard-role] .osh.osh--v14 .osh__ficon { width: 28px; height: 28px; border-radius: 8px; }
+  html body [data-dashboard-role] .osh.osh--v14 .osh__ficon svg { width: 16px; height: 16px; }
+}
+@media (max-width: 1280px) {
+  html body [data-dashboard-role] .osh.osh--v14 { --osh-min-h: 250px; --osh-copy: 52%; --osh-art-w: 50%; --osh-art-h: 88%; }
+  html body [data-dashboard-role] .osh.osh--v14 .osh__features li { padding: 5px 10px 5px 5px; }
+  html body [data-dashboard-role] .osh.osh--v14 .osh__ficon { width: 30px; height: 30px; }
+}
+@media (max-width: 1100px) {
+  html body [data-dashboard-role] .osh.osh--v14 { --osh-copy: 58%; --osh-art-w: 44%; --osh-art-h: 74%; }
+  html body [data-dashboard-role] .osh.osh--v14 .osh__title { white-space: normal; }
+}
+/* Tablet / phone: illustration moves below the copy instead of fading
+   behind it. */
+@media (max-width: 960px) {
+  html body [data-dashboard-role] .osh.osh--v14 { --osh-copy: 100%; min-height: 0; padding: 20px 18px 0; }
+  html body [data-dashboard-role] .osh.osh--v14 .osh__art {
+    position: static; order: 2; width: 100%; height: auto; margin-top: 12px; opacity: 1; justify-content: center;
+  }
+  html body [data-dashboard-role] .osh.osh--v14 .osh__art img { max-height: 190px; object-position: center bottom; }
+  html body [data-dashboard-role] .osh.osh--v14 .osh__main { order: 1; }
+}
+@media (max-width: 560px) {
+  html body [data-dashboard-role] .osh.osh--v14 .osh__subtitle { font-size: 14px !important; }
+  html body [data-dashboard-role] .osh.osh--v14 .osh__features { gap: 6px; }
+  html body [data-dashboard-role] .osh.osh--v14 .osh__features li { flex: 1 1 calc(50% - 6px); min-width: 0; }
+  html body [data-dashboard-role] .osh.osh--v14 .osh__art img { max-height: 140px; }
+}
+
+/* Assessments toolbar: search + 4 selects + Filters + Create on one row. */
+@media (min-width: 1200px) {
+  html body [data-dashboard-role] .kx-page.mentor-assessments-page > .kx-toolbar:not(:has(input[type="date"])) { flex-wrap: nowrap; }
+  html body [data-dashboard-role] .kx-page.mentor-assessments-page > .kx-toolbar .kx-select { flex: 0 1 160px; min-width: 112px; }
+  html body [data-dashboard-role] .kx-page.mentor-assessments-page > .kx-toolbar .kx-btn { flex: none; }
+}
+
+/* Toolbar action cluster used by the v14 pages (moved out of the hero). */
+html body [data-dashboard-role] .v14-actions { display: inline-flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 8px; }
+html body [data-dashboard-role] .v14-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 7px; height: 38px; padding: 0 15px;
+  border: 1px solid #dbe5f2; border-radius: 10px; background: #ffffff; color: #0f2a4a;
+  font-size: 13.5px; font-weight: 700; white-space: nowrap; transition: background-color .15s ease, transform .15s ease;
+}
+html body [data-dashboard-role] .v14-btn:hover { background: #f4f8fd; }
+html body [data-dashboard-role] .v14-btn:focus-visible { outline: 2px solid #2f6fe4; outline-offset: 2px; }
+html body [data-dashboard-role] .v14-btn:disabled { opacity: .55; cursor: not-allowed; }
+html body [data-dashboard-role] .v14-btn svg { width: 16px; height: 16px; }
+html body [data-dashboard-role] .v14-btn--primary { border-color: #f58a0b; background: #f58a0b; color: #ffffff; box-shadow: 0 8px 18px -10px rgba(245, 138, 11, .8); }
+html body [data-dashboard-role] .v14-btn--primary:hover { background: #e57d06; }
+html.dark body [data-dashboard-role] .v14-btn:not(.v14-btn--primary),
+html body [data-dashboard-role].dark .v14-btn:not(.v14-btn--primary) { border-color: #334155; background: #0f172a; color: #e2e8f0; }
+
+/* Employees / Students: chips carry a descriptive second line. On laptop
+   widths only the primary label is shown so all four chips stay on one row. */
+html body [data-dashboard-role] .osh .osh__fsub { font: inherit; color: inherit; }
+@media (max-width: 1440px) and (min-width: 561px) {
+  html body [data-dashboard-role] .osh.osh--v14.osh-v14--compact-chips .osh__features li br,
+  html body [data-dashboard-role] .osh.osh--v14.osh-v14--compact-chips .osh__fsub { display: none; }
+  html body [data-dashboard-role] .osh.osh--v14.osh-v14--compact-chips .osh__features li { padding-top: 5px; padding-bottom: 5px; font-size: 12px; }
+}
+
+/* Students: 45% copy / 55% artwork, ~220px tall; the full PNG stays visible. */
+html body [data-dashboard-role] .osh.osh--v14.osh-v14--students { --osh-min-h: 220px; --osh-copy: 45%; --osh-art-w: 56%; --osh-art-h: 100%; --osh-art-right: 0px; padding: 18px 24px; border-radius: 16px; }
+html body [data-dashboard-role] .osh.osh--v14.osh-v14--students .osh__art img { object-fit: contain; object-position: right center; }
+html body [data-dashboard-role] .osh.osh--v14.osh-v14--students .osh__features { max-width: 560px; }
+@media (max-width: 1280px) { html body [data-dashboard-role] .osh.osh--v14.osh-v14--students { --osh-copy: 50%; --osh-art-w: 50%; --osh-art-h: 86%; } }
+html body [data-dashboard-role] .osh.osh--v14.osh-v14--students { --osh-min-h: 0px; padding: 14px 24px; }
+html body [data-dashboard-role] .osh.osh--v14.osh-v14--students .osh__eyebrow { margin-bottom: 4px; }
+html body [data-dashboard-role] .osh.osh--v14.osh-v14--students .osh__title { font-size: clamp(30px, 2.8vw, 46px) !important; }
+html body [data-dashboard-role] .osh.osh--v14.osh-v14--students .osh__subtitle { margin-top: 6px; }
+html body [data-dashboard-role] .osh.osh--v14.osh-v14--students .osh__features { margin-top: 12px; gap: 6px 8px; }
+@media (max-width: 960px) {
+  html body [data-dashboard-role] .osh.osh--v14.osh-v14--students { --osh-copy: 100%; padding: 18px 16px 0; }
+  html body [data-dashboard-role] .osh.osh--v14.osh-v14--students .osh__features { max-width: none; }
+}
+@media (max-width: 560px) {
+  html body [data-dashboard-role] .osh.osh--v14.osh-v14--students .osh__title { font-size: 30px !important; }
+  html body [data-dashboard-role] .osh.osh--v14.osh-v14--students .osh__features li { flex: 1 1 calc(50% - 6px); min-width: 0; overflow-wrap: anywhere; }
+}
+
+/* Mentors: wide (3.2:1) artwork, vertically centred with a margin so the desk
+   and books never touch the banner edge; the whole image stays visible. */
+html body [data-dashboard-role] .osh.osh--v14.osh-v14--mentors { --osh-copy: 44%; --osh-art-w: 55%; border-radius: 16px; }
+html body [data-dashboard-role] .osh.osh--v14.osh-v14--mentors .osh__art { top: 14px; bottom: 14px; right: 18px; height: auto; align-items: center; }
+html body [data-dashboard-role] .osh.osh--v14.osh-v14--mentors .osh__art img { object-fit: contain; object-position: right center; }
+@media (max-width: 960px) {
+  html body [data-dashboard-role] .osh.osh--v14.osh-v14--mentors { --osh-copy: 100%; }
+  html body [data-dashboard-role] .osh.osh--v14.osh-v14--mentors .osh__art { position: static; margin: 12px 0 16px; justify-content: center; }
+  html body [data-dashboard-role] .osh.osh--v14.osh-v14--mentors .osh__art img { object-position: center; }
+}

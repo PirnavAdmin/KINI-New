@@ -1,0 +1,24 @@
+.hrbd { color: #133b5d; }
+.hrbd-back { display: inline-flex; align-items: center; gap: 8px; margin: var(--hr-detail-back-margin, 16px 0); font-size: 14px; font-weight: 600; }
+.hrbd-panel { background: white; border: 1px solid #dfe7f1; border-radius: 18px; padding: var(--hr-detail-padding, 24px); box-shadow: 0 3px 12px #133b5d05; }
+.hrbd-panel h1 { font-size: 24px; font-weight: 700; overflow-wrap: anywhere; }
+.hrbd-panel h2 { font-size: 18px; font-weight: 700; margin-bottom: var(--hr-detail-gap, 24px); }
+.hrbd-header { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; margin-bottom: var(--hr-detail-gap, 20px); }
+.hrbd-header p { color: #59708d; margin-top: 5px; }
+.hrbd-header .hrbd-meta { font-size: 13px; overflow-wrap: anywhere; }
+.hrbd-icon { display: grid; place-items: center; width: 60px; height: 60px; border-radius: 16px; background: #e4edff; color: #2164df; }
+.hrbd-info { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: var(--hr-detail-gap, 26px); }
+.hrbd-info dt { font-size: 13px; color: #59708d; }
+.hrbd-info dd { font-size: 14px; font-weight: 600; margin-top: 6px; overflow-wrap: anywhere; }
+.hrbd-tabs { display: flex; gap: var(--hr-gap, 12px); margin: var(--hr-detail-back-margin, 20px 0); border-bottom: 1px solid #dfe7f1; }
+.hrbd-tabs button { padding: var(--hr-detail-tab-padding, 12px 16px); font-weight: 600; border-bottom: 3px solid transparent; }
+.hrbd-tabs button[aria-selected=true] { color: #2164df; border-color: #2164df; }
+.hrbd-table { overflow-x: auto; }
+.hrbd-table table { width: 100%; text-align: left; font-size: 14px; border-collapse: collapse; }
+.hrbd-table th { background: #eef3ff; color: #2164df; font-size: 12px; text-transform: uppercase; }
+.hrbd-table th,.hrbd-table td { padding: var(--hr-detail-cell-padding, 15px 12px); border-bottom: 1px solid #e9eff7; white-space: nowrap; }
+.hrbd-table a { color: #2164df; font-weight: 600; }
+.hrbd-loading { display: grid; gap: 20px; }
+.hrbd-loading > div:not(.grid),.hrbd-loading .grid > div { border-radius: 18px; background: #e6edf7; animation: hrbd-pulse 1.5s ease-in-out infinite; }
+@keyframes hrbd-pulse { 50% { opacity: .5; } }
+@media(max-width:640px) { .hrbd-info { grid-template-columns: repeat(2,minmax(0,1fr)); } .hrbd-panel { padding: var(--hr-detail-padding, 18px); } .hrbd-header .flex-1 { flex-basis: calc(100% - 76px); } }

@@ -1,0 +1,410 @@
+%PDF-1.3
+%ºß¬à
+3 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Annots [
+<</Type /Annot /Subtype /Link /Rect [51.0236220472441033 305.5750393700786844 538.5826771653544256 291.4018110236220309] /Border [0 0 0] /A <</S /URI /URI (https://react.dev/reference/react/hooks) >> >>
+]
+/Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 3692
+>>
+stream
+0.5670000000000001 w
+0 G
+0.07 0.23 0.36 rg
+0. 841.8899999999999864 595.2755905511811534 -34.0157480314960665 re
+f
+BT
+/F1 23 Tf
+26.4499999999999993 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 759.6852755905511003 Td
+(React Hooks Cheat Sheet) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 734.1734645669291695 Td
+(Full Stack MERN | Built-in learning library) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 694.4884251968503577 Td
+(Choose a hook) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 671.8112598425196893 Td
+(useState stores values that affect rendering. useRef holds a mutable value without triggering a) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 655.9372440944881646 Td
+(render. useContext reads shared context. useEffect synchronizes with an external system.) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 640.0632283464567536 Td
+(useMemo caches a calculation; useCallback caches a function identity. Use memoization when it) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 624.1892125984252289 Td
+(solves a measured performance problem.) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 585.6380314960630358 Td
+(Counter example) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 562.9608661417323674 Td
+(import { useState } from 'react';) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 535.7482677165354517 Td
+(export default function Counter\(\) {) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 522.1419685039370506 Td
+(  const [count, setCount] = useState\(0\);) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 508.5356692913386496 Td
+(  return \() Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 494.9293700787401917 Td
+(    <button onClick={\(\) => setCount\(n => n + 1\)}>) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 481.3230708661417907 Td
+(      Count: {count}) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 467.7167716535433328 Td
+(    </button>) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 454.110472440944875 Td
+(  \);) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 440.5041732283464171 Td
+(}) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 404.220708661417234 Td
+(Practice) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 381.5435433070865088 Td
+(Add a Reset button. Then add a second counter and check that its state is independent. For) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 365.6695275590550409 Td
+(subscriptions or timers, return a cleanup function from the effect. Keep ordinary Hooks at the top) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 349.795511811023573 Td
+(level of a component or custom Hook.) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 311.2443307086614368 Td
+(Further reading \(official documentation\):) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.09 0.361 0.729 rg
+51.0236220472441033 294.2364566929132934 Td
+(https://react.dev/reference/react/hooks) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.392 0.455 0.545 rg
+51.0236220472441033 34.0159842519684616 Td
+(Kini | Starter study guide | 1 / 1) Tj
+ET
+endstream
+endobj
+1 0 obj
+<</Type /Pages
+/Kids [3 0 R ]
+/Count 1
+>>
+endobj
+5 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+6 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+7 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+8 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+9 0 obj
+<<
+/Type /Font
+/BaseFont /Courier
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+10 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+11 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+12 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+13 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Roman
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+14 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+15 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Italic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+16 0 obj
+<<
+/Type /Font
+/BaseFont /Times-BoldItalic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+17 0 obj
+<<
+/Type /Font
+/BaseFont /ZapfDingbats
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+18 0 obj
+<<
+/Type /Font
+/BaseFont /Symbol
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+2 0 obj
+<<
+/ProcSet [/PDF /Text /ImageB /ImageC /ImageI]
+/Font <<
+/F1 5 0 R
+/F2 6 0 R
+/F3 7 0 R
+/F4 8 0 R
+/F5 9 0 R
+/F6 10 0 R
+/F7 11 0 R
+/F8 12 0 R
+/F9 13 0 R
+/F10 14 0 R
+/F11 15 0 R
+/F12 16 0 R
+/F13 17 0 R
+/F14 18 0 R
+>>
+/XObject <<
+>>
+>>
+endobj
+19 0 obj
+<<
+/Producer (jsPDF 4.2.1)
+/Title (React Hooks Cheat Sheet)
+/Subject (Original starter study guide)
+/Author (Kini learning library)
+/CreationDate (D:20260917184913+05'30')
+>>
+endobj
+20 0 obj
+<<
+/Type /Catalog
+/Pages 1 0 R
+/OpenAction [3 0 R /FitH null]
+/PageLayout /OneColumn
+>>
+endobj
+xref
+0 21
+0000000000 65535 f 
+0000004111 00000 n 
+0000005928 00000 n 
+0000000015 00000 n 
+0000000367 00000 n 
+0000004168 00000 n 
+0000004293 00000 n 
+0000004423 00000 n 
+0000004556 00000 n 
+0000004693 00000 n 
+0000004816 00000 n 
+0000004945 00000 n 
+0000005077 00000 n 
+0000005213 00000 n 
+0000005341 00000 n 
+0000005468 00000 n 
+0000005597 00000 n 
+0000005730 00000 n 
+0000005832 00000 n 
+0000006176 00000 n 
+0000006367 00000 n 
+trailer
+<<
+/Size 21
+/Root 20 0 R
+/Info 19 0 R
+/ID [ <F9D785160307589E96C45C882D1194BD> <F9D785160307589E96C45C882D1194BD> ]
+>>
+startxref
+6471
+%%EOF

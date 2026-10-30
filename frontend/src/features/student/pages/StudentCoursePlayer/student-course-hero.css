@@ -1,0 +1,32 @@
+/* Course player hero (v14) — course title, batch/mentor/progress/sections and
+   the course illustration (OrgCourseDetailsHeroBanner). */
+.scp-hero {
+  position: relative; display: flex; align-items: center; min-height: 188px; overflow: hidden;
+  padding: 22px 28px; border: 1px solid #dbe7f7; border-radius: 18px;
+  background: radial-gradient(circle at 74% 30%, rgba(255,255,255,.8), transparent 42%), linear-gradient(115deg, #f6f9ff 0%, #e8f1fd 58%, #d9e8fb 100%);
+}
+.scp-hero__copy { position: relative; z-index: 2; max-width: 60%; }
+.scp-hero__eyebrow { margin: 0; color: #1d63d8; font-size: 11.5px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase; }
+.scp-hero__title { margin: 4px 0 0; color: #0b1f3f; font-size: clamp(30px, 3vw, 46px); font-weight: 900; line-height: 1.05; letter-spacing: -.02em; }
+.scp-hero__stats { display: flex; flex-wrap: wrap; gap: 10px 0; margin: 16px 0 0; }
+.scp-hero__stats > div { min-width: 0; padding: 0 18px; border-left: 1px solid #d6e2f2; }
+.scp-hero__stats > div:first-child { padding-left: 0; border-left: 0; }
+.scp-hero__stats dt { display: flex; align-items: center; gap: 6px; color: #5e7089; font-size: 11.5px; font-weight: 600; }
+.scp-hero__stats dt svg { width: 15px; height: 15px; color: #6d4ce0; }
+.scp-hero__stats dd { margin: 3px 0 0; color: #0b1f3f; font-size: 13.5px; font-weight: 800; white-space: nowrap; }
+.scp-hero__art {
+  position: absolute; z-index: 1; right: 8px; bottom: 0; height: 100%; max-width: 44%;
+  object-fit: contain; object-position: right bottom; pointer-events: none; user-select: none;
+}
+@media (max-width: 1100px) {
+  .scp-hero__copy { max-width: 64%; }
+  .scp-hero__art { max-width: 38%; height: 92%; }
+}
+@media (max-width: 720px) {
+  .scp-hero { flex-direction: column; align-items: stretch; padding: 18px 16px 0; }
+  .scp-hero__copy { max-width: none; }
+  .scp-hero__stats > div { padding: 0 12px; }
+  .scp-hero__art { position: static; align-self: center; width: 100%; max-width: 360px; height: auto; margin-top: 10px; }
+}
+html.dark .scp-hero { border-color: #22324a; background: linear-gradient(115deg, #0f1c2e 0%, #13243b 100%); }
+html.dark .scp-hero__title, html.dark .scp-hero__stats dd { color: #f1f5f9; }

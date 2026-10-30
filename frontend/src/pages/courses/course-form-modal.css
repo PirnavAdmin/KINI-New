@@ -1,0 +1,113 @@
+/* Add / Edit Course dialog (CourseForm.jsx).
+   Header: a course-specific variant of the shared ModalHero (.kmh); selectors
+   use `html body .kmh.kmh--course` to out-rank modal-hero.css. Form controls,
+   dropzone and buttons are prefixed `cfm-` and only exist in this dialog. */
+
+/* ── Header ──────────────────────────────────────────────────────────── */
+html body .kmh.kmh--course {
+  min-height: 156px;
+  padding: 24px 64px 22px 30px;
+  background: linear-gradient(105deg, #ffe9d8 0%, #fff6ef 38%, #fbf9ff 64%, #efe9ff 100%);
+}
+html body .kmh.kmh--course .kmh__dots {
+  top: 26px; left: 50%; width: 96px; height: 48px; opacity: .55;
+  background-image: radial-gradient(circle, #f6b37a 1.5px, transparent 1.7px);
+}
+html body .kmh.kmh--course .kmh__art {
+  right: 64px; bottom: 0; height: 96%; max-width: 40%;
+  object-fit: contain; object-position: right bottom;
+}
+html body .kmh.kmh--course .kmh__main { max-width: 58%; }
+html body .kmh.kmh--course .kmh__eyebrow { margin-bottom: 8px; color: #ea7a12 !important; font-size: 12px; letter-spacing: .14em; }
+html body .kmh.kmh--course .kmh__title { color: #0b2545 !important; font-size: clamp(24px, 2.3vw, 32px) !important; }
+html body .kmh.kmh--course .kmh__subtitle { margin-top: 8px; max-width: 56ch; color: #44597a !important; font-size: 14px !important; }
+html body .kmh.kmh--course .kmh__close { top: 16px; right: 16px; width: 38px; height: 38px; }
+html body .kmh.kmh--course .kmh__close svg { width: 18px; height: 18px; }
+
+@media (max-width: 900px) {
+  html body .kmh.kmh--course { padding: 20px 58px 18px 20px; }
+  html body .kmh.kmh--course .kmh__main { max-width: none; }
+  html body .kmh.kmh--course .kmh__art { right: 0; opacity: .2; max-width: 60%; }
+}
+html.dark body .kmh.kmh--course { background: linear-gradient(105deg, #2a1d14 0%, #16233a 60%, #1d1a33 100%); }
+
+/* ── Section headings ────────────────────────────────────────────────── */
+.cfm-section-icon {
+  display: grid; flex-shrink: 0; place-items: center; width: 40px; height: 40px; border-radius: 12px;
+}
+.cfm-section-icon.is-orange { background: #fff1e3; color: #ea7a12; box-shadow: inset 0 0 0 1px #fde0c2; }
+.cfm-section-icon.is-rose { background: #fff0f0; color: #e5484d; box-shadow: inset 0 0 0 1px #fdd8d8; }
+
+/* ── Fields ──────────────────────────────────────────────────────────── */
+.cfm-field {
+  position: relative; display: flex; align-items: stretch; height: 42px;
+  border: 1px solid #dce5f1; border-radius: 9px; background: #fff;
+  transition: border-color .15s ease, box-shadow .15s ease;
+}
+.cfm-field:hover { border-color: #c8d6e8; }
+.cfm-field:focus-within { border-color: #ff941f; box-shadow: 0 0 0 3px rgba(255, 148, 31, .16); }
+.cfm-field.is-invalid { border-color: #f0a3a6; }
+.cfm-field.is-invalid:focus-within { border-color: #e5484d; box-shadow: 0 0 0 3px rgba(229, 72, 77, .14); }
+.cfm-field__icon {
+  display: grid; flex-shrink: 0; place-items: center; width: 42px;
+  border-right: 1px solid #e8eef6; color: #5e7089;
+}
+.cfm-field:focus-within .cfm-field__icon { color: #ea7a12; }
+html body .cfm-field .cfm-control {
+  min-width: 0; flex: 1; height: 100%; padding: 0 12px; border: 0; border-radius: 0 9px 9px 0;
+  background: transparent; color: #0b2545; font-size: 13.5px; font-weight: 500; outline: none; box-shadow: none;
+}
+html body .cfm-field select.cfm-control { appearance: none; padding-right: 36px; cursor: pointer; }
+html body .cfm-field select.cfm-control.is-placeholder { color: #7c8da5; }
+.cfm-field .cfm-control::placeholder { color: #94a3b8; }
+.cfm-field__chevron {
+  position: absolute; top: 50%; right: 12px; width: 16px; height: 16px; translate: 0 -50%;
+  color: #5e7089; pointer-events: none;
+}
+/* Hide number spinners: the value is typed, and spinners crowd the field. */
+.cfm-field input[type="number"]::-webkit-outer-spin-button,
+.cfm-field input[type="number"]::-webkit-inner-spin-button { margin: 0; -webkit-appearance: none; }
+.cfm-field input[type="number"] { -moz-appearance: textfield; }
+
+html.dark .cfm-field { border-color: #334155; background: #0f172a; }
+html.dark .cfm-field__icon { border-color: #1e293b; color: #94a3b8; }
+html.dark body .cfm-field .cfm-control { color: #f1f5f9; }
+
+/* ── PDF dropzone ────────────────────────────────────────────────────── */
+.cfm-drop {
+  display: flex; align-items: center; gap: 14px; padding: 12px 14px;
+  border: 1.5px dashed #c9d7ea; border-radius: 12px; background: #f8fafd;
+  transition: border-color .15s ease, background-color .15s ease;
+}
+.cfm-drop.is-dragging { border-color: #ff941f; background: #fff7ef; }
+.cfm-drop.is-invalid { border-color: #f0a3a6; background: #fff8f8; }
+.cfm-drop__icon {
+  display: grid; flex-shrink: 0; place-items: center; width: 52px; height: 44px; border-radius: 10px;
+  background: #fff; color: #1d63d8; box-shadow: 0 2px 8px -4px rgba(15, 42, 74, .25);
+}
+html.dark .cfm-drop { border-color: #334155; background: #0f172a; }
+html.dark .cfm-drop__icon { background: #1e293b; color: #93c5fd; }
+@media (max-width: 520px) {
+  .cfm-drop { flex-wrap: wrap; }
+  .cfm-drop .cfm-btn { width: 100%; }
+}
+
+/* ── Buttons ─────────────────────────────────────────────────────────── */
+.cfm-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 42px; padding: 0 18px;
+  border-radius: 10px; font-size: 14px; font-weight: 700; white-space: nowrap;
+  transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+.cfm-btn:focus-visible { outline: 2px solid #ff941f; outline-offset: 2px; }
+.cfm-btn:disabled { cursor: not-allowed; opacity: .6; }
+.cfm-btn--sm { height: 36px; padding: 0 14px; font-size: 13px; }
+.cfm-btn--ghost { border: 1px solid #d6e0ee; background: #fff; color: #0b2545; }
+.cfm-btn--ghost:hover:not(:disabled) { border-color: #c2d1e5; background: #f5f8fc; }
+.cfm-btn--primary {
+  min-width: 156px; padding: 0 22px; background: #ff941f; color: #fff;
+  box-shadow: 0 8px 18px -8px rgba(255, 148, 31, .7);
+}
+.cfm-btn--primary:hover:not(:disabled) { background: #f2850f; }
+.cfm-btn--danger { border: 1px solid #fecaca; background: #fff; color: #dc2626; }
+.cfm-btn--danger:hover:not(:disabled) { background: #fef2f2; }
+html.dark .cfm-btn--ghost, html.dark .cfm-btn--danger { border-color: #334155; background: #1e293b; color: #e2e8f0; }

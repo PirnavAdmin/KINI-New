@@ -1,0 +1,104 @@
+/* Wide enough for the full 7-column item table; the body scrolls vertically.
+   !important beats the Modal's inline size-based max-width. */
+.invoice-details-modal { color: #133b5d; background: #fff !important; max-width: min(1120px, calc(100vw - 2rem)) !important; max-height: 90vh !important; }
+.invoice-details-content { padding: 24px; display: grid; gap: 20px; font-size: 14px; line-height: 1.5; }
+.invoice-details-content p, .invoice-details-content h3, .invoice-details-content h4 { margin: 0; }
+.invoice-details-content h3 { font-size: 18px; font-weight: 800; overflow-wrap: anywhere; }
+.invoice-details-content h4 { font-weight: 750; }
+.invoice-identity { display: flex; justify-content: space-between; align-items: center; gap: 24px; padding-bottom: 18px; border-bottom: 1px solid #dfe7ee; }
+/* 1564×967 source → fits 150×56 by height (~91px wide), centred, never cropped. */
+.invoice-logo { display: block; flex: none; width: 150px; height: 56px; max-width: 100%; object-fit: contain; object-position: center; background: transparent; }
+.invoice-identity > div { text-align: right; min-width: 0; }
+.invoice-details-content .invoice-eyebrow { color: #5f7180; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; margin-bottom: 6px; }
+.invoice-parties { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 20px; }
+.invoice-parties p { overflow-wrap: anywhere; }
+.invoice-parties dl { margin: 0; min-width: 200px; }
+.invoice-parties dl > div, .invoice-totals > div { display: flex; justify-content: space-between; gap: 24px; }
+.invoice-parties dt { color: #5f7180; }
+.invoice-details-content dd { margin: 0; font-variant-numeric: tabular-nums; text-align: right; }
+.invoice-items { width: 100%; border-collapse: collapse; }
+.invoice-items th { background: #f1f5f8; color: #5f7180; font-size: 11px; text-transform: uppercase; letter-spacing: .07em; text-align: left; }
+.invoice-items th, .invoice-items td { padding: 14px 16px; border-bottom: 1px solid #dfe7ee; }
+.invoice-items th:last-child, .invoice-items td:last-child { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.invoice-items small { display: block; color: #5f7180; }
+.invoice-payment-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, .85fr); gap: 20px; align-items: start; }
+.invoice-payment-status, .invoice-totals { padding: 18px; border: 1px solid #dfe7ee; border-radius: 12px; }
+.invoice-payment-status > p { font-size: 12px; color: #5f7180; margin-top: 4px; }
+.invoice-status { display: inline-flex; padding: 5px 12px; margin-top: 14px; border-radius: 999px; background: #fff1dc; color: #945300; font-weight: 700; text-transform: capitalize; }
+.invoice-status[data-status="paid"] { background: #e6f7ef; color: #08734d; }
+.invoice-status[data-status="cancelled"], .invoice-status[data-status="overdue"] { background: #fff0f2; color: #b52d4a; }
+.invoice-payment-status .invoice-overdue { color: #b52d4a; margin-top: 8px; }
+.invoice-totals { margin: 0; display: grid; gap: 10px; background: #f7f9fb; }
+.invoice-total { padding-top: 12px; border-top: 1px solid #dfe7ee; font-size: 18px; font-weight: 800; }
+.invoice-balance { font-weight: 750; }
+.invoice-terms { border-radius: 10px; padding: 14px 16px; background: #f7f9fb; font-size: 12px; color: #5f7180; }
+.invoice-download { margin-left: auto; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 11px 20px; border-radius: 10px; background: #f39924; color: #133b5d; font-size: 14px; font-weight: 750; }
+.invoice-download:hover { background: #e88c18; }
+.invoice-download:disabled { opacity: .6; cursor: wait; }
+.invoice-download:focus-visible { outline: 3px solid #133b5d; outline-offset: 3px; }
+/* ---- Invoice document (mirrors the generated PDF layout) ---------------- */
+.invoice-document { color: #102f66; gap: 16px; background: #fff; }
+.invoice-document-header { display:flex; justify-content:space-between; align-items:center; gap:20px; padding-bottom:14px; border-bottom:4px solid #f28b22; }
+.invoice-brand { display:flex; align-items:center; gap:16px; color:#0c4c88; min-width:0; }
+.invoice-org { min-width:0; }
+.invoice-org strong { display:block; font-size:22px; line-height:1.15; color:#0c4c88; }
+.invoice-org p { margin:0; font-size:12px; color:#133b5d; overflow-wrap:anywhere; }
+.invoice-title { text-align:right; display:grid; gap:2px; flex:none; }
+.invoice-title span { font-size:18px; font-weight:800; color:#0c4c88; }
+.invoice-title strong { color:#f16b21; font-size:36px; line-height:1; }
+.invoice-title small { font-size:12px; color:#5f7180; }
+.invoice-document-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+.invoice-document-card { border:1px solid #b9d9f0; border-radius:8px; overflow:hidden; background:#f4f9ff; }
+.invoice-document-card h4 { margin:0; padding:9px 14px; color:white; background:#075990; font-size:13px; letter-spacing:.02em; }
+/* Section header text (BILL TO, INVOICE DETAILS, PAYMENT DETAILS, TERMS / NOTES)
+   stays white on the blue band. The extra class out-ranks the dashboard's
+   `[data-dashboard-role] main :is(h1, h2, h3, h4)` heading colour, and
+   print-color-adjust keeps the blue band when printing, so the white text
+   never lands on a white page. */
+.invoice-details-content .invoice-document-card h4,
+.invoice-details-content .invoice-document-card h4:hover {
+  color: #fff;
+  -webkit-text-fill-color: #fff;
+  font-weight: 700;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+/* Label column + left-aligned value, like the PDF. */
+.invoice-document-card dl { margin:0; padding:12px 14px; display:grid; gap:6px; }
+.invoice-document-card dl > div { display:grid; grid-template-columns:150px minmax(0, 1fr); gap:10px; font-size:13px; align-items:baseline; }
+.invoice-document-card dt { font-weight:700; }
+.invoice-document-card dd { margin:0; text-align:left; overflow-wrap:anywhere; }
+.invoice-document-card .invoice-status { margin-top:0; padding:2px 10px; font-size:12px; }
+/* Only the item table scrolls sideways on very small screens. */
+.invoice-items-scroll { width:100%; overflow-x:auto; border:1px solid #b9d9f0; border-radius:8px; }
+.invoice-document-items { min-width:640px; }
+.invoice-document-items th { color:#fff; background:#075990; padding:10px 8px; font-size:12px; text-transform:none; letter-spacing:0; text-align:center; }
+.invoice-document-items td { padding:10px 8px; font-size:13px; border-top:1px solid #b9d9f0; text-align:center; }
+.invoice-document-items th:nth-child(2), .invoice-document-items td:nth-child(2) { text-align:left; }
+.invoice-document-items th:nth-last-child(-n+2), .invoice-document-items td:nth-last-child(-n+2) { text-align:right; white-space:nowrap; font-variant-numeric:tabular-nums; }
+.invoice-lower-grid { margin-top:0; }
+.invoice-document-card ul { margin:0; padding:12px 20px 4px 32px; font-size:12.5px; list-style:disc; }
+.invoice-document-card li { margin:3px 0; }
+.invoice-document-totals { width:100%; padding:12px 16px; gap:8px; background:#f1f8ff; border:1px solid #b9d9f0; border-radius:8px; font-size:14px; }
+.invoice-document-totals dt { font-weight:700; }
+.invoice-document-totals .invoice-total { color:#102f66; background:#ffe5a7; margin:4px -16px -12px; padding:12px 16px; font-size:20px; border-top:0; }
+.invoice-document-note { font-size:12.5px; padding:0 14px 12px; }
+.invoice-document-footer { display:grid; gap:2px; justify-items:center; text-align:center; padding-top:14px; border-top:1px solid #0c4c88; color:#133b5d; }
+.invoice-document-footer strong { font-size:15px; }
+.invoice-document-footer p { margin:0; font-size:12.5px; }
+.invoice-document-footer small { font-size:11.5px; color:#5f7180; }
+@media (max-width: 600px) {
+  .invoice-details-content { padding: 16px; gap: 16px; }
+  .invoice-parties, .invoice-payment-grid { grid-template-columns: minmax(0, 1fr); }
+  .invoice-identity { gap: 12px; }
+  .invoice-logo { width: 110px; height: 44px; }
+  .invoice-details-content h3 { font-size: 14px; }
+  .invoice-items th, .invoice-items td { padding: 12px 8px; }
+  .invoice-download { width: 100%; }
+  .invoice-document-header { flex-direction:column; align-items:flex-start; }
+  .invoice-title { text-align:left; }
+  .invoice-title strong { font-size:26px; }
+  .invoice-org strong { font-size:17px; }
+  .invoice-document-grid { grid-template-columns:1fr; }
+  .invoice-document-card dl > div { grid-template-columns:120px minmax(0, 1fr); }
+}

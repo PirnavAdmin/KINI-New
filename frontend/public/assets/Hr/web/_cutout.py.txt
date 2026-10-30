@@ -1,0 +1,153 @@
+"""Strip baked-in checkerboard / black backgrounds from the HR hero PNGs
+and export transparent, web-sized WebP files."""
+import sys, os
+import numpy as np
+import cv2
+from PIL import Image
+from scipy import ndimage as ndi
+
+SRC = sys.argv[1]
+OUT = sys.argv[2]
+
+JOBS = {
+    "HrEmployeHeroBanner (2).png": ("hr-employees-team.webp", "checker"),
+    "hr-dashbordEmpolye.png": ("hr-employees.webp", "checker"),
+    "HrBatchBannerHero.png": ("hr-batches.webp", "black"),
+    "HrSyllabusHeroBanner.png": ("hr-syllabus.webp", "checker"),
+    "HrAttendanceHeroBnner.png": ("hr-attendance.webp", "checker"),
+    "HrStudentsManagementBannerHero.png": ("hr-students.webp", "checker"),
+    "HrLearningResourcesBnnerHero.png": ("hr-resources.webp", "alpha"),
+}
+
+
+def checker_candidates(rgb):
+    r, g, b = [rgb[..., i].astype(int) for i in range(3)]
+    mx = np.maximum(np.maximum(r, g), b)
+    mn = np.minimum(np.minimum(r, g), b)
+    chroma = mx - mn
+    light = (mx >= 168) & (mx <= 224) & (chroma <= 26)
+    dark = (mx >= 92) & (mx <= 168) & (chroma <= 26)
+    return light | dark, light, dark
+
+
+def _near(mask, dy, dx, reach=15, start=1):
+    out = np.zeros_like(mask)
+    h, w = mask.shape
+    for k in range(start, reach + 1):
+        ys, xs = dy * k, dx * k
+        src = mask[max(ys, 0):h + min(ys, 0), max(xs, 0):w + min(xs, 0)]
+        out[max(-ys, 0):h + min(-ys, 0), max(-xs, 0):w + min(-xs, 0)] |= src
+    return out
+
+
+def remove_checker(rgb, chroma_max=40, light_max=226):
+    r, g, b = [rgb[..., i].astype(int) for i in range(3)]
+    mx = np.maximum(np.maximum(r, g), b)
+    chroma = mx - np.minimum(np.minimum(r, g), b)
+    light = (mx >= 168) & (mx <= light_max) & (chroma <= chroma_max)
+    dark = (mx >= 92) & (mx < 168) & (chroma <= chroma_max)
+    dirs = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+    # a checkerboard alternates: opposite tone within one square, and the
+    # same tone again one square further. A gradient never comes back.
+    alt_l = sum((_near(dark, dy, dx) & _near(light, dy, dx, 30, 14)).astype(np.uint8) for dy, dx in dirs)
+    alt_d = sum((_near(light, dy, dx) & _near(dark, dy, dx, 30, 14)).astype(np.uint8) for dy, dx in dirs)
+    patt = (light & (alt_l >= 3)) | (dark & (alt_d >= 3))
+    patt = ndi.binary_closing(patt, structure=np.ones((3, 3)), iterations=1)
+    lab, n = ndi.label(patt)
+    border = np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))
+    keep = set(int(x) for x in border if x)
+    sizes = ndi.sum(np.ones_like(lab), lab, index=np.arange(1, n + 1))
+    lsum = ndi.sum(light, lab, index=np.arange(1, n + 1))
+    dsum = ndi.sum(dark, lab, index=np.arange(1, n + 1))
+    for i in range(n):
+        if sizes[i] >= 180 and lsum[i] / sizes[i] > 0.18 and dsum[i] / sizes[i] > 0.18:
+            keep.add(i + 1)
+    bg = np.isin(lab, list(keep))
+    # grow into edge fringes: pixels that alternate in >= 2 directions
+    fringe = ((light & (alt_l >= 2)) | (dark & (alt_d >= 2))) | bg
+    fringe = ndi.binary_closing(fringe, structure=np.ones((3, 3)))
+    bg = ndi.binary_dilation(bg, iterations=16, mask=fringe)
+    return bg
+
+
+def remove_black(rgb):
+    mx = rgb.max(axis=2).astype(int)
+    cand = mx <= 28
+    lab, n = ndi.label(cand)
+    border = np.unique(np.concatenate([lab[0], lab[-1], lab[:, 0], lab[:, -1]]))
+    keep = [int(x) for x in border if x]
+    sizes = ndi.sum(np.ones_like(lab), lab, index=np.arange(1, n + 1))
+    keep += [i + 1 for i in range(n) if sizes[i] > 1500]
+    return np.isin(lab, keep)
+
+
+def alpha_from_bg(bg):
+    fg = ~bg
+    # drop specks of leftover checker, fill pinholes inside art
+    fg = ndi.binary_opening(fg, iterations=1)
+    lab, n = ndi.label(fg)
+    if n:
+        sizes = ndi.sum(np.ones_like(lab), lab, index=np.arange(1, n + 1))
+        fg = np.isin(lab, [i + 1 for i in range(n) if sizes[i] >= 600])
+    # pull the edge in 1px to kill the gray halo, then feather
+    fg = ndi.binary_erosion(fg, iterations=1)
+    a = fg.astype(np.float32)
+    a = cv2.GaussianBlur(a, (0, 0), 0.9)
+    return np.clip(a * 255, 0, 255).astype(np.uint8)
+
+
+# regions where tinted glow / shadow sits on the checkerboard
+LOCAL_FIX = {
+    "hr-dashbordEmpolye.png": [(700, 880, 1000, 990)],
+}
+
+# (cx, cy, radius) of light-bulb glows painted over the checkerboard
+GLOW_FIX = {"hr-dashbordEmpolye.png": [(607, 346, 118)]}
+
+
+def glow_halo(rgb, cx, cy, rad):
+    h, w = rgb.shape[:2]
+    yy, xx = np.mgrid[0:h, 0:w]
+    disk = (xx - cx) ** 2 + (yy - cy) ** 2 <= rad ** 2
+    r, g, b = [rgb[..., i].astype(int) for i in range(3)]
+    mx = np.maximum(np.maximum(r, g), b)
+    chroma = mx - np.minimum(np.minimum(r, g), b)
+    warm_neutral = (chroma <= 48) & (r - b >= -2) & (mx >= 115)
+    halo = disk & warm_neutral
+    # only the part connected to the checkerboard around the bulb
+    halo = ndi.binary_opening(halo, iterations=1)
+    return halo
+
+
+os.makedirs(OUT, exist_ok=True)
+for src_name, (out_name, mode) in JOBS.items():
+    im = Image.open(os.path.join(SRC, src_name))
+    if mode == "alpha":
+        rgba = np.array(im.convert("RGBA"))
+    else:
+        rgb = np.array(im.convert("RGB"))
+        bg = remove_checker(rgb) if mode == "checker" else remove_black(rgb)
+        for (x0, y0, x1, y1) in LOCAL_FIX.get(src_name, []):
+            loose = remove_checker(rgb[y0:y1, x0:x1], chroma_max=110)
+            bg[y0:y1, x0:x1] |= loose
+        for (cx, cy, rad) in GLOW_FIX.get(src_name, []):
+            bg |= glow_halo(rgb, cx, cy, rad)
+        if mode == "checker":
+            r_, g_, b_ = [rgb[..., i].astype(int) for i in range(3)]
+            mx_ = np.maximum(np.maximum(r_, g_), b_)
+            ch_ = mx_ - np.minimum(np.minimum(r_, g_), b_)
+            grayish = (mx_ >= 95) & (mx_ <= 222) & (ch_ <= 22)
+            edge = ndi.binary_dilation(bg, iterations=6) & ~bg
+            bg = bg | (edge & grayish)
+        a = alpha_from_bg(bg)
+        rgba = np.dstack([rgb, a])
+    # trim to content
+    ys, xs = np.where(rgba[..., 3] > 8)
+    pad = 4
+    y0, y1 = max(ys.min() - pad, 0), min(ys.max() + pad, rgba.shape[0])
+    x0, x1 = max(xs.min() - pad, 0), min(xs.max() + pad, rgba.shape[1])
+    rgba = rgba[y0:y1, x0:x1]
+    out = Image.fromarray(rgba, "RGBA")
+    out.thumbnail((1500, 1500), Image.LANCZOS)
+    out.save(os.path.join(OUT, out_name), "WEBP", quality=88, method=6)
+    print(out_name, out.size, os.path.getsize(os.path.join(OUT, out_name)) // 1024, "KB")

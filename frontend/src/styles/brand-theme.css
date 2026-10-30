@@ -1,0 +1,784 @@
+/* Kini EduHub brand layer: visual-only overrides for authenticated workspaces. */
+:root {
+  --brand-navy: #133b5d;
+  --brand-navy-dark: #0e2d47;
+  --brand-navy-soft: #e8eff5;
+  --brand-orange: #f39924;
+  --brand-orange-hover: #d97f0d;
+  --brand-orange-soft: #fff1dc;
+  --brand-page: var(--app-background);
+  --brand-surface: #ffffff;
+  --brand-text: #17324a;
+  --brand-secondary: #5f7180;
+  --brand-muted: #5f7180;
+  --brand-border: #d8d1c3;
+  --brand-success: #2e8b57;
+  --brand-shadow: 0 4px 16px rgba(14, 45, 71, 0.06);
+  --brand-shadow-hover: 0 8px 24px rgba(14, 45, 71, 0.1);
+}
+
+[data-dashboard-role] {
+  background: var(--app-background) !important;
+  color: var(--brand-text) !important;
+}
+
+[data-dashboard-role] .mentor-content-shell,
+[data-dashboard-role] .mentor-content-shell > main,
+[data-dashboard-role] .mentor-content-shell > main > div,
+[data-dashboard-role] [data-dashboard-home="true"],
+[data-dashboard-role] main[class*="bg-gradient"],
+[data-dashboard-role] main[class*="bg-slate-"] {
+  background: var(--app-background) !important;
+  background-image: none !important;
+}
+
+/* The scroll canvas sits outside individual pages; this prevents any old
+   dashboard utility or polished-page wash from leaking through below cards. */
+[data-dashboard-role] > .mentor-content-shell,
+[data-dashboard-role] > .mentor-content-shell > main,
+[data-dashboard-role] > .mentor-content-shell > main > [data-dashboard-home="true"],
+[data-dashboard-role="mentor"] .dashboard-home-workspace,
+[data-dashboard-role="mentor"] main.mentor-dashboard-home {
+  background-color: var(--brand-page) !important;
+  background-image: none !important;
+}
+
+[data-dashboard-role] [data-ui="dashboard-header"] {
+  background: var(--brand-surface) !important;
+  border-color: var(--brand-border) !important;
+  color: var(--brand-text) !important;
+  box-shadow: 0 1px 0 rgba(9, 45, 78, 0.03) !important;
+}
+
+[data-dashboard-role] [data-ui="dashboard-header"] :is(h1, h2, h3, p, span),
+[data-dashboard-role] [data-ui="dashboard-header"] svg {
+  color: var(--brand-text);
+}
+
+[data-dashboard-role] [data-ui="dashboard-header"] :is(button, a):hover {
+  background-color: var(--brand-orange-soft) !important;
+}
+
+[data-dashboard-role] aside[data-ui="dashboard-sidebar"] {
+  background: var(--brand-navy) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 10px 0 30px rgba(7, 47, 78, 0.16) !important;
+}
+
+[data-dashboard-role] aside[data-ui="dashboard-sidebar"] .sidebar-brand-header {
+  background: #ffffff !important;
+  border-color: var(--brand-border) !important;
+}
+
+[data-dashboard-role] aside[data-ui="dashboard-sidebar"] .sidebar-brand-card {
+  background: transparent !important;
+  border-color: transparent !important;
+  box-shadow: none !important;
+}
+
+[data-dashboard-role] aside[data-ui="dashboard-sidebar"] .mentor-sidebar-item {
+  color: rgba(255, 255, 255, 0.82) !important;
+}
+
+[data-dashboard-role] aside[data-ui="dashboard-sidebar"] .mentor-sidebar-item:hover {
+  background: rgba(255, 255, 255, 0.09) !important;
+  color: #ffffff !important;
+}
+
+[data-dashboard-role] aside[data-ui="dashboard-sidebar"] [class*="bg-[#f39924]"],
+[data-dashboard-role] aside[data-ui="dashboard-sidebar"] [class*="from-[#0f55f7]"],
+[data-dashboard-role] aside[data-ui="dashboard-sidebar"] [class*="from-[#0f5cf5]"],
+[data-dashboard-role] aside[data-ui="dashboard-sidebar"] [class*="from-[#125df5]"] {
+  background: var(--brand-orange) !important;
+  color: #ffffff !important;
+  border-color: transparent !important;
+  box-shadow: 0 8px 20px rgba(255, 136, 0, 0.24) !important;
+}
+
+[data-dashboard-role] aside[data-ui="dashboard-sidebar"] [class*="text-[#0f55f7]"],
+[data-dashboard-role] aside[data-ui="dashboard-sidebar"] [class*="text-blue-"] {
+  color: var(--brand-orange) !important;
+}
+
+[data-dashboard-role] aside[data-ui="dashboard-sidebar"] [class*="bg-[#0f55f7]"] {
+  background: var(--brand-orange) !important;
+}
+
+[data-dashboard-role] :is(.content-card, [data-ui="metric-card"], [data-ui="dashboard-section"], [data-ui="dashboard-widget"], [data-ui="quick-action"], .mentor-schedule-surface, .mentor-calendar-hero, .mentor-attendance-panel, .mentor-course-card, .mentor-batch-card, .mentor-students-roster) {
+  background: var(--brand-surface) !important;
+  border-color: var(--brand-border) !important;
+  box-shadow: var(--brand-shadow) !important;
+}
+
+[data-dashboard-role] :is(.content-card, [data-ui="metric-card"], [data-ui="dashboard-section"], [data-ui="dashboard-widget"], [data-ui="quick-action"]):hover {
+  box-shadow: var(--brand-shadow-hover) !important;
+}
+
+[data-dashboard-role] :is(h1, h2, h3, h4, h5, h6) {
+  color: var(--brand-text);
+}
+
+/* Preserve readable contrast for intentional navy hero panels. */
+[data-dashboard-role] [data-ui="dashboard-hero"] :is(h1, h2, h3, h4, h5, h6, p, span) {
+  color: #ffffff !important;
+}
+
+[data-dashboard-role] :is(input, select, textarea) {
+  background: var(--brand-surface) !important;
+  border-color: var(--brand-border) !important;
+  color: var(--brand-text) !important;
+}
+
+[data-dashboard-role] :is(input, select, textarea):focus {
+  border-color: var(--brand-orange) !important;
+  box-shadow: 0 0 0 3px rgba(255, 136, 0, 0.16) !important;
+  outline: none !important;
+}
+
+[data-dashboard-role] :is(input, select, textarea)::placeholder {
+  color: var(--brand-muted) !important;
+}
+
+[data-dashboard-role] :is(button, a)[class*="bg-blue-600"],
+[data-dashboard-role] :is(button, a)[class*="bg-blue-700"],
+[data-dashboard-role] :is(button, a)[class*="from-blue-600"],
+[data-dashboard-role] :is(button, a)[class*="from-[#0f55f7]"] {
+  background: var(--brand-orange) !important;
+  color: #ffffff !important;
+  border-color: var(--brand-orange) !important;
+}
+
+[data-dashboard-role] :is(button, a)[class*="bg-blue-600"]:hover,
+[data-dashboard-role] :is(button, a)[class*="bg-blue-700"]:hover,
+[data-dashboard-role] :is(button, a)[class*="from-blue-600"]:hover {
+  background: var(--brand-orange-hover) !important;
+}
+
+[data-dashboard-role] :is(a, button)[class*="text-blue-"] {
+  color: var(--brand-navy) !important;
+}
+
+[data-dashboard-role] :is(a, button)[class*="text-blue-"]:hover {
+  color: var(--brand-orange-hover) !important;
+}
+
+/* Tables sitting directly in a scroll wrapper get the standard table card
+   (same as listTableStyles.js / table-header-system.css): 14px corners and
+   the light #E2E8F0 border and row lines used by every application table. */
+[data-dashboard-role] .overflow-x-auto:has(> table) {
+  background: var(--brand-surface) !important;
+  border: 1px solid #E2E8F0 !important;
+  border-radius: 14px !important;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, .05) !important;
+}
+
+[data-dashboard-role] .overflow-x-auto > table thead,
+[data-dashboard-role] .overflow-x-auto > table th {
+  background: #ffffff !important;
+  color: var(--brand-text) !important;
+  border-color: #E2E8F0 !important;
+}
+
+[data-dashboard-role] .overflow-x-auto > table tbody tr,
+[data-dashboard-role] .overflow-x-auto > table td {
+  background: var(--brand-surface) !important;
+  border-color: #E2E8F0 !important;
+  color: var(--brand-text);
+}
+
+[data-dashboard-role] .overflow-x-auto > table tbody tr:hover {
+  background: #fffaf3 !important;
+}
+
+[data-dashboard-role] :is([role="dialog"], [role="menu"], [data-radix-popper-content-wrapper] > *) {
+  background: var(--brand-surface) !important;
+  border-color: var(--brand-border) !important;
+  color: var(--brand-text) !important;
+  box-shadow: 0 20px 50px rgba(9, 45, 78, 0.16) !important;
+}
+
+[data-dashboard-role] .class-schedule-page,
+[data-dashboard-role] .mentor-calendar-page {
+  background: var(--brand-page) !important;
+  background-image: none !important;
+}
+
+/* Mentor courses previously carried its own blue/cyan page wash. Keep this
+   page explicit so its component-level utility classes cannot repaint it. */
+[data-dashboard-role="mentor"] .mentor-courses-page,
+[data-dashboard-role="mentor"] .mentor-courses-page > div {
+  background: #faf7f1 !important;
+  background-image: none !important;
+}
+
+[data-dashboard-role="mentor"] .mentor-courses-page > div > header {
+  background: #ffffff !important;
+  background-image: none !important;
+  border-color: #e7e2da !important;
+  box-shadow: 0 4px 16px rgba(9, 45, 78, 0.06) !important;
+}
+
+[data-dashboard-role="mentor"] .mentor-courses-page > div > header > div > div > p:first-child {
+  color: #ff8800 !important;
+}
+
+[data-dashboard-role="mentor"] .mentor-courses-page > div > header > div > span {
+  background: #fff1df !important;
+  border-color: #ffcf99 !important;
+  color: #0b2e4f !important;
+}
+
+[data-dashboard-role="mentor"] .mentor-courses-page > div > header nav {
+  background: #fffefc !important;
+  border-color: #e7e2da !important;
+}
+
+[data-dashboard-role="mentor"] .mentor-courses-page > div > header nav button[class*="bg-blue-600"] {
+  background: #ff8800 !important;
+}
+
+[data-dashboard-role="mentor"] .mentor-courses-page > div > section > aside,
+[data-dashboard-role="mentor"] .mentor-courses-page > div > section > div {
+  background: #ffffff !important;
+  border-color: #e7e2da !important;
+  box-shadow: 0 4px 16px rgba(9, 45, 78, 0.06) !important;
+}
+
+[data-dashboard-role="mentor"] .mentor-courses-page :is(input, select, textarea) {
+  border-color: #ddd8d0 !important;
+}
+
+[data-dashboard-role="mentor"] .mentor-courses-page button[class*="bg-blue-600"],
+[data-dashboard-role="mentor"] .mentor-courses-page button[class*="bg-cyan-"],
+[data-dashboard-role="mentor"] .mentor-courses-page button[class*="bg-teal-"] {
+  background: #ff8800 !important;
+  color: #ffffff !important;
+}
+
+/* Mentor dashboard hero: the legacy stylesheet painted white chip/button
+   surfaces while also forcing white text, which made their labels disappear. */
+[data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"] .mentor-hero-copy > div > span {
+  background: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.72) !important;
+  color: #0b2e4f !important;
+  -webkit-text-fill-color: #0b2e4f !important;
+}
+
+[data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"] .mentor-hero-copy > div > span > span {
+  color: inherit !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+[data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"] button:first-child {
+  background: #ff8800 !important;
+  border-color: #ff8800 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+[data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"] button:last-child {
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+  color: #0b2e4f !important;
+  -webkit-text-fill-color: #0b2e4f !important;
+}
+
+[data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"] button :is(span, svg) {
+  color: currentColor !important;
+  -webkit-text-fill-color: currentColor !important;
+}
+
+/* Final mentor-dashboard canvas: one almond workspace and one warm-white
+   surface system. These rules intentionally cover the whole mentor dashboard
+   only; live/error/status colours retain their semantic meaning. */
+[data-dashboard-role="mentor"] .mentor-content-shell,
+[data-dashboard-role="mentor"] .mentor-content-shell > main,
+[data-dashboard-role="mentor"] .mentor-content-shell > main > [data-dashboard-home="true"],
+[data-dashboard-role="mentor"] .dashboard-home-workspace,
+[data-dashboard-role="mentor"] main.mentor-dashboard-home,
+[data-dashboard-role="mentor"] main.mentor-dashboard-home > div {
+  background: var(--app-background) !important;
+  background-image: none !important;
+}
+
+[data-dashboard-role="mentor"] .mentor-dashboard-home :is(article, [data-ui="mentor-metric-card"], [data-ui="mentor-teaching-card"], [data-ui="mentor-upcoming-card"]) {
+  background: #fffefc !important;
+  border-color: #e7e2da !important;
+  box-shadow: 0 3px 12px rgba(9, 45, 78, 0.05) !important;
+}
+
+[data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="mentor-section-header"] {
+  background: #fbf8f2 !important;
+  border-color: #e7e2da !important;
+}
+
+[data-dashboard-role="mentor"] .mentor-dashboard-home :is(input, select, textarea) {
+  background: #fffefc !important;
+  border-color: #ddd8d0 !important;
+  color: #0b2e4f !important;
+}
+
+[data-dashboard-role="mentor"] .mentor-dashboard-home :is(input, select, textarea):focus {
+  border-color: #ff8800 !important;
+  box-shadow: 0 0 0 3px rgba(255, 136, 0, 0.12) !important;
+}
+
+[data-dashboard-role] :is(button, a):focus-visible,
+[data-dashboard-role] :is(input, select, textarea):focus-visible {
+  outline: 2px solid var(--brand-orange) !important;
+  outline-offset: 2px;
+}
+
+@media (max-width: 767px) {
+  [data-dashboard-role] .mentor-content-shell > main {
+    padding-bottom: calc(1rem * var(--ui-space));
+  }
+}
+
+/* This stylesheet is loaded after the legacy page styles, so keep the
+   organization student-management canvas on the shared almond background. */
+[data-dashboard-role] :is(.students-management-page, .student-management-page) {
+  background: var(--app-background) !important;
+  background-image: none !important;
+}
+
+[data-dashboard-role] .students-management-page > div {
+  background: transparent !important;
+}
+
+/* Organization dashboard pages use their own root class, so explicitly
+   normalize that canvas too. */
+[data-dashboard-role] .organization-workspace,
+[data-dashboard-role] .organization-workspace > main,
+[data-dashboard-role] .org-institute-dashboard,
+[data-dashboard-role] .org-institute-dashboard > div {
+  background-color: var(--brand-page) !important;
+  background-image: none !important;
+}
+
+/* Remove the legacy blue organization canvas and its decorative overlay.
+   Keep the navy sidebar and semantic accent colours unchanged. */
+html body [data-dashboard-role="org-admin"] .organization-workspace,
+html body [data-dashboard-role="org-admin"] main:has(> .org-institute-dashboard),
+html body [data-dashboard-role="org-admin"] .org-institute-dashboard {
+  background: var(--app-background) !important;
+  background-image: none !important;
+}
+
+html body [data-dashboard-role="org-admin"] .organization-workspace::before,
+html body [data-dashboard-role="org-admin"] main:has(> .org-institute-dashboard)::before,
+html body [data-dashboard-role="org-admin"] .org-institute-dashboard::before {
+  background: none !important;
+  background-image: none !important;
+  opacity: 0 !important;
+  display: none !important;
+}
+
+/* The organization home uses dashboard-home-workspace (not
+   organization-workspace), so normalize that canvas as well. */
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace,
+html body [data-dashboard-role="org-admin"] .mentor-content-shell > main,
+html body [data-dashboard-role="org-admin"] main:has(> .dashboard-home-workspace),
+html body [data-dashboard-role="org-admin"] main:has(.employee-management-page),
+html body [data-dashboard-role="org-admin"] main:has(.students-management-page),
+html body [data-dashboard-role="org-admin"] main:has(.tutor-management-page) {
+  background: var(--app-background) !important;
+  background-image: none !important;
+}
+
+/* Highest-specificity guard for the organization student page. The legacy
+   gradient selector uses :has(), so this matching :has() rule must win too. */
+html body [data-dashboard-role="org-admin"] .mentor-content-shell > main:has(> .students-management-page),
+html body [data-dashboard-role="org-admin"] .mentor-content-shell > main > .students-management-page {
+  background: var(--app-background) !important;
+  background-color: var(--app-background) !important;
+  background-image: none !important;
+}
+
+html body [data-dashboard-role="org-admin"] .mentor-content-shell > main::before,
+html body [data-dashboard-role="org-admin"] .mentor-content-shell > main::after {
+  background: none !important;
+  background-image: none !important;
+  display: none !important;
+}
+
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace::before,
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace::after {
+  background: none !important;
+  background-image: none !important;
+  display: none !important;
+}
+
+/* Match the warm, clean reference dashboard: the welcome panel is a light
+   surface and the orange action remains the visual accent. */
+/* Keep the page canvas warm between dashboard cards as well. */
+html body [data-dashboard-role="org-admin"] main:has(.org-institute-dashboard),
+html body [data-dashboard-role="org-admin"] main:has(.dashboard-home-workspace),
+html body [data-dashboard-role="org-admin"] .mentor-content-shell > main,
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace {
+  background: var(--app-background) !important;
+  background-color: var(--app-background) !important;
+  background-image: none !important;
+}
+
+/* Warm almond organization dashboard refresh. */
+html body [data-dashboard-role="org-admin"] .org-institute-dashboard,
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace {
+  background: var(--app-background) !important;
+  color: var(--brand-text) !important;
+}
+
+html body [data-dashboard-role="org-admin"] .org-institute-dashboard > section:first-child {
+  min-height: calc(112px * var(--ui-space)) !important;
+  border-color: rgba(19, 59, 93, 0.14) !important;
+  background: #ffffff !important;
+  box-shadow: 0 10px 24px rgba(14, 45, 71, 0.08) !important;
+}
+
+html body [data-dashboard-role="org-admin"] .org-institute-dashboard > section:first-child :is(h1, b) {
+  color: var(--brand-text) !important;
+}
+
+html body [data-dashboard-role="org-admin"] .org-institute-dashboard > section:first-child :is(p, span) {
+  color: var(--brand-secondary) !important;
+}
+
+html body [data-dashboard-role="org-admin"] .org-institute-dashboard > section:first-child button[aria-haspopup="menu"] {
+  background: var(--brand-orange) !important;
+  border-color: var(--brand-orange) !important;
+  color: #fff !important;
+  box-shadow: 0 8px 18px rgba(217, 127, 13, 0.2) !important;
+}
+
+html body [data-dashboard-role="org-admin"] .org-institute-dashboard > section:first-child button[aria-haspopup="menu"]:hover {
+  background: var(--brand-orange-hover) !important;
+}
+
+html body [data-dashboard-role="org-admin"] .org-institute-dashboard > section:first-child button:not([aria-haspopup="menu"]) {
+  color: var(--brand-secondary) !important;
+}
+
+html body [data-dashboard-role="org-admin"] .org-institute-dashboard
+  :is([class*="bg-blue-"], [class*="bg-sky-"], [class*="bg-indigo-"]) {
+  background-color: var(--brand-navy-soft) !important;
+}
+
+html body [data-dashboard-role="org-admin"] .org-institute-dashboard
+  :is([class*="text-blue-"], [class*="text-sky-"], [class*="text-indigo-"]) {
+  color: var(--brand-navy) !important;
+}
+
+/* Keep the actionable approval button readable after the dashboard palette
+   remaps generic blue surfaces to pale orange cards. */
+html body [data-dashboard-role="org-admin"] .org-institute-dashboard .org-approval-action:not(.border) {
+  background: var(--brand-orange) !important;
+  border-color: var(--brand-orange) !important;
+  color: #ffffff !important;
+}
+
+html body [data-dashboard-role="org-admin"] .org-institute-dashboard .org-approval-action:not(.border):hover {
+  background: var(--brand-orange-hover) !important;
+}
+
+html body [data-dashboard-role="org-admin"] .org-institute-dashboard
+  :is([class*="border-blue-"], [class*="border-sky-"], [class*="border-indigo-"]) {
+  border-color: var(--brand-border) !important;
+}
+
+html body [data-dashboard-role="org-admin"] .org-institute-dashboard > div > section,
+html body [data-dashboard-role="org-admin"] .org-institute-dashboard .org-kpi-card {
+  border-color: var(--brand-border) !important;
+  background: var(--brand-surface) !important;
+  box-shadow: var(--brand-shadow) !important;
+}
+
+html body [data-dashboard-role="org-admin"] .org-institute-dashboard > div > section > header {
+  border-color: var(--brand-border) !important;
+  background: #ffffff !important;
+}
+
+html body [data-dashboard-role="org-admin"] .org-institute-dashboard .org-kpi-card::before {
+  background: var(--brand-orange) !important;
+}
+
+/* Final calendar readability override. */
+html body [data-ui="mentor-calendar-page"] .mentor-calendar-hero {
+  background: #f8f1e3 !important;
+  background-image: none !important;
+  border-color: #d9c9b4 !important;
+  color: #0b3558 !important;
+}
+
+html body [data-ui="mentor-calendar-page"] .mentor-calendar-hero h1,
+html body [data-ui="mentor-calendar-page"] .mentor-calendar-hero p,
+html body [data-ui="mentor-calendar-page"] .mentor-calendar-hero nav button:not([aria-current="page"]) {
+  color: #0b3558 !important;
+  -webkit-text-fill-color: #0b3558 !important;
+}
+
+html body [data-ui="mentor-calendar-page"] .mentor-calendar-hero nav button[aria-current="page"] {
+  background: #ff8800 !important;
+  border-color: #ff8800 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* Organization courses: remove the legacy blue canvas and hero in favor of
+   the almond reference palette. */
+html body [data-dashboard-role="org-admin"] .courses-management-page,
+html body [data-dashboard-role="org-admin"] .mentor-content-shell:has(.courses-management-page),
+html body [data-dashboard-role="org-admin"] .mentor-content-shell:has(.courses-management-page) > main {
+  background: var(--app-background) !important;
+  background-color: var(--app-background) !important;
+  background-image: none !important;
+}
+
+html body [data-dashboard-role="org-admin"] .courses-management-page > div > header {
+  border: 1px solid #e7e2da !important;
+  background: #fffefc !important;
+  background-image: none !important;
+  box-shadow: 0 3px 12px rgba(9, 45, 78, 0.05) !important;
+}
+
+html body [data-dashboard-role="org-admin"] .courses-management-page > div > header :is(h1, p, span, svg) {
+  color: #0b2e4f !important;
+  -webkit-text-fill-color: #0b2e4f !important;
+}
+
+/* Organization batches: remove the legacy blue hero band in favor of the
+   same warm-white reference header used on the courses and tutors pages. */
+html body [data-dashboard-role="org-admin"] .batch-management-page > header {
+  border: 1px solid #e7e2da !important;
+  background: #fffefc !important;
+  background-image: none !important;
+  box-shadow: 0 3px 12px rgba(9, 45, 78, 0.05) !important;
+}
+
+html body [data-dashboard-role="org-admin"] .batch-management-page > header :is(h1, p, span, svg, button) {
+  color: #0b2e4f !important;
+  -webkit-text-fill-color: #0b2e4f !important;
+}
+
+/* Organization assessments: the shared .mentor-page-hero class is repainted
+   navy by the legacy polish layer; use the warm-white reference header. */
+html body [data-dashboard-role="org-admin"] :is([data-ui="dashboard-hero"], .mentor-page-hero, .organization-page-hero) {
+  border: 1px solid #e7e2da !important;
+  background: #fffefc !important;
+  background-image: none !important;
+  box-shadow: 0 3px 12px rgba(9, 45, 78, 0.05) !important;
+  color: #0b2e4f !important;
+}
+
+html body [data-dashboard-role="org-admin"] :is([data-ui="dashboard-hero"], .mentor-page-hero, .organization-page-hero) :is(h1, h2, h3, p, span, svg) {
+  color: #0b2e4f !important;
+  -webkit-text-fill-color: #0b2e4f !important;
+}
+
+/* Organization classes/schedule: remove the legacy blue hero band. */
+html body [data-dashboard-role="org-admin"] [data-ui="schedule-page-header"] {
+  border: 1px solid #e7e2da !important;
+  background: #fffefc !important;
+  background-image: none !important;
+  box-shadow: 0 3px 12px rgba(9, 45, 78, 0.05) !important;
+  color: #0b2e4f !important;
+}
+
+html body [data-dashboard-role="org-admin"] [data-ui="schedule-page-header"] :is(h1, p, span, svg, button) {
+  color: #0b2e4f !important;
+  -webkit-text-fill-color: #0b2e4f !important;
+}
+
+html body [data-dashboard-role="org-admin"] [data-ui="schedule-page-header"] > span {
+  display: none !important;
+}
+
+/* Mentor dashboard hero and canvas use the same neutral reference treatment. */
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home,
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home > div {
+  background: var(--app-background) !important;
+  background-color: var(--app-background) !important;
+  background-image: none !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"] {
+  border-color: #e7e2da !important;
+  background: #ffffff !important;
+  background-image: none !important;
+  box-shadow: 0 3px 12px rgba(9, 45, 78, 0.05) !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"] :is(h1, h2, h3, p, span, svg) {
+  color: #0b2e4f !important;
+  -webkit-text-fill-color: #0b2e4f !important;
+}
+
+/* Give the mentor hero visual depth without bringing back the blue surface. */
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"] {
+  isolation: isolate;
+  background:
+    radial-gradient(circle at 96% 8%, rgba(255, 136, 0, 0.12), transparent 15rem),
+    radial-gradient(circle at 4% 100%, rgba(11, 46, 79, 0.07), transparent 18rem),
+    linear-gradient(135deg, #fffefb 0%, #fffaf2 58%, #f4eadb 100%) !important;
+  box-shadow: 0 14px 30px rgba(91, 62, 31, 0.1), inset 0 1px 0 #ffffff !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"]::after {
+  position: absolute;
+  right: 8%;
+  bottom: 0;
+  width: 38%;
+  height: 3px;
+  border-radius: 999px 999px 0 0;
+  background: linear-gradient(90deg, transparent, #ff8800, transparent);
+  content: "";
+  opacity: 0.8;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"] > span:first-child {
+  background: rgba(255, 136, 0, 0.12) !important;
+  filter: blur(2px);
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"] > span:nth-child(2) {
+  background: radial-gradient(circle at 75% 20%, rgba(11, 46, 79, 0.08), transparent 62%) !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="dashboard-hero"] .mentor-hero-copy > div > span {
+  border-color: #eadfce !important;
+  background: rgba(255, 255, 255, 0.78) !important;
+  box-shadow: 0 5px 14px rgba(91, 62, 31, 0.06) !important;
+}
+
+html body [data-ui="mentor-calendar-page"] .calendar-readable-hero {
+  background: #f8f1e3 !important;
+  background-image: none !important;
+  border-color: #d9c9b4 !important;
+  color: #0b3558 !important;
+}
+
+html body [data-ui="mentor-calendar-page"] .calendar-readable-hero h1,
+html body [data-ui="mentor-calendar-page"] .calendar-readable-hero p,
+html body [data-ui="mentor-calendar-page"] .calendar-readable-hero nav button:not([aria-current="page"]) {
+  color: #0b3558 !important;
+  -webkit-text-fill-color: #0b3558 !important;
+}
+
+html body [data-ui="mentor-calendar-page"] .calendar-readable-hero nav button[aria-current="page"] {
+  background: #ff8800 !important;
+  border-color: #ff8800 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+/* -------------------------------------------------------------------------
+   KINI brand foundation.  This final shared layer intentionally uses the
+   approved logo palette only, and is loaded after the legacy theme sheets so
+   every role inherits the same visual language without changing its logic.
+   ------------------------------------------------------------------------- */
+:root {
+  --color-primary: #F39924;
+  --color-primary-light: #FFF1DC;
+  --color-primary-dark: #D97F0D;
+  --color-primary-500: #F39924;
+  --color-primary-600: #D97F0D;
+  --color-secondary: #133B5D;
+  --color-secondary-light: #E8EFF5;
+  --color-secondary-dark: #0E2D47;
+  --color-secondary-500: #133B5D;
+  --color-accent: #F39924;
+  --color-surface: #FFFFFF;
+  --color-surface-secondary: #FAF3E0;
+  --color-surface-tertiary: #FFF1DC;
+  --color-base: #FAF3E0;
+  --color-text-primary: #17324A;
+  --color-text-secondary: #5F7180;
+  --color-border: #D8D1C3;
+  --color-border-secondary: #E9E2D7;
+  --color-border-focus: #F39924;
+  --color-button-primary-bg: #F39924;
+  --color-button-primary-text: #133B5D;
+  --color-button-primary-hover: #D97F0D;
+  --color-button-secondary-bg: #133B5D;
+  --color-button-secondary-text: #FFFFFF;
+  --color-link-default: #133B5D;
+  --color-link-hover: #D97F0D;
+  --color-success: #2E8B57;
+  --color-warning: #F39924;
+  --color-danger: #D64545;
+  --focus-ring: 0 0 0 3px rgba(243, 153, 36, 0.35);
+  --gradient-primary: linear-gradient(135deg, #133B5D 0%, #0E2D47 100%);
+  --gradient-primary-hover: linear-gradient(135deg, #0E2D47 0%, #133B5D 100%);
+  --gradient-card-light: linear-gradient(135deg, #FFFFFF 0%, #FFFDF8 100%);
+}
+
+html body {
+  background: var(--app-background);
+  color: #17324A;
+}
+
+html body :is([data-dashboard-role], [data-dashboard-role] .mentor-content-shell, [data-dashboard-role] main) {
+  background-color: var(--app-background);
+}
+
+/* Shared action hierarchy.  Destructive controls preserve their semantic red. */
+html body :is(.bg-primary, [class~="bg-[#0f55f7]"], [class~="bg-[#0866E9]"]) {
+  background-color: #F39924 !important;
+  color: #133B5D !important;
+}
+
+html body :is(.text-primary, [class~="text-[#0f55f7]"], [class~="text-[#0866E9]"]) {
+  color: #133B5D !important;
+}
+
+html body :is(.border-primary, [class~="border-[#0f55f7]"], [class~="border-[#0866E9]"]) {
+  border-color: #F39924 !important;
+}
+
+html body button:not([disabled]):focus-visible,
+html body a:focus-visible,
+html body input:focus-visible,
+html body select:focus-visible,
+html body textarea:focus-visible {
+  outline: 3px solid rgba(243, 153, 36, 0.45);
+  outline-offset: 2px;
+}
+
+html body :is(input, select, textarea) {
+  border-color: #D8D1C3;
+}
+
+html body :is(input, select, textarea):focus {
+  border-color: #F39924;
+  box-shadow: 0 0 0 3px rgba(243, 153, 36, 0.16);
+}
+
+/* The same navy navigation applies on desktop and mobile for every role. */
+html body [data-dashboard-role] aside,
+html body [data-dashboard-role] [data-ui="dashboard-sidebar"] {
+  background: #133B5D !important;
+  color: #FFFFFF;
+}
+
+html body [data-dashboard-role] aside :is(a, button, span, svg) {
+  color: inherit;
+}
+
+html body [data-dashboard-role] aside a[aria-current="page"],
+html body [data-dashboard-role] aside .active {
+  background: #F39924 !important;
+  color: #133B5D !important;
+}
+
+/* Reusable work surfaces: readable on the almond application canvas. */
+html body [data-dashboard-role] :is(.premium-card, .content-card, .dashboard-card, .card, [role="dialog"]) {
+  border-color: #D8D1C3;
+}
+
+html body [data-dashboard-role] :is(.premium-card, .content-card, .dashboard-card, .card) {
+  background-color: #FFFFFF;
+  box-shadow: 0 5px 18px rgba(19, 59, 93, 0.07);
+}
+
+html body [data-dashboard-role] :is(.recharts-cartesian-grid line, .recharts-polar-grid line) {
+  stroke: #E5DED2;
+}

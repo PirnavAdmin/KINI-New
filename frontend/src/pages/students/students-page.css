@@ -1,0 +1,413 @@
+/* ──────────────────────────────────────────────────────────────────────
+   Organization → Students Management.
+   One stylesheet for the page, driven by the tokens below. Selectors carry
+   the page class so they out-rank the shared showcase-hero, KPI and table
+   theme rules; nothing here leaks to other pages. Real sizes only — no zoom
+   or scale — sized for 100% browser zoom at 1280–1920px.
+   Desktop targets: hero ~155px, KPI ~74px, controls 36px, header 36px,
+   every table row 42px (one enrollment per row; the rest open in a popover).
+   ────────────────────────────────────────────────────────────────────── */
+
+html body [data-dashboard-role] .students-management-page {
+  --st-ink: #0b1f3f;
+  --st-navy: #123b63;
+  --st-text: #1c3553;
+  --st-muted: #5b6f88;          /* 4.9:1 on white */
+  --st-faint: #8a9bb2;
+  --st-line: #e6edf6;
+  --st-line-soft: #eef2f7;
+  --st-head: #f3f6fb;
+  --st-blue: #2563eb;
+  --st-orange: #e8690c;          /* large text only; #f7931e is fill-only */
+  --st-radius: 12px;
+  --st-control-h: 40px;
+  --st-row-h: 42px;
+}
+
+/* ── Hero (~155px) ────────────────────────────────────────────────────── */
+html body [data-dashboard-role] .students-management-page .osh.osh--v14.osh-v14--students .osh__title em {
+  color: var(--st-orange) !important;
+  -webkit-text-fill-color: var(--st-orange) !important;
+  font-style: normal;
+}
+@media (min-width: 1024px) {
+  html body [data-dashboard-role] .students-management-page .osh.osh--v14.osh-v14--students {
+    --osh-copy: 56%; --osh-art-w: 46%;
+    padding: 14px 24px;
+    border-radius: 14px;
+    animation: students-rise .35s ease-out both;
+  }
+  html body [data-dashboard-role] .students-management-page .osh.osh--v14.osh-v14--students .osh__eyebrow { margin-bottom: 2px; font-size: 11px; }
+  html body [data-dashboard-role] .students-management-page .osh.osh--v14.osh-v14--students .osh__title {
+    color: var(--st-navy) !important;
+    font-size: clamp(26px, 2.15vw, 36px) !important;
+    letter-spacing: -.02em;
+    line-height: 1.12 !important;
+  }
+  html body [data-dashboard-role] .students-management-page .osh.osh--v14.osh-v14--students .osh__subtitle {
+    max-width: 70ch;
+    margin-top: 4px;
+    color: #3e5577 !important;
+    font-size: 13px !important;
+    line-height: 1.5 !important;
+  }
+  /* Four single-line feature chips in one row. */
+  html body [data-dashboard-role] .students-management-page .osh.osh--v14.osh-v14--students .osh__features {
+    display: flex;
+    flex-wrap: nowrap;
+    max-width: none;
+    margin-top: 10px;
+    gap: 8px;
+  }
+  html body [data-dashboard-role] .students-management-page .osh.osh--v14.osh-v14--students .osh__features li {
+    flex: 0 1 auto;
+    gap: 7px;
+    min-width: 0;
+    padding: 4px 12px 4px 4px;
+    border: 1px solid #e8eef7;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .92);
+    box-shadow: 0 6px 16px -12px rgba(15, 42, 74, .45);
+    color: var(--st-ink);
+    font-size: 12.5px;
+    font-weight: 700;
+    line-height: 1.25;
+    white-space: nowrap;
+  }
+  html body [data-dashboard-role] .students-management-page .osh.osh--v14.osh-v14--students .osh__features li br,
+  html body [data-dashboard-role] .students-management-page .osh.osh--v14.osh-v14--students .osh__fsub { display: none; }
+  html body [data-dashboard-role] .students-management-page .osh.osh--v14.osh-v14--students .osh__ficon { width: 26px; height: 26px; border-radius: 8px; }
+  html body [data-dashboard-role] .students-management-page .osh.osh--v14.osh-v14--students .osh__ficon svg { width: 15px; height: 15px; }
+}
+/* The second sentence only where it still fits on the same two lines. */
+@media (max-width: 1679px) {
+  html body [data-dashboard-role] .students-management-page .students-hero__more { display: none; }
+}
+
+/* ── KPI cards (~74px) ────────────────────────────────────────────────── */
+@media (min-width: 1024px) {
+  html body [data-dashboard-role] .students-management-page section[aria-label="Student statistics"] { gap: 12px !important; }
+  html body [data-dashboard-role] .students-management-page section[aria-label="Student statistics"] > * {
+    min-height: 0 !important;
+    border-radius: var(--st-radius) !important;
+    animation: students-rise .35s ease-out both;
+  }
+  html body [data-dashboard-role] .students-management-page section[aria-label="Student statistics"] > :nth-child(2) { animation-delay: .04s; }
+  html body [data-dashboard-role] .students-management-page section[aria-label="Student statistics"] > :nth-child(3) { animation-delay: .08s; }
+  html body [data-dashboard-role] .students-management-page section[aria-label="Student statistics"] > :nth-child(4) { animation-delay: .12s; }
+  html body [data-dashboard-role] .students-management-page section[aria-label="Student statistics"] .kpi-content { padding-top: 10px !important; padding-bottom: 10px !important; gap: 12px !important; }
+  html body [data-dashboard-role] .students-management-page section[aria-label="Student statistics"] .kpi-icon { width: 40px !important; height: 40px !important; }
+  html body [data-dashboard-role] .students-management-page section[aria-label="Student statistics"] .kpi-icon svg { width: 20px !important; height: 20px !important; }
+  html body [data-dashboard-role] .students-management-page section[aria-label="Student statistics"] .kpi-value { font-size: 21px !important; line-height: 1.15 !important; }
+  html body [data-dashboard-role] .students-management-page section[aria-label="Student statistics"] .kpi-description { margin-top: 1px !important; font-size: 12px !important; }
+}
+@keyframes students-rise { from { opacity: 0; transform: translateY(6px); } }
+
+/* ── Tabs and toolbar (36px) ──────────────────────────────────────────── */
+html body [data-dashboard-role] .students-management-page .students-tab-count {
+  display: inline-grid; place-items: center; min-width: 22px; height: 20px; padding: 0 6px;
+  border-radius: 999px; background: rgba(255, 255, 255, .22); font-size: 11px; font-weight: 800;
+}
+html body [data-dashboard-role] .students-management-page button[aria-pressed="false"] .students-tab-count { background: #e8f0fe; color: var(--st-blue); }
+@media (min-width: 1024px) {
+  html body [data-dashboard-role] .students-management-page nav[aria-label="Student management views"] { padding: 3px; border-radius: 11px; }
+  html body [data-dashboard-role] .students-management-page nav[aria-label="Student management views"] button[aria-pressed] { height: 34px; padding-inline: 14px; border-radius: 8px; font-size: 13px; }
+  html body [data-dashboard-role] .students-management-page .v14-btn { height: var(--st-control-h); padding: 0 16px; border-radius: 10px; font-size: 13px; transition: background-color .15s ease, box-shadow .15s ease, transform .15s ease; }
+  html body [data-dashboard-role] .students-management-page .v14-btn:hover { transform: translateY(-1px); }
+  html body [data-dashboard-role] .students-management-page .v14-btn svg { width: 15px; height: 15px; }
+}
+
+/* ── Filters (36px) ───────────────────────────────────────────────────── */
+@media (min-width: 1024px) {
+  html body [data-dashboard-role] .students-management-page .students-filter-bar { gap: 8px !important; padding: 8px !important; border-radius: var(--st-radius) !important; }
+  html body [data-dashboard-role] .students-management-page :is(input[aria-label="Search students"], .students-filter-bar select) {
+    height: var(--st-control-h) !important; min-height: 0 !important; font-size: 13px !important;
+  }
+  html body [data-dashboard-role] .students-management-page .students-filter-bar > button { height: var(--st-control-h) !important; font-size: 13px !important; }
+}
+html body [data-dashboard-role] .students-management-page .students-filter-bar > :is(label, div):focus-within {
+  border-color: #93b4f5;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, .14);
+}
+
+/* ── Table ────────────────────────────────────────────────────────────── */
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"] > thead > tr > th.students-th {
+  height: 36px;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  border-bottom: 1px solid var(--st-line) !important;
+  background: var(--st-head) !important;
+  color: var(--st-muted) !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  letter-spacing: .03em !important;
+  text-transform: uppercase;
+}
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"] > thead > tr > th.students-th--actions { color: var(--st-blue) !important; }
+/* One line per row: every row is the same height. */
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"] > tbody > tr > td {
+  height: var(--st-row-h);
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  font-size: 12.5px !important;
+  line-height: 1.4;
+  vertical-align: middle;
+}
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"] > tbody > tr { transition: background-color .12s ease; }
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"] > tbody > tr:hover > td { background: #f7faff; }
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"] > tbody > tr > td button[title]:not([data-student-actions]):not(.students-more) { font-size: 13px !important; font-weight: 700 !important; color: var(--st-ink); }
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"] .students-avatar { width: 28px !important; height: 28px !important; font-size: 10.5px !important; }
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"] .osh-pill { padding: 3px 9px; border-radius: 7px; font-size: 11.5px; font-weight: 600; line-height: 1.35; }
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"] .students-status-pill { padding: 3px 9px; font-size: 11.5px; white-space: nowrap; }
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"] [data-student-actions] { width: 30px !important; height: 30px !important; border-radius: 8px !important; }
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"] input[type="checkbox"] { width: 15px; height: 15px; vertical-align: middle; }
+
+html body [data-dashboard-role] .students-management-page .students-muted { color: var(--st-faint); }
+html body [data-dashboard-role] .students-management-page .students-name { max-width: 100%; }
+
+/* Course/batch chip: shrinks with its column, full value on hover. */
+html body [data-dashboard-role] .students-management-page .students-chip-cell {
+  display: inline-block; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle;
+}
+html body [data-dashboard-role] .students-management-page .students-enrollment-cell { display: flex; min-width: 0; align-items: center; gap: 5px; }
+html body [data-dashboard-role] .students-management-page .students-enrollment-cell > .students-chip-cell { flex: 0 1 auto; min-width: 0; }
+html body [data-dashboard-role] .students-management-page .students-more {
+  flex: 0 0 auto; padding: 2px 7px; border-radius: 999px; background: #e8f0fe;
+  color: var(--st-blue); font-size: 11px; font-weight: 800; white-space: nowrap; cursor: pointer;
+  transition: background-color .15s ease;
+}
+html body [data-dashboard-role] .students-management-page .students-more:hover { background: #d7e4fd; }
+html body [data-dashboard-role] .students-management-page .students-more:focus-visible { outline: 2px solid var(--st-blue); outline-offset: 1px; }
+
+html body [data-dashboard-role] .students-management-page .students-mentor { display: flex; align-items: center; gap: 7px; min-width: 0; max-width: 100%; color: var(--st-text); }
+html body [data-dashboard-role] .students-management-page .students-mentor__initials {
+  display: grid; flex: 0 0 auto; place-items: center; width: 24px; height: 24px; border-radius: 999px; font-size: 10px; font-weight: 800;
+}
+
+html body [data-dashboard-role] .students-management-page .students-attendance { display: flex; align-items: center; gap: 8px; min-width: 0; }
+html body [data-dashboard-role] .students-management-page .students-attendance__value { flex: 0 0 auto; min-width: 32px; font-weight: 700; }
+html body [data-dashboard-role] .students-management-page .students-attendance__bar { flex: 1 1 auto; max-width: 64px; height: 6px; overflow: hidden; border-radius: 999px; background: #e6ecf4; }
+html body [data-dashboard-role] .students-management-page .students-attendance__bar > span { display: block; height: 100%; border-radius: inherit; }
+
+/* Laptop widths: same columns, slightly tighter padding and type. */
+@media (max-width: 1365px) {
+  html body [data-dashboard-role] .students-management-page table[aria-label="Students"] > :is(thead, tbody) > tr > :is(th, td) { padding-left: 6px !important; padding-right: 6px !important; }
+  html body [data-dashboard-role] .students-management-page table[aria-label="Students"] > tbody > tr > td { font-size: 12px !important; }
+  html body [data-dashboard-role] .students-management-page table[aria-label="Students"] > thead > tr > th.students-th { font-size: 10.5px !important; letter-spacing: 0 !important; }
+  html body [data-dashboard-role] .students-management-page table[aria-label="Students"] .osh-pill { padding: 2px 7px; font-size: 11px; }
+  html body [data-dashboard-role] .students-management-page table[aria-label="Students"] .students-avatar { width: 26px !important; height: 26px !important; }
+  /* The full mentor name matters more than the initials here. */
+  html body [data-dashboard-role] .students-management-page .students-mentor__initials { display: none; }
+  html body [data-dashboard-role] .students-management-page .students-attendance__bar { max-width: 44px; }
+  html body [data-dashboard-role] .students-management-page .students-more__word { display: none; }
+}
+
+/* Pagination (~44px) */
+html body [data-dashboard-role] .students-management-page .students-table-footer { padding: 6px 16px !important; font-size: 12.5px; }
+html body [data-dashboard-role] .students-management-page .students-table-footer button { height: 32px; min-width: 32px; }
+html body [data-dashboard-role] .students-management-page .students-table-footer select { height: 32px; font-size: 12.5px; }
+
+@media (min-width: 1024px) {
+  html body [data-dashboard-role] .students-management-page > div > :not(:last-child),
+  html body [data-dashboard-role] .students-management-page .students-list-stack > :not(:last-child) { margin-block-end: 2px; }
+}
+
+/* ── Row menu and enrollments popover (portaled to <body>) ─────────────── */
+.students-menu {
+  position: fixed; z-index: 50; width: 200px; padding: 6px;
+  border: 1px solid #e6edf6; border-radius: 12px; background: #fff;
+  box-shadow: 0 20px 48px -12px rgba(15, 42, 74, .35);
+  animation: students-pop .14s ease-out;
+}
+.students-menu__item {
+  display: block; width: 100%; padding: 8px 10px; border-radius: 8px;
+  color: #1c3553; font-size: 13px; font-weight: 600; text-align: left; cursor: pointer;
+}
+.students-menu__item:hover, .students-menu__item:focus-visible { background: #f1f6fd; color: #2563eb; outline: none; }
+.students-menu__item.is-danger { margin-top: 4px; border-top: 1px solid #eef2f7; border-radius: 0 0 8px 8px; color: #be123c; }
+.students-menu__item.is-danger:hover { background: #fff1f3; color: #be123c; }
+
+.students-enrollments {
+  position: fixed; z-index: 50; overflow: hidden; outline: none;
+  border: 1px solid #e6edf6; border-radius: 14px; background: #fff;
+  box-shadow: 0 24px 56px -16px rgba(15, 42, 74, .4);
+  animation: students-pop .14s ease-out;
+}
+.students-enrollments__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 12px 10px 14px; border-bottom: 1px solid #eef2f7; }
+.students-enrollments__head b { display: block; color: #0b1f3f; font-size: 13.5px; }
+.students-enrollments__head small { display: block; color: #5b6f88; font-size: 11.5px; }
+.students-enrollments__head button { display: grid; place-items: center; width: 28px; height: 28px; border-radius: 8px; color: #5b6f88; cursor: pointer; }
+.students-enrollments__head button:hover { background: #f1f5f9; color: #0b1f3f; }
+.students-enrollments__head svg { width: 15px; height: 15px; }
+.students-enrollments ul { display: grid; gap: 2px; max-height: 320px; margin: 0; padding: 6px; overflow-y: auto; list-style: none; }
+.students-enrollments li { display: flex; align-items: flex-start; gap: 10px; padding: 8px; border-radius: 10px; }
+.students-enrollments li:hover { background: #f7faff; }
+.students-enrollments__icon { display: grid; flex: 0 0 auto; place-items: center; width: 28px; height: 28px; border-radius: 8px; background: #e8f0fe; color: #2563eb; }
+.students-enrollments__icon svg { width: 14px; height: 14px; }
+.students-enrollments__copy { display: flex; min-width: 0; flex-direction: column; gap: 4px; }
+.students-enrollments__copy small { color: #5b6f88; font-size: 11.5px; }
+.students-enrollments__pair { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+.students-chip { display: inline-flex; max-width: 100%; overflow: hidden; padding: 3px 9px; border-radius: 7px; font-size: 12px; font-weight: 600; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
+.students-chip.is-course { background: #e8f0fe; color: #1d4fb8; }
+.students-chip.is-batch { background: #fff0e0; color: #b45309; }
+@keyframes students-pop { from { opacity: 0; transform: translateY(-4px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .students-menu, .students-enrollments,
+  html body [data-dashboard-role] .students-management-page .osh.osh--v14.osh-v14--students,
+  html body [data-dashboard-role] .students-management-page section[aria-label="Student statistics"] > * { animation: none; }
+  html body [data-dashboard-role] .students-management-page .v14-btn:hover { transform: none; }
+}
+
+/* ── Dark mode ────────────────────────────────────────────────────────── */
+.dark .students-menu, .dark .students-enrollments { border-color: #22324a; background: #0f1c2e; }
+.dark .students-menu__item, .dark .students-enrollments__head b { color: #e2e8f0; }
+.dark .students-menu__item:hover, .dark .students-enrollments li:hover { background: #15263c; }
+.dark .students-enrollments__head, .dark .students-menu__item.is-danger { border-color: #22324a; }
+.dark .students-chip.is-course { background: #16294a; color: #8db4ff; }
+.dark .students-chip.is-batch { background: #3a2614; color: #ffb672; }
+html.dark body [data-dashboard-role] .students-management-page table[aria-label="Students"] > thead > tr > th.students-th { background: #13233a !important; border-color: #22324a !important; color: #9fb0c6 !important; }
+
+/* ── Final audit: readable names, honest attendance ───────────────────── */
+/* Student and mentor names wrap to two lines inside the same 42px row
+   instead of being cut at one; beyond two lines the full name is on hover. */
+html body [data-dashboard-role] .students-management-page :is(.students-name, .students-mentor__name) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  min-width: 0;
+  line-height: 1.2 !important;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+html body [data-dashboard-role] .students-management-page .students-mentor__name { font-size: 12.5px; }
+@media (max-width: 1365px) {
+  html body [data-dashboard-role] .students-management-page .students-mentor__name { font-size: 12px; }
+}
+/* Attendance states: "Not recorded" (no records) is never shown as 0%. */
+html body [data-dashboard-role] .students-management-page .students-not-recorded {
+  display: inline-flex; padding: 2px 8px; border-radius: 999px; background: #eef2f7;
+  color: #5b6f88; font-size: 11px; font-weight: 600; white-space: nowrap;
+}
+html body [data-dashboard-role] .students-management-page .students-attendance__value sup { margin-left: 1px; color: #b45309; font-size: 10px; }
+html body [data-dashboard-role] .students-management-page .students-attendance.is-loading .students-attendance__bar {
+  width: 64px; max-width: 100%; background: linear-gradient(90deg, #e6ecf4, #f3f6fa, #e6ecf4); background-size: 200% 100%;
+  animation: students-shimmer 1.2s ease-in-out infinite;
+}
+@keyframes students-shimmer { to { background-position: -200% 0; } }
+@media (prefers-reduced-motion: reduce) {
+  html body [data-dashboard-role] .students-management-page .students-attendance.is-loading .students-attendance__bar { animation: none; }
+}
+
+/* ── Enterprise pass: 40px controls, 13px table type, filter feedback ───── */
+@media (min-width: 1024px) {
+  html body [data-dashboard-role] .students-management-page .osh.osh--v14.osh-v14--students .osh__title { font-size: clamp(28px, 2.1vw, 32px) !important; }
+  html body [data-dashboard-role] .students-management-page nav[aria-label="Student management views"] button[aria-pressed] { height: 38px; }
+}
+@media (min-width: 1366px) {
+  html body [data-dashboard-role] .students-management-page table[aria-label="Students"] > tbody > tr > td { font-size: 13px !important; }
+  html body [data-dashboard-role] .students-management-page .students-mentor__name { font-size: 13px; }
+}
+
+/* A filter narrowing the list is visibly "on". */
+html body [data-dashboard-role] .students-management-page .students-filter-bar [data-active] {
+  border-color: #9cc0fa;
+  background: #f4f8ff;
+}
+html body [data-dashboard-role] .students-management-page .students-filter-bar [data-active] select { color: #1d4fb8 !important; }
+html body [data-dashboard-role] .students-management-page .students-clear:disabled { cursor: default; opacity: .55; }
+html body [data-dashboard-role] .students-management-page .students-clear:disabled:hover { background: #fff; }
+html body [data-dashboard-role] .students-management-page .students-clear__count {
+  display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 5px;
+  border-radius: 999px; background: #1677f2; color: #fff; font-size: 11px; font-weight: 800;
+}
+
+/* Empty results: say what produced them and offer the way back. */
+html body [data-dashboard-role] .students-management-page .students-empty {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  min-height: 220px; padding: 32px 16px; text-align: center;
+}
+html body [data-dashboard-role] .students-management-page .students-empty__icon {
+  display: grid; place-items: center; width: 48px; height: 48px; margin-bottom: 4px;
+  border-radius: 14px; background: #eef4fe; color: #1677f2;
+}
+html body [data-dashboard-role] .students-management-page .students-empty__icon svg { width: 22px; height: 22px; }
+html body [data-dashboard-role] .students-management-page .students-empty__title { margin: 0; color: var(--st-ink); font-size: 15px; font-weight: 700; }
+html body [data-dashboard-role] .students-management-page .students-empty__text { margin: 0; max-width: 46ch; color: var(--st-muted); font-size: 13px; }
+html body [data-dashboard-role] .students-management-page .students-empty__action {
+  margin-top: 8px; height: 36px; padding: 0 16px; border: 1px solid #d6e1ef; border-radius: 10px;
+  background: #fff; color: #1d4fb8; font-size: 13px; font-weight: 700; cursor: pointer;
+}
+html body [data-dashboard-role] .students-management-page .students-empty__action:hover { background: #f1f6fd; }
+
+/* Loading skeleton in the shape of the real filters and table. */
+html body [data-dashboard-role] .students-management-page .students-skeleton { display: grid; gap: 12px; }
+html body [data-dashboard-role] .students-management-page .students-skeleton__filters {
+  display: grid; gap: 8px; padding: 8px; border: 1px solid var(--st-line); border-radius: var(--st-radius); background: #fff;
+  grid-template-columns: minmax(0, 2fr) repeat(3, minmax(0, 1fr)) 140px;
+}
+html body [data-dashboard-role] .students-management-page .students-skeleton__table { overflow: hidden; border: 1px solid var(--st-line); border-radius: var(--st-radius); background: #fff; }
+html body [data-dashboard-role] .students-management-page .students-skeleton :is(.students-skeleton__filters > span, .students-skeleton__head, .students-skeleton__row) {
+  display: block; border-radius: 8px;
+  background: linear-gradient(90deg, #edf1f6 0%, #f6f8fb 50%, #edf1f6 100%); background-size: 200% 100%;
+  animation: students-shimmer 1.3s ease-in-out infinite;
+}
+html body [data-dashboard-role] .students-management-page .students-skeleton__filters > span { height: var(--st-control-h); }
+html body [data-dashboard-role] .students-management-page .students-skeleton__head { height: 36px; border-radius: 0; }
+html body [data-dashboard-role] .students-management-page .students-skeleton__row { height: 26px; margin: 8px 16px; }
+@media (max-width: 760px) {
+  html body [data-dashboard-role] .students-management-page .students-skeleton__filters { grid-template-columns: 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html body [data-dashboard-role] .students-management-page .students-skeleton * { animation: none !important; }
+}
+
+/* Below desktop the artwork would push the student data down a full screen;
+   the title, description and feature strip carry the header on their own. */
+@media (max-width: 1023px) {
+  html body [data-dashboard-role] .students-management-page .osh.osh--v14.osh-v14--students .osh__art { display: none; }
+  html body [data-dashboard-role] .students-management-page .osh.osh--v14.osh-v14--students { padding: 16px; min-height: 0; }
+  html body [data-dashboard-role] .students-management-page .osh.osh--v14.osh-v14--students .osh__features { display: flex; flex-wrap: wrap; gap: 6px; }
+}
+
+/* ── Header colours: one pastel block per column, Mentors-table style ─────
+   Fixed left-to-right sequence; no two neighbouring headers share a colour.
+   The checkbox column (not in the sequence) stays a neutral grey. Blocks sit
+   behind the label (6px radius, inset inside the 36px header row). */
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"]:not(#students-head) > thead > tr > th.students-th {
+  position: relative;
+  isolation: isolate;
+  background: #fff !important;
+  border-bottom: 1px solid #e2e8f0 !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: .03em !important;
+  text-transform: uppercase;
+  color: var(--th-fg, #64748b) !important;
+}
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"]:not(#students-head) > thead > tr > th.students-th::before {
+  content: "";
+  position: absolute;
+  inset: 6px 2px;
+  z-index: -1;
+  border-radius: 6px;
+  background: var(--th-bg, #f1f5f9);
+  pointer-events: none;
+}
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"]:not(#students-head) > thead > tr > th.students-th :is(button, span) { color: inherit !important; }
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"] th.students-th--select     { --th-bg: #f1f5f9; --th-fg: #64748b; }
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"] th.students-th--rowNumber  { --th-bg: #ede3ff; --th-fg: #7c3aed; }
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"] th.students-th--name       { --th-bg: #dbeafe; --th-fg: #2563eb; }
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"] th.students-th--email      { --th-bg: #ffeed5; --th-fg: #f97316; }
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"] th.students-th--mobile     { --th-bg: #d1fae5; --th-fg: #059669; }
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"] th.students-th--course     { --th-bg: #fce7f3; --th-fg: #db2777; }
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"] th.students-th--batch      { --th-bg: #fef3c7; --th-fg: #b45309; }
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"] th.students-th--mentorName { --th-bg: #cffafe; --th-fg: #0e7490; }
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"] th.students-th--attendance { --th-bg: #f3e8ff; --th-fg: #9333ea; }
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"] th.students-th--status     { --th-bg: #dcfce7; --th-fg: #15803d; }
+html body [data-dashboard-role] .students-management-page table[aria-label="Students"] th.students-th--actions    { --th-bg: #ffe4e6; --th-fg: #e11d48; }
+@media (max-width: 1365px) {
+  html body [data-dashboard-role] .students-management-page table[aria-label="Students"]:not(#students-head) > thead > tr > th.students-th { font-size: 10.5px !important; letter-spacing: .01em !important; }
+}
+html.dark body [data-dashboard-role] .students-management-page table[aria-label="Students"]:not(#students-head) > thead > tr > th.students-th { background: #0f1c2e !important; }

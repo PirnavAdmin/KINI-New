@@ -1,0 +1,68 @@
+/* ModalHero — illustrated dialog header (see ModalHero.jsx). Selectors are
+   prefixed with `html body` because some page stylesheets restyle h2/p with
+   !important inside dialogs. */
+
+html body .kmh {
+  position: relative;
+  isolation: isolate;
+  flex-shrink: 0;
+  min-height: 176px;
+  overflow: hidden;
+  padding: 26px 64px 26px 30px;
+  background: linear-gradient(110deg, #f5f9ff 0%, #e9f1fe 52%, #d9e8fc 100%);
+}
+html body .kmh .kmh__bg { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; pointer-events: none; }
+html body .kmh .kmh__dots {
+  position: absolute; z-index: -1; top: 22px; left: 54%; width: 120px; height: 64px; pointer-events: none;
+  background-image: radial-gradient(circle, #9bb9e6 1.6px, transparent 1.8px); background-size: 18px 18px; opacity: .7;
+}
+html body .kmh .kmh__art {
+  position: absolute; z-index: -1; right: 48px; bottom: 0; height: 100%; max-width: 40%;
+  object-fit: contain; object-position: right bottom; pointer-events: none; user-select: none;
+}
+html body .kmh .kmh__main { position: relative; display: flex; align-items: center; gap: 20px; max-width: 56%; }
+html body .kmh .kmh__icon {
+  display: grid; flex-shrink: 0; place-items: center; width: 84px; height: 84px; border-radius: 22px;
+  background: linear-gradient(150deg, #ffffff 0%, #eef4ff 100%); color: #2563eb;
+  box-shadow: 0 14px 30px -14px rgba(37, 99, 235, .45), inset 0 1px 0 #ffffff;
+}
+html body .kmh .kmh__icon svg { width: 40px; height: 40px; stroke-width: 1.9; }
+html body .kmh .kmh__copy { min-width: 0; }
+html body .kmh .kmh__eyebrow { margin: 0 0 6px; color: #1d63d8 !important; font-size: 12.5px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+html body .kmh .kmh__title {
+  margin: 0; color: #0b1f3f !important; font-size: clamp(22px, 2.2vw, 34px) !important; font-weight: 800 !important; white-space: nowrap;
+  line-height: 1.08 !important; letter-spacing: -.02em;
+}
+html body .kmh .kmh__title em { font-style: normal; }
+html body .kmh .kmh__title em.is-orange { color: #f2700f !important; }
+html body .kmh .kmh__title em.is-blue { color: #1673f0 !important; }
+html body .kmh .kmh__subtitle { margin: 10px 0 0; max-width: 44ch; color: #3e5577 !important; font-size: 15.5px !important; line-height: 1.45 !important; }
+html body .kmh .kmh__extra { position: relative; margin-top: 18px; max-width: 64%; }
+html body .kmh .kmh__close {
+  position: absolute; z-index: 3; top: 18px; right: 18px; display: grid; place-items: center; width: 42px; height: 42px;
+  border-radius: 50%; background: #ffffff; color: #0b1f3f; box-shadow: 0 6px 16px -6px rgba(15, 42, 74, .35);
+  transition: transform .15s ease;
+}
+html body .kmh .kmh__close:hover { transform: scale(1.06); }
+html body .kmh .kmh__close:focus-visible { outline: 2px solid #2563eb; outline-offset: 2px; }
+html body .kmh .kmh__close:disabled { opacity: .5; cursor: not-allowed; }
+html body .kmh .kmh__close svg { width: 20px; height: 20px; }
+
+@media (max-width: 900px) {
+  html body .kmh .kmh__title { white-space: normal; }
+  html body .kmh { min-height: 0; padding: 20px 60px 20px 20px; }
+  html body .kmh .kmh__main, html body .kmh .kmh__extra { max-width: none; }
+  html body .kmh .kmh__art { opacity: .18; max-width: 70%; right: 0; }
+  html body .kmh .kmh__icon { width: 60px; height: 60px; border-radius: 16px; }
+  html body .kmh .kmh__icon svg { width: 30px; height: 30px; }
+}
+@media (max-width: 560px) {
+  html body .kmh .kmh__icon { display: none; }
+  html body .kmh .kmh__subtitle { font-size: 14px !important; }
+}
+
+html.dark body .kmh { background: linear-gradient(110deg, #0f1c2e 0%, #13243b 100%); }
+html.dark body .kmh .kmh__bg { opacity: .1; }
+html.dark body .kmh .kmh__title { color: #f1f5f9 !important; }
+html.dark body .kmh .kmh__subtitle { color: #a8b8cc !important; }
+html.dark body .kmh .kmh__icon, html.dark body .kmh .kmh__close { background: #16243a; color: #93c5fd; }

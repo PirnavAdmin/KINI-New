@@ -1,0 +1,82 @@
+/* HR › Calendar & Events board (v21) */
+html body [data-dashboard-role] .hrc-main { display: grid; gap: 14px; grid-template-columns: minmax(0, 1fr) 300px; }
+@media (max-width: 1180px) { html body [data-dashboard-role] .hrc-main { grid-template-columns: 1fr; } }
+html body [data-dashboard-role] .hrc-cal, html body [data-dashboard-role] .hrc-card { border: 1px solid #e6edf6; border-radius: 16px; background: #fff; box-shadow: 0 4px 14px rgba(15,42,74,.04); }
+html body [data-dashboard-role] .hrc-cal { padding: 12px; }
+html body [data-dashboard-role] .hrc-cal__bar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-bottom: 12px; }
+html body [data-dashboard-role] .hrc-cal__bar h2 { margin: 0 auto 0 8px; color: #0b1f3f !important; font-size: 20px; font-weight: 800; }
+html body [data-dashboard-role] .hrc-btn { height: 38px; padding: 0 16px; border: 1px solid #dfe6ef; border-radius: 9px; background: #fff; color: #0f2a4a; font-weight: 600; }
+html body [data-dashboard-role] .hrc-nav { display: inline-flex; overflow: hidden; border: 1px solid #dfe6ef; border-radius: 9px; }
+html body [data-dashboard-role] .hrc-nav button { display: grid; place-items: center; width: 40px; height: 36px; background: #fff; color: #0f2a4a; }
+html body [data-dashboard-role] .hrc-nav button + button { border-left: 1px solid #dfe6ef; }
+html body [data-dashboard-role] .hrc-nav svg { width: 17px; height: 17px; }
+html body [data-dashboard-role] .hrc-views { display: inline-flex; overflow: hidden; border: 1px solid #dfe6ef; border-radius: 9px; }
+html body [data-dashboard-role] .hrc-views button { height: 38px; padding: 0 22px; background: #fff; color: #0f2a4a; font-weight: 600; }
+html body [data-dashboard-role] .hrc-views button[aria-pressed="true"] { background: #0f2a4a; color: #fff; }
+html body [data-dashboard-role] .hrc-grid { display: grid; overflow: hidden; border: 1px solid #e6edf6; border-radius: 12px; grid-template-columns: repeat(7, minmax(0, 1fr)); }
+html body [data-dashboard-role] .hrc-grid__head { padding: 9px 0; border-bottom: 1px solid #e6edf6; background: #f6f9fd; color: #1c3553; font-size: 13px; font-weight: 700; text-align: center; }
+/* Equal desktop day cells cannot grow with event content. Existing event and
+   more-event buttons remain accessible through the cell's vertical scroller. */
+html body [data-dashboard-role] .hrc-cell { display: flex; height: var(--hr-calendar-cell-height, auto); min-height: var(--hr-calendar-cell-height, 92px); overflow-y: var(--hr-calendar-overflow, visible); min-width: 0; flex-direction: column; gap: 4px; padding: 6px; border-right: 1px solid #eef2f7; border-bottom: 1px solid #eef2f7; }
+html body [data-dashboard-role] .hrc-cell > * { flex-shrink: 0; }
+html body [data-dashboard-role] .hrc-cell:nth-child(7n + 7) { border-right: 0; }
+html body [data-dashboard-role] .hrc-cell.is-out .hrc-cell__day { color: #a6b3c4; }
+html body [data-dashboard-role] .hrc-cell.is-today { box-shadow: inset 0 0 0 2px #2f6fe4; background: #f3f8ff; }
+html body [data-dashboard-role] .hrc-cell__day { color: #0b1f3f; font-size: 12.5px; font-weight: 700; }
+html body [data-dashboard-role] .hrc-ev { display: block; width: 100%; min-width: 0; padding: 4px 6px; border-radius: 6px; background: var(--ce-soft); text-align: left; }
+html body [data-dashboard-role] .hrc-ev b { display: flex; align-items: center; gap: 4px; overflow: hidden; color: var(--ce-ink) !important; font-size: 11px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+html body [data-dashboard-role] .hrc-ev b svg { width: 11px; height: 11px; flex-shrink: 0; }
+html body [data-dashboard-role] .hrc-ev small { display: block; color: var(--ce-ink) !important; font-size: 10.5px; opacity: .85; }
+:is(.hrc-ev, .hrc-list button, .hrc-up__icon).is-purple { --ce-soft: #efe6fe; --ce-ink: #6d28d9; }
+:is(.hrc-ev, .hrc-list button, .hrc-up__icon).is-blue { --ce-soft: #e3edfd; --ce-ink: #1d4fb4; }
+:is(.hrc-ev, .hrc-list button, .hrc-up__icon).is-red { --ce-soft: #ffe4e6; --ce-ink: #be123c; }
+:is(.hrc-ev, .hrc-list button, .hrc-up__icon).is-orange { --ce-soft: #ffeedd; --ce-ink: #c2410c; }
+:is(.hrc-ev, .hrc-list button, .hrc-up__icon).is-green { --ce-soft: #dcf5e7; --ce-ink: #15803d; }
+html body [data-dashboard-role] .hrc-more { color: #1d63d8; font-size: 11px; font-weight: 700; }
+html body [data-dashboard-role] .hrc-list { display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+html body [data-dashboard-role] .hrc-list button { display: grid; width: 100%; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; background: var(--ce-soft); text-align: left; grid-template-columns: 70px 1fr auto; }
+html body [data-dashboard-role] .hrc-list b, html body [data-dashboard-role] .hrc-list span { color: var(--ce-ink) !important; font-weight: 700; font-size: 13px; }
+html body [data-dashboard-role] .hrc-list small { color: #3b5270 !important; font-size: 12px; }
+html body [data-dashboard-role] .hrc-side { display: flex; flex-direction: column; gap: 14px; }
+html body [data-dashboard-role] .hrc-card header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 6px; }
+html body [data-dashboard-role] .hrc-card h3 { margin: 0; color: #0b1f3f !important; font-size: 15px; font-weight: 800; }
+html body [data-dashboard-role] .hrc-card header button { color: #5b6f88; font-size: 12px; }
+html body [data-dashboard-role] .hrc-up { margin: 0; padding: 0 16px 10px; list-style: none; }
+html body [data-dashboard-role] .hrc-up li { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid #eef2f7; }
+html body [data-dashboard-role] .hrc-up li:last-child { border-bottom: 0; }
+html body [data-dashboard-role] .hrc-up__date { display: flex; width: 44px; flex-shrink: 0; flex-direction: column; align-items: center; padding: 4px 0; border: 1px solid #e0e8f2; border-radius: 9px; color: #1d63d8; font-size: 10.5px; font-weight: 700; }
+html body [data-dashboard-role] .hrc-up__date b { color: #0b1f3f; font-size: 16px; line-height: 1.1; }
+html body [data-dashboard-role] .hrc-up__icon { display: grid; flex-shrink: 0; place-items: center; width: 38px; height: 38px; border-radius: 10px; background: var(--ce-soft); color: var(--ce-ink); }
+html body [data-dashboard-role] .hrc-up__icon svg { width: 18px; height: 18px; }
+html body [data-dashboard-role] .hrc-up b { display: block; overflow: hidden; color: #0b1f3f !important; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+html body [data-dashboard-role] .hrc-up small { display: block; color: #5b6f88 !important; font-size: 11.5px; }
+html body [data-dashboard-role] .hrc-filters { display: grid; gap: 8px; padding: 6px 16px 14px; grid-template-columns: 1fr 1fr; }
+html body [data-dashboard-role] .hrc-filters label { display: flex; align-items: center; gap: 7px; color: #1c3553; font-size: 12.5px; }
+html body [data-dashboard-role] .hrc-filters input { width: 15px; height: 15px; accent-color: #1d63d8; }
+html body [data-dashboard-role] :is(.hrc-filters, .hrc-types) i { width: 9px; height: 9px; flex-shrink: 0; border-radius: 3px; }
+:is(.hrc-filters, .hrc-types) i.is-purple { background: #7c3aed; } :is(.hrc-filters, .hrc-types) i.is-blue { background: #2f6fe4; } :is(.hrc-filters, .hrc-types) i.is-red { background: #e5484d; } :is(.hrc-filters, .hrc-types) i.is-orange { background: #f58a0b; } :is(.hrc-filters, .hrc-types) i.is-green { background: #16a34a; }
+html body [data-dashboard-role] .hrc-empty, html body [data-dashboard-role] .hrc-loading { padding: 16px; color: #5b6f88; font-size: 13px; }
+html body [data-dashboard-role] .hrc-bottom { display: grid; gap: 14px; margin-top: 14px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1.1fr); }
+@media (max-width: 1180px) { html body [data-dashboard-role] .hrc-bottom { grid-template-columns: 1fr; } }
+html body [data-dashboard-role] .hrc-types { display: flex; align-items: center; gap: 18px; padding: 6px 16px 16px; }
+html body [data-dashboard-role] .hrc-donut { display: grid; flex-shrink: 0; place-items: center; width: 120px; height: 120px; border-radius: 999px; }
+html body [data-dashboard-role] .hrc-donut > span { display: grid; place-items: center; width: 84px; height: 84px; border-radius: 999px; background: #fff; text-align: center; }
+html body [data-dashboard-role] .hrc-donut b { color: #0b1f3f; font-size: 24px; line-height: 1; }
+html body [data-dashboard-role] .hrc-donut small { color: #3b5270; font-size: 11px; }
+html body [data-dashboard-role] .hrc-types ul { display: grid; flex: 1; gap: 8px; margin: 0; padding: 0; list-style: none; }
+html body [data-dashboard-role] .hrc-types li { display: flex; align-items: center; gap: 8px; color: #1c3553; font-size: 12.5px; }
+html body [data-dashboard-role] .hrc-types li b { margin-left: auto; color: #0b1f3f; font-weight: 600; }
+html body [data-dashboard-role] .hrc-overview { display: grid; gap: 10px; padding: 6px 16px 16px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+html body [data-dashboard-role] .hrc-overview > div { display: flex; flex-direction: column; gap: 6px; padding: 14px 12px; border-radius: 12px; background: var(--co-soft); }
+html body [data-dashboard-role] .hrc-overview svg { width: 22px; height: 22px; color: var(--co-ink); }
+html body [data-dashboard-role] .hrc-overview b { color: #0b1f3f; font-size: 24px; font-weight: 800; }
+html body [data-dashboard-role] .hrc-overview small { color: #3b5270; font-size: 12.5px; }
+.hrc-overview .is-purple { --co-soft: #f4effe; --co-ink: #7c3aed; } .hrc-overview .is-green { --co-soft: #e8f8ef; --co-ink: #16a34a; } .hrc-overview .is-blue { --co-soft: #ebf2fe; --co-ink: #2f6fe4; } .hrc-overview .is-orange { --co-soft: #fff4e6; --co-ink: #f58a0b; }
+html body [data-dashboard-role] .hrc-quick { display: grid; gap: 10px; padding: 6px 16px 16px; grid-template-columns: 1fr 1fr; }
+html body [data-dashboard-role] .hrc-quick button { display: grid; align-items: center; column-gap: 10px; padding: 10px; border: 1px solid #e6edf6; border-radius: 12px; background: #fff; text-align: left; grid-template-columns: 40px 1fr; }
+html body [data-dashboard-role] .hrc-quick button span { display: grid; grid-row: span 2; place-items: center; width: 40px; height: 40px; border-radius: 999px; }
+html body [data-dashboard-role] .hrc-quick button span.is-purple { background: #efe6fe; color: #7c3aed; } html body [data-dashboard-role] .hrc-quick button span.is-blue { background: #e3edfd; color: #1d63d8; }
+html body [data-dashboard-role] .hrc-quick button span svg { width: 18px; height: 18px; }
+html body [data-dashboard-role] .hrc-quick b { color: #1d4f91; font-size: 13px; }
+html body [data-dashboard-role] .hrc-quick small { color: #5b6f88; font-size: 11.5px; }
+html.dark body [data-dashboard-role] :is(.hrc-cal, .hrc-card) { background: #0f1c2e; border-color: #22324a; }

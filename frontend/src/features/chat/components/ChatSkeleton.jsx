@@ -1,0 +1,1 @@
+export default function ChatSkeleton() { return <div className="space-y-4 p-6 animate-pulse">{["w-2/5","ml-auto w-3/5","w-1/2","ml-auto w-2/5"].map((width, i) => <div key={i} className={`h-16 rounded-2xl bg-slate-200 dark:bg-slate-800 ${width}`} />)}</div>; }

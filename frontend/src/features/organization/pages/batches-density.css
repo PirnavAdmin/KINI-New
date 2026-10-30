@@ -1,0 +1,130 @@
+/* Batch Management — desktop density for the shared pieces this page reuses
+   (showcase hero, global KPI card, status chips, filter controls, list-table
+   rows), matching the Employees and Mentors pages at 100% zoom on a ~1280px
+   view (1.5x display scaling). The table's column sizing lives in
+   BatchManagement.jsx.
+   Scoped to this page and to desktop widths; tablet and mobile are unchanged.
+   The overridden sizes are plain Tailwind utilities or shared unlayered rules
+   of lower specificity, so no !important is needed except for the hero
+   subtitle, which the shared hero sets with !important. */
+
+/* Give the shared title row room for its action group on wide desktops. */
+@media (min-width: 1200px) {
+  html body [data-dashboard-role] .batch-management-page .osh.osh--v14 {
+    --osh-copy: 65%;
+  }
+}
+
+@media (min-width: 1024px) {
+  /* Section rhythm: 8px between blocks. */
+  html body [data-dashboard-role] .batch-management-page > :not(:last-child) {
+    margin-block-end: 8px;
+  }
+
+  /* Hero (~245px): tighter padding, subtitle and chips. */
+  html body [data-dashboard-role] .batch-management-page .osh.osh--v14 {
+    padding-top: 14px;
+    padding-bottom: 12px;
+  }
+  html body [data-dashboard-role] .batch-management-page .osh.osh--v14 .osh__subtitle {
+    margin-top: 6px;
+    font-size: 13.5px !important;
+  }
+  html body [data-dashboard-role] .batch-management-page .osh.osh--v14 .osh__features {
+    margin-top: 10px;
+    gap: 6px;
+  }
+  html body [data-dashboard-role] .batch-management-page .osh.osh--v14 .osh__features li {
+    gap: 7px;
+    padding: 3px 10px 3px 3px;
+    font-size: 11.5px;
+    line-height: 1.25;
+  }
+  html body [data-dashboard-role] .batch-management-page .osh.osh--v14 .osh__ficon {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+  }
+  html body [data-dashboard-role] .batch-management-page .osh.osh--v14 .osh__ficon svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* KPI cards (~60px): four in one row with 8px gaps. */
+  html body [data-dashboard-role] .batch-management-page [aria-label="Batch statistics"] {
+    gap: 8px;
+  }
+  html body [data-dashboard-role] .batch-management-page [aria-label="Batch statistics"] > * {
+    min-height: 0;
+    border-radius: 12px;
+  }
+  html body [data-dashboard-role] .batch-management-page [aria-label="Batch statistics"] .kpi-content {
+    gap: 10px;
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+  html body [data-dashboard-role] .batch-management-page [aria-label="Batch statistics"] .kpi-icon {
+    width: 32px;
+    height: 32px;
+  }
+  html body [data-dashboard-role] .batch-management-page [aria-label="Batch statistics"] .kpi-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+  html body [data-dashboard-role] .batch-management-page [aria-label="Batch statistics"] .kpi-value {
+    font-size: 18px;
+  }
+  html body [data-dashboard-role] .batch-management-page [aria-label="Batch statistics"] .kpi-content p.mt-2 {
+    margin-top: 3px;
+  }
+  html body [data-dashboard-role] .batch-management-page [aria-label="Batch statistics"] .kpi-bars {
+    bottom: 8px;
+    height: 24px;
+  }
+
+  /* Filter bar (~36px controls). */
+  html body [data-dashboard-role] .batch-management-page :is(input[placeholder^="Search batches"], select[aria-label]:not([aria-label="Rows per page"])) {
+    height: 36px;
+    font-size: 13px;
+  }
+  html body [data-dashboard-role] .batch-management-page .rounded-\[14px\] > button {
+    height: 36px;
+  }
+
+  /* Status chips (~30px) stay on one row with the table actions. */
+  html body [data-dashboard-role] .batch-management-page .osh-chips {
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+  html body [data-dashboard-role] .batch-management-page .osh-chip {
+    gap: 7px;
+    height: 30px;
+    padding: 0 10px 0 12px;
+    font-size: 12.5px;
+  }
+  html body [data-dashboard-role] .batch-management-page .osh-chip span {
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    font-size: 11px;
+  }
+  html body [data-dashboard-role] .batch-management-page .osh-batches-table .v14-btn {
+    height: 32px;
+    padding: 0 12px;
+    font-size: 12.5px;
+  }
+
+  /* Table header (~32px) through the header system's own variable. */
+  html body [data-dashboard-role] .batch-management-page table[aria-label="Batches"] {
+    --hr-standard-head-padding: 8px 8px;
+  }
+
+  /* Table rows (~44px, as on Employees and Mentors). */
+  html body [data-dashboard-role] .batch-management-page table[aria-label="Batches"] > tbody > tr > td {
+    height: 44px;
+  }
+  html body [data-dashboard-role] .batch-management-page table[aria-label="Batches"] > tbody > tr > td :is(.h-9.w-9) {
+    width: 30px;
+    height: 30px;
+  }
+}

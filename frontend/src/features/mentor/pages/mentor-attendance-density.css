@@ -1,0 +1,159 @@
+/* Mentor › My Attendance — desktop density (100% zoom, ~1280px view).
+   The page's existing hero and table rules (kini-mentor-v17.css) are written
+   with !important, so these overrides must be too; they carry the page class
+   plus .mv20-att-banner / .mv17 to out-rank them, and are limited to this
+   page and to desktop widths. Tablet and mobile keep the existing layout. */
+
+@media (min-width: 1024px) {
+  /* ── Hero (~180px): copy left, art centre, actions top-right, quote below them. */
+  html body [data-dashboard-role] .mentor-attendance-v15.mv17 .mentor-banner.mv20-att-banner {
+    min-height: 0 !important;
+    padding: 16px 24px !important;
+  }
+  html body [data-dashboard-role] .mentor-attendance-v15 .mv20-att-banner .mentor-banner__copy {
+    max-width: 46% !important;
+  }
+  html body [data-dashboard-role] .mentor-attendance-v15 .mv20-att-banner .mentor-banner__eyebrow {
+    margin-bottom: 4px !important;
+    font-size: 12px !important;
+  }
+  html body [data-dashboard-role] .mentor-attendance-v15 .mv20-att-banner .mentor-banner__title {
+    font-size: clamp(30px, 2.7vw, 42px) !important;
+  }
+  html body [data-dashboard-role] .mentor-attendance-v15 .mv20-att-banner .mentor-banner__subtitle {
+    margin-top: 4px !important;
+    font-size: 13px !important;
+  }
+  html body [data-dashboard-role] .mentor-attendance-v15 .mv20-att-banner .mentor-banner__features {
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    margin-top: 12px !important;
+  }
+  html body [data-dashboard-role] .mentor-attendance-v15 .mv20-att-banner .mentor-banner__feature {
+    gap: 7px !important;
+    padding: 4px 12px 4px 4px !important;
+  }
+  html body [data-dashboard-role] .mentor-attendance-v15 .mv20-att-banner .mentor-banner__feature-icon {
+    width: 26px !important;
+    height: 26px !important;
+    border-radius: 8px !important;
+  }
+  html body [data-dashboard-role] .mentor-attendance-v15 .mv20-att-banner .mentor-banner__feature-icon svg {
+    width: 14px !important;
+    height: 14px !important;
+  }
+  html body [data-dashboard-role] .mentor-attendance-v15 .mv20-att-banner .mentor-banner__feature-text b {
+    font-size: 12.5px !important;
+  }
+  /* Art sits between the copy and the right-hand column (actions + quote). */
+  html body [data-dashboard-role] .mentor-attendance-v15 .mv20-att-banner .mentor-banner__art {
+    right: 26% !important;
+    width: 31% !important;
+    opacity: 1;
+  }
+  html body [data-dashboard-role] .mentor-attendance-v15 .mv20-att-banner .mentor-banner__actions {
+    top: 14px !important;
+    right: 18px !important;
+    gap: 8px;
+  }
+  html body [data-dashboard-role] .mentor-attendance-v15 .mv20-att-banner .mentor-banner__actions .mentor-hero-btn {
+    min-width: 0 !important;
+    height: 36px !important;
+    padding: 0 18px !important;
+    font-size: 13.5px !important;
+  }
+  html body [data-dashboard-role] .mentor-attendance-v15.mv17 .mentor-banner.mv20-att-banner .mentor-banner__script {
+    display: flex !important;
+    right: 24px !important;
+    bottom: 12px !important;
+  }
+  html body [data-dashboard-role] .mentor-attendance-v15.mv17 .mentor-banner.mv20-att-banner .mentor-banner__script em {
+    font-size: 17px !important;
+  }
+
+  /* ── Identity / status bar (~52px). */
+  html body .mentor-attendance-v15 .mv15-identity {
+    min-height: 0;
+    padding: 6px 14px;
+  }
+
+  /* ── Check In / Check Out / Working Hours (~72px). */
+  html body .mentor-attendance-v15 .mv15-stat {
+    min-height: 0;
+    padding: 8px 14px;
+  }
+
+  /* ── Records: title, range and every control on one row. */
+  html body .mv17.mentor-attendance-v15 .mv17-records__head {
+    flex-wrap: nowrap;
+    gap: 10px;
+    padding: 10px 16px 8px;
+  }
+  html body .mv17.mentor-attendance-v15 .mv17-records__title {
+    min-width: 0;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  html body .mv17.mentor-attendance-v15 .mv17-records__title > span:not(.mv17-records__icon) {
+    font-size: 12.5px;
+  }
+  html body .mv17.mentor-attendance-v15 .mv17-records__title :is(h2, h3) {
+    font-size: 18px !important;
+  }
+  html body .mv17.mentor-attendance-v15 .mv17-records__tools {
+    flex-wrap: nowrap;
+    gap: 6px;
+  }
+  html body .mv17.mentor-attendance-v15 .mv17-search {
+    min-width: 0;
+    width: 150px;
+  }
+  html body .mv17.mentor-attendance-v15 .mv17-search input:not(#mv17) {
+    height: 34px !important;
+    font-size: 12.5px !important;
+  }
+  html body .mv17.mentor-attendance-v15 .mv17-tool-btn {
+    height: 34px;
+    padding: 0 10px;
+    font-size: 13px;
+  }
+  html body .mv17.mentor-attendance-v15 .mv17-segmented button {
+    height: 34px;
+    padding: 0 10px;
+    font-size: 12.5px;
+  }
+
+  /* ── Table: ~38px header and rows. */
+  html body .mv17.mentor-attendance-v15 .mv17-table thead th.mv17-col-num {
+    padding: 9px 14px !important;
+  }
+  html body .mv17.mentor-attendance-v15 .mv17-th {
+    padding: 9px 14px;
+  }
+  html body .mv17.mentor-attendance-v15 .mv17-table tbody td {
+    padding: 5px 14px;
+  }
+  html body .mv17.mentor-attendance-v15 .mv17-table-foot {
+    padding: 8px 16px 10px;
+  }
+}
+
+/* 1024–1399px: the copy column needs ~490px for the three badges and the
+   actions ~260px, so the illustration narrows to the space left between them. */
+@media (min-width: 1024px) and (max-width: 1399px) {
+  html body [data-dashboard-role] .mentor-attendance-v15 .mv20-att-banner .mentor-banner__art {
+    right: 27% !important;
+    width: 24% !important;
+  }
+}
+
+/* 1024–1279px: no room for copy, art and the right column together. */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  html body [data-dashboard-role] .mentor-attendance-v15 .mv20-att-banner .mentor-banner__art,
+  html body [data-dashboard-role] .mentor-attendance-v15.mv17 .mentor-banner.mv20-att-banner .mentor-banner__script {
+    display: none !important;
+  }
+  html body [data-dashboard-role] .mentor-attendance-v15 .mv20-att-banner .mentor-banner__copy {
+    max-width: 70% !important;
+  }
+}

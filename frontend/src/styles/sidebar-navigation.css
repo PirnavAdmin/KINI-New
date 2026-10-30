@@ -1,0 +1,13 @@
+/* The shared mentor/HR mobile drawer fills the viewport rather than inheriting
+   the global modal's shorter scroll frame. All visual styles stay shared. */
+html body [data-sidebar-design="mentor"] .dashboard-sidebar-drawer {
+  top: 0 !important; bottom: 0 !important; height: 100dvh !important; max-height: 100dvh !important;
+  margin: 0 !important; padding: 0 !important; border: 0 !important;
+  overflow: hidden !important; border-radius: 0 !important; background: transparent !important;
+}
+
+/* The HR accessibility marker must not paint the shared theme's square
+   anchor background. Active color remains the existing mentor item class. */
+html body aside[data-sidebar-design="mentor"] a[aria-current="page"] {
+  background: transparent !important;
+}

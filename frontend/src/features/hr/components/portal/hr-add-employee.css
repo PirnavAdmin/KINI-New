@@ -1,0 +1,67 @@
+/* Scoped to the Add Employee dialog; reference palette and dimensions. */
+.hae-backdrop { position: fixed; inset: 0; z-index: 10000; background: rgb(10 25 43 / 50%); backdrop-filter: blur(3px); }
+.hae-dialog { --hae-navy: #102e43; --hae-muted: #71819a; --hae-border: #d9e1ec; position: fixed; z-index: 10001; top: 50%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; width: min(1016px, calc(100vw - 40px)); max-height: calc(100dvh - 40px); overflow: hidden; border: 1px solid #e3e8ef; border-radius: 16px; background: #fff; color: var(--hae-navy); box-shadow: 0 24px 70px rgb(10 25 43 / 24%); font-family: inherit; outline: none; }
+.hae-dialog *, .hae-options * { box-sizing: border-box; }
+.hae-header { display: flex; align-items: center; gap: var(--hr-dialog-gap, 22px); flex-shrink: 0; padding: var(--hr-dialog-padding, 24px 26px); border-bottom: 1px solid #e9edf3; }
+.hae-header__icon { display: grid; place-items: center; flex-shrink: 0; width: var(--hr-dialog-icon, 64px); height: var(--hr-dialog-icon, 64px); border-radius: 50%; background: #e8f1ff; color: #2879ef; }
+.hae-header__icon svg { width: 28px; height: 28px; }
+.hae-header__copy { flex: 1; min-width: 0; }
+.hae-title { margin: 0; color: var(--hae-navy); font-size: 32px; line-height: 1.25; font-weight: 750; letter-spacing: -.025em; }
+.hae-title span { color: #ff980b; }
+.hae-subtitle { margin: 5px 0 0; color: var(--hae-muted); font-size: 15.5px; line-height: 1.5; }
+.hae-close { display: grid; place-items: center; flex-shrink: 0; width: 40px; height: 40px; padding: 0; border: 0; border-radius: 10px; background: transparent; color: #8b9bb1; cursor: pointer; }
+.hae-close:hover { background: #f2f5f9; color: var(--hae-navy); }
+.hae-close svg { width: 19px; height: 19px; }
+.hae-form { display: flex; flex: 1; flex-direction: column; min-height: 0; }
+.hae-body { min-height: var(--hr-dialog-body-min, 430px); overflow-y: auto; overscroll-behavior: contain; padding: var(--hr-dialog-padding, 26px); }
+.hae-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--hr-dialog-gap, 24px); }
+.hae-field { min-width: 0; }
+.hae-label { display: block; margin-bottom: 7px; color: #485b74; font-size: 14.5px; line-height: 20px; font-weight: 600; }
+.hae-label > span { color: #ef4444; }
+.hae-input, .hae-select { display: flex; align-items: center; width: 100%; min-width: 0; height: var(--hr-control-height, 56px); padding: 0; border: 1px solid var(--hae-border); border-radius: 11px; background: #fff; color: var(--hae-navy); transition: border-color .15s, box-shadow .15s; }
+.hae-field-icon { display: grid; place-items: center; align-self: stretch; flex-shrink: 0; width: var(--hr-dialog-field-icon, 51px); border-radius: 10px; background: #f4f6f9; color: #576c85; }
+.hae-field-icon svg { width: 20px; height: 20px; }
+.hae-input input { width: 100%; min-width: 0; height: 100%; padding: 0 13px; border: 0; border-radius: 0 10px 10px 0; outline: none; background: transparent; color: inherit; font: inherit; font-size: 16px; }
+.hae-input input::placeholder { color: #8492a8; opacity: 1; }
+.hae-input:focus-within, .hae-select:focus-visible, .hae-select[data-state="open"] { border-color: #86b4ff; box-shadow: 0 0 0 2px rgb(40 121 239 / 9%); outline: none; }
+.hae-select { gap: 13px; text-align: left; font: inherit; font-size: 15px; font-weight: 500; cursor: pointer; }
+.hae-select > span:nth-child(2) { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.hae-select-chevron { display: grid; place-items: center; margin-left: auto; padding-right: 13px; }
+.hae-select-chevron svg { width: 18px; height: 18px; transition: transform .15s; }
+.hae-select[data-state="open"] .hae-select-chevron svg { transform: rotate(180deg); }
+.hae-select[data-state="open"] .hae-field-icon { background: #eaf2ff; color: #2879ef; }
+.hae-options { z-index: 10002; width: var(--radix-select-trigger-width); max-width: calc(100vw - 24px); max-height: min(260px, var(--radix-select-content-available-height)); overflow: hidden; border: 1px solid #e5eaf2; border-radius: 12px; background: #fff; color: #102e43; box-shadow: 0 5px 14px rgb(10 25 43 / 12%); font-family: inherit; }
+.hae-options__list { padding: 8px; }
+.hae-option { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 42px; padding: 8px 24px; border-radius: 7px; font-size: 15px; cursor: pointer; outline: none; }
+.hae-option[data-highlighted], .hae-option[data-state="checked"] { background: #f0f6ff; }
+.hae-option svg, .hae-select-scroll svg { width: 17px; height: 17px; }
+.hae-select-scroll { display: grid; place-items: center; height: 24px; color: #71819a; }
+.hae-input.is-invalid, .hae-select.is-invalid { border-color: #dc4444; }
+.hae-field-error { margin: 6px 0 0; color: #b42318; font-size: 12.5px; line-height: 1.5; }
+.hae-error { margin: 22px 0 0; padding: 12px; border: 1px solid #f2c6c6; border-radius: 8px; background: #fff7f7; color: #b42318; font-size: 14px; }
+.hae-footer { display: flex; justify-content: flex-end; gap: var(--hr-gap, 14px); flex-shrink: 0; padding: var(--hr-dialog-padding, 20px 26px 22px); border-top: 1px solid #e9edf3; }
+.hae-button { display: inline-flex; align-items: center; justify-content: center; gap: 12px; min-height: var(--hr-control-height, 48px); border-radius: 12px; padding: var(--hr-dialog-button-padding, 10px 24px); font: inherit; font-size: 16px; font-weight: 600; cursor: pointer; transition: background .15s; }
+.hae-button svg { width: 19px; height: 19px; }
+.hae-button--cancel { min-width: 112px; border: 1px solid #d7d9de; background: #fff; color: #65758a; box-shadow: 0 2px 3px rgb(10 25 43 / 7%); }
+.hae-button--cancel:hover { background: #f4f6f9; }
+.hae-button--save { min-width: 128px; border: 1px solid #f59918; background: #ff9f1c; color: #102e43; box-shadow: 0 4px 10px rgb(255 159 28 / 20%); }
+.hae-button--save:hover { background: #f7940c; }
+.hae-button:focus-visible, .hae-close:focus-visible { outline: 2px solid #2879ef; outline-offset: 3px; }
+.hae-dialog button:disabled, .hae-dialog input:disabled { cursor: not-allowed; opacity: .6; }
+.hae-spinner { animation: hae-spin 1s linear infinite; }
+@keyframes hae-spin { to { transform: rotate(360deg); } }
+@media (max-width: 640px) {
+  .hae-dialog { width: calc(100vw - 24px); max-height: calc(100dvh - 24px); }
+  .hae-header { gap: var(--hr-dialog-gap, 12px); padding: var(--hr-dialog-padding, 20px 16px); }
+  .hae-header__icon { width: var(--hr-dialog-icon, 46px); height: var(--hr-dialog-icon, 46px); }
+  .hae-header__icon svg { width: 23px; height: 23px; }
+  .hae-title { font-size: 25px; }
+  .hae-subtitle { font-size: 13px; }
+  .hae-close { width: 32px; height: 36px; }
+  .hae-body { min-height: var(--hr-dialog-body-min, 0); padding: var(--hr-dialog-padding, 22px 16px); }
+  .hae-grid { grid-template-columns: minmax(0, 1fr); gap: var(--hr-dialog-gap, 20px); }
+  .hae-footer { padding: var(--hr-dialog-padding, 16px); gap: var(--hr-gap, 10px); }
+  .hae-button { flex: 1; min-width: 0; }
+}
+@media (max-height: 720px) { .hae-body { min-height: var(--hr-dialog-body-min, 0); } }
+@media (prefers-reduced-motion: reduce) { .hae-spinner { animation: none; } .hae-input, .hae-select, .hae-select-chevron svg, .hae-button { transition: none; } }

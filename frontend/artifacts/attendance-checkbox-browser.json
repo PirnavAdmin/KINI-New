@@ -1,0 +1,71 @@
+[
+  {
+    "width": 1440,
+    "aligned": true,
+    "widths": [
+      54,
+      340,
+      238,
+      213,
+      182,
+      182
+    ],
+    "colors": [
+      "rgb(124, 58, 237)",
+      "rgb(37, 99, 235)",
+      "rgb(234, 138, 11)",
+      "rgb(5, 150, 105)",
+      "rgb(239, 68, 68)",
+      "rgb(124, 58, 237)"
+    ],
+    "pageOverflow": 0,
+    "scrollable": false,
+    "checks": "checkbox removal, columns, alignment, pagination, sorting, date filtering, CSV export passed"
+  },
+  {
+    "width": 768,
+    "aligned": true,
+    "widths": [
+      60,
+      237,
+      165,
+      148,
+      125,
+      125
+    ],
+    "colors": [
+      "rgb(124, 58, 237)",
+      "rgb(37, 99, 235)",
+      "rgb(234, 138, 11)",
+      "rgb(5, 150, 105)",
+      "rgb(239, 68, 68)",
+      "rgb(124, 58, 237)"
+    ],
+    "pageOverflow": 0,
+    "scrollable": true,
+    "checks": "checkbox removal, columns, alignment, pagination, sorting, date filtering, CSV export passed"
+  },
+  {
+    "width": 390,
+    "aligned": true,
+    "widths": [
+      64,
+      237,
+      164,
+      147,
+      124,
+      124
+    ],
+    "colors": [
+      "rgb(124, 58, 237)",
+      "rgb(37, 99, 235)",
+      "rgb(234, 138, 11)",
+      "rgb(5, 150, 105)",
+      "rgb(239, 68, 68)",
+      "rgb(124, 58, 237)"
+    ],
+    "pageOverflow": 0,
+    "scrollable": true,
+    "checks": "checkbox removal, columns, alignment, pagination, sorting, date filtering, CSV export passed"
+  }
+]

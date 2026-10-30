@@ -1,0 +1,121 @@
+/* HR Employees page — desktop density.
+   CONTEXT: app-density.css already sets --ui-space: 0.9 at desktop (≥1024px),
+   which means ALL Tailwind utility classes (p-4, mt-4, gap-3, etc.) are already
+   scaled 10% smaller. The hr-portal.css uses hard-coded pixel values that do NOT
+   use --ui-space, so those need explicit reductions here.
+
+   CRITICAL STRUCTURAL FIX:
+   hr-portal.css line 51: @media (max-width: 1280px) { .hrp-kpis: 3 columns }
+   At 100% zoom on a 1280px monitor the CSS viewport is 1280px → this fires → 3 cols.
+   At 90% zoom on the same monitor CSS viewport = 1422px → doesn't fire → 5 cols.
+   Fix: override grid-template-columns with a higher-specificity (0,3,0) rule,
+   wrapped in min-width: 761px to preserve the tablet 2-column behavior.
+
+   Scope: [data-dashboard-role] .hrp-employees-pg
+   Added via HRPage className prop in EmployeeManagement.jsx. */
+
+/* ════════════════════════════════════════════════════════════════════
+   STRUCTURE — fix these FIRST before any density adjustments
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── KPI grid: force all cards into one row at desktop ───────────────
+   Base rule (max-width:1280px, 3 cols) has specificity (0,2,2).
+   Our selector (0,3,0) beats it, but we wrap in min-width:761px
+   so the tablet 2-column rule (@media max-width:760px) still applies. */
+@media (min-width: 761px) {
+  [data-dashboard-role] .hrp-employees-pg .hrp-kpis {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  }
+}
+/* Allow KPI cards to shrink below their content width so grid columns flex */
+[data-dashboard-role] .hrp-employees-pg .hrp-kpi { min-width: 0; }
+
+/* ── Bottom analytics: 3-column row at desktop ───────────────────────
+   Tailwind lg:grid-cols-3 (1024px) has specificity (0,1,0).
+   Our (0,3,0) inside min-width:641px ensures 3 cols and can't be beaten
+   by the JSX grid-cols-1 (no media query) at any desktop width. */
+@media (min-width: 641px) {
+  [data-dashboard-role] .hrp-employees-pg .hre-analytics {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+/* Allow analytics section cards to shrink below content min-width */
+[data-dashboard-role] .hrp-employees-pg .hre-analytics > section { min-width: 0; }
+
+/* ════════════════════════════════════════════════════════════════════
+   DENSITY — reduce fixed-px hr-portal.css values by ~10%
+   (Tailwind utility classes are already 10% smaller via --ui-space: 0.9)
+   ════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1023px) {
+/* ── Breadcrumb ──────────────────────────────────────────────────────
+   Base: margin-bottom 8px at (0,2,2). Our (0,3,0) wins. */
+[data-dashboard-role] .hrp-employees-pg .hrp-crumbs { margin-bottom: 6px; }
+
+/* ── Hero ────────────────────────────────────────────────────────────
+   The compound rule hrp-hero--v24 + hrp-hero--noscript + :has(.hrp-hero__actions)
+   sets min-height: 262px at (0,4,2). Need (0,5,0)+ to beat it:
+   achieved by 5 class/attribute segments in our selector. */
+[data-dashboard-role] .hrp-employees-pg .hrp-hero.hrp-hero--v24.hrp-hero--noscript {
+  min-height: 200px;
+  padding: 16px 26px;
+}
+/* Sub-heading margin-top (base: 12px from .hrp-hero--plain at (0,2,2)) */
+[data-dashboard-role] .hrp-employees-pg .hrp-hero__sub {
+  font-size: 14px;
+  line-height: 1.35;
+  margin-top: 9px;
+}
+/* Action buttons (base: top:18px right:22px at (0,3,2) → need (0,4,0)) */
+[data-dashboard-role] .hrp-employees-pg .hrp-hero .hrp-hero__actions {
+  top: 12px;
+  right: 14px;
+  gap: 8px;
+}
+
+/* ── KPI grid gaps ───────────────────────────────────────────────────
+   Base: gap 12px, margin-top 12px at (0,2,2). Our (0,3,0) wins. */
+[data-dashboard-role] .hrp-employees-pg .hrp-kpis {
+  gap: 10px;
+  margin-top: 10px;
+}
+
+/* ── KPI cards ───────────────────────────────────────────────────────
+   Base: min-height 92px, padding 14px 14px 18px, gap 12px at (0,2,2). */
+[data-dashboard-role] .hrp-employees-pg .hrp-kpi {
+  min-height: 82px;
+  padding: 12px 12px 16px;
+  gap: 10px;
+}
+/* Base icon: 52×52px, svg 25×25px */
+[data-dashboard-role] .hrp-employees-pg .hrp-kpi__icon { width: 46px; height: 46px; }
+[data-dashboard-role] .hrp-employees-pg .hrp-kpi__icon svg { width: 22px; height: 22px; }
+/* Base value font: 25px */
+[data-dashboard-role] .hrp-employees-pg .hrp-kpi__value { font-size: 22px; }
+/* Base wave height: 34px */
+[data-dashboard-role] .hrp-employees-pg .hrp-kpi__wave { height: 30px; }
+
+/* ── Employee list section header ────────────────────────────────────
+   Base: gap 14px, margin-bottom 14px, icon 46px, h2 19px, p 13.5px */
+[data-dashboard-role] .hrp-employees-pg .hre-list-head { gap: 10px; margin-bottom: 10px; }
+[data-dashboard-role] .hrp-employees-pg .hre-list-head__icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+}
+[data-dashboard-role] .hrp-employees-pg .hre-list-head__icon svg { width: 18px; height: 18px; }
+[data-dashboard-role] .hrp-employees-pg .hre-list-head h2 { font-size: 16px; }
+[data-dashboard-role] .hrp-employees-pg .hre-list-head p { font-size: 12.5px; margin-top: 1px; }
+
+/* ── Table card ──────────────────────────────────────────────────────
+   Tailwind sm:p-5 at desktop gives ~18px after --ui-space scaling.
+   Override to 12px via selector (0,3,0) > Tailwind's single-class (0,1,0). */
+[data-dashboard-role] .hrp-employees-pg .hre-table-card { padding: 12px; }
+[data-dashboard-role] .hrp-employees-pg { padding-left: 8px; }
+
+}
+
+/* Employees-only table card; heroes and KPIs use shared desktop tokens. */
+@media (min-width: 1024px) {
+  [data-dashboard-role] .hrp-employees-pg .hre-table-card { padding: 12px; }
+}

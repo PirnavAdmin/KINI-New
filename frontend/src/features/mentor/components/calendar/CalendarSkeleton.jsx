@@ -1,0 +1,1 @@
+export default function CalendarSkeleton(){return <div className="animate-pulse space-y-4"><div className="h-14 rounded-xl bg-slate-200"/><div className="grid grid-cols-5 gap-3">{Array.from({length:5},(_,i)=><div key={i} className="h-24 rounded-xl bg-slate-200"/>)}</div><div className="h-[600px] rounded-2xl bg-slate-200"/></div>}

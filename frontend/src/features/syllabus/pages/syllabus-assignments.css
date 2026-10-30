@@ -1,0 +1,45 @@
+/* The assignment screen uses the shared syllabus banner, with its art held
+   in a dedicated right-side column and clear space for the title/features. */
+@media (min-width: 861px) {
+  html body [data-dashboard-role] .hr-syllabus-assignments .hr-syllabus-assignments__hero.hrp-hero--v24 {
+    --hr-hero-height: 218px;
+    --hr-hero-padding: 20px 28px;
+    overflow: hidden;
+  }
+  html body [data-dashboard-role] .hr-syllabus-assignments .hr-syllabus-assignments__hero .hrp-hero__copy {
+    width: 48%;
+    max-width: 48%;
+  }
+  html body [data-dashboard-role] .hr-syllabus-assignments .hr-syllabus-assignments__hero .hrp-hero__art--v24 {
+    left: auto !important;
+    right: 0 !important;
+    width: 48% !important;
+    top: 0 !important;
+    bottom: 0;
+    justify-content: flex-end;
+    align-items: flex-end;
+  }
+  html body [data-dashboard-role] .hr-syllabus-assignments .hr-syllabus-assignments__hero .hrp-hero__art--v24 img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    object-position: right bottom;
+  }
+}
+
+@media (min-width: 861px) and (max-width: 1280px) {
+  html body [data-dashboard-role] .hr-syllabus-assignments .hr-syllabus-assignments__hero .hrp-hero__copy {
+    width: 50%;
+    max-width: 50%;
+  }
+  html body [data-dashboard-role] .hr-syllabus-assignments .hr-syllabus-assignments__hero .hrp-hero__art--v24 {
+    width: 46% !important;
+    right: 0 !important;
+  }
+}
+
+@media (max-width: 860px) {
+  html body [data-dashboard-role] .hr-syllabus-assignments .hr-syllabus-assignments__hero {
+    min-height: 176px;
+  }
+}

@@ -1,0 +1,365 @@
+/* Kini landing styles, merged into the Kini app.
+   Imported from src/index.css so it shares the app's single Tailwind build
+   (no second `@import "tailwindcss"`) and the app's class-based `dark`
+   variant. Everything that would change the rest of the app is scoped to
+   `body.kini-landing`, which LandingLayout sets while a landing route is
+   mounted (on <body> so the modals' portals are inside the scope too):
+   - tokens whose names the app already uses are redefined only there;
+   - body / heading / focus / selection / scrollbar rules apply only there.
+   Only tokens and utilities the app does not define are registered globally. */
+
+/* Landing-only tokens: names the Kini app does not use, so registering them
+   globally just makes the landing's utilities (font-display, bg-surface-hover,
+   text-foreground-muted, bg-ink-950, …) available. */
+@theme {
+  --color-primary-950: #071a2b;
+  --color-secondary-950: #422207;
+
+  --color-tertiary: #f39924;
+  --color-button-border: #f39924;
+
+  --color-brand-blue: #133b5d;
+  --color-brand-green: #f39924;
+  --color-brand-gold: #f39924;
+
+  --color-background-secondary: #f8fafc;
+  --color-background-tertiary: #f1f5f9;
+
+  --color-surface-hover: #f8fafc;
+  --color-surface-active: #f1f5f9;
+
+  --color-foreground-secondary: #475569;
+  --color-foreground-muted: #64748b;
+  --color-foreground-disabled: #94a3b8;
+
+  --color-border-subtle: #f1f5f9;
+  --color-border-strong: #cbd5e1;
+
+  --color-success-bg: #f0fdf4;
+  --color-warning-bg: #fff4e5;
+  --color-error: #dc2626;
+  --color-error-bg: #fef2f2;
+  --color-info-bg: #eef3f8;
+
+  --color-ink-950: #071a2b;
+  --color-ink-900: #0d263d;
+  --color-ink-800: #102f49;
+
+  --color-porcelain: #ffffff;
+  --color-brand: #133b5d;
+  --color-brand-indigo: #133b5d;
+  --color-brand-coral: #b6630f;
+
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, sans-serif;
+
+  --radius-card: 1rem;
+  --radius-pill: 9999px;
+
+  --shadow-card-dark: 0 1px 2px rgba(0, 0, 0, 0.2), 0 12px 32px -8px rgba(0, 0, 0, 0.4);
+
+  --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Single source of truth for the dark-mode landing background. */
+  --gradient-app-dark: linear-gradient(135deg, #071a2b 0%, #0d263d 50%, #0a2136 100%);
+}
+
+@layer base {
+  /* Landing values for tokens the Kini app also defines. The app maps
+     bg-primary / bg-background / text-foreground / border-border to the
+     shadcn variables (--primary, --background, …) through `@theme inline`,
+     so those are redefined here too. */
+  .kini-landing {
+    /* KINI brand ramp — navy, #133B5D at step 700. */
+    --color-primary: #133b5d;
+    --color-primary-50: #eef3f8;
+    --color-primary-100: #d9e3ee;
+    --color-primary-200: #b3c7dd;
+    --color-primary-300: #8ca9c9;
+    --color-primary-400: #5e82a8;
+    --color-primary-500: #35608a;
+    --color-primary-600: #1f4a70;
+    --color-primary-700: #133b5d;
+    --color-primary-800: #0f2e49;
+    --color-primary-900: #0b2338;
+
+    /* KINI brand ramp — orange, #F39924 at step 500. */
+    --color-secondary: #f39924;
+    --color-secondary-50: #fff4e5;
+    --color-secondary-100: #fee6c2;
+    --color-secondary-200: #fdcf8a;
+    --color-secondary-300: #fbb454;
+    --color-secondary-400: #f7a62e;
+    --color-secondary-500: #f39924;
+    --color-secondary-600: #db7f14;
+    --color-secondary-700: #b6630f;
+    --color-secondary-800: #914e12;
+    --color-secondary-900: #764212;
+
+    --color-button-primary-bg: #f39924;
+    --color-button-primary-text: #133b5d;
+    --color-button-secondary-bg: #133b5d;
+    --color-button-secondary-text: #f39924;
+
+    --color-background: #ffffff;
+    --color-surface: #ffffff;
+    --color-foreground: #133b5d;
+    --color-border: #e2e8f0;
+
+    --color-success: #16a34a;
+    --color-warning: #f39924;
+    --color-info: #133b5d;
+
+    --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+
+    --shadow-card: 0 1px 2px rgba(15, 23, 42, 0.04), 0 12px 32px -8px rgba(15, 23, 42, 0.08);
+    --shadow-elevated: 0 8px 16px -4px rgba(19, 59, 93, 0.16), 0 24px 48px -12px rgba(19, 59, 93, 0.2);
+
+    --primary: var(--color-primary);
+    --secondary: var(--color-secondary);
+    --background: var(--color-background);
+    --foreground: var(--color-foreground);
+    --border: var(--color-border);
+  }
+
+  /* Dark-mode values for the semantic tokens. */
+  :where(.dark) .kini-landing {
+    --color-background: #071a2b;
+    --color-background-secondary: #0d263d;
+    --color-background-tertiary: #123655;
+
+    --color-surface: #102f49;
+    --color-surface-hover: #16395a;
+    --color-surface-active: #1b4266;
+
+    --color-foreground: #f8fafc;
+    --color-foreground-secondary: #cbd5e1;
+    --color-foreground-muted: #94a3b8;
+    --color-foreground-disabled: rgba(248, 250, 252, 0.35);
+
+    --color-border: rgba(255, 255, 255, 0.1);
+    --color-border-subtle: rgba(255, 255, 255, 0.06);
+    --color-border-strong: rgba(255, 255, 255, 0.16);
+
+    --color-success: #34d399;
+    --color-success-bg: rgba(16, 185, 129, 0.12);
+    --color-warning: #f39924;
+    --color-warning-bg: rgba(243, 153, 36, 0.15);
+    --color-error: #f87171;
+    --color-error-bg: rgba(239, 68, 68, 0.12);
+    --color-info: #5e82a8;
+    --color-info-bg: rgba(94, 130, 168, 0.15);
+  }
+
+  html:has(> body.kini-landing) {
+    scroll-behavior: smooth;
+    scrollbar-color: var(--color-border-strong) transparent;
+  }
+
+  html.dark:has(> body.kini-landing) {
+    scrollbar-color: rgba(255, 255, 255, 0.18) transparent;
+  }
+
+  /* Themed scrollbar so it doesn't stay a light-mode bar over a dark page. */
+  html:has(> body.kini-landing)::-webkit-scrollbar,
+  .kini-landing ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  html:has(> body.kini-landing)::-webkit-scrollbar-track,
+  .kini-landing ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  html:has(> body.kini-landing)::-webkit-scrollbar-thumb,
+  .kini-landing ::-webkit-scrollbar-thumb {
+    background-color: #cbd5e1;
+    border-radius: 9999px;
+  }
+  html.dark:has(> body.kini-landing)::-webkit-scrollbar-thumb,
+  :where(.dark) .kini-landing ::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.18);
+  }
+
+  .kini-landing :where(h1, h2, h3, h4) {
+    @apply font-display;
+  }
+
+  .kini-landing ::selection {
+    background: rgba(19, 59, 93, 0.25);
+    color: inherit;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .kini-landing *,
+    .kini-landing *::before,
+    .kini-landing *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+/* Unlayered, like the app's own `html body` rules in styles/brand-theme.css,
+   and one class more specific so the landing's page background, text colour
+   and focus ring win while a landing route is mounted.
+   overflow-x: clip (not hidden) contains the horizontal bleed of AOS's
+   untriggered fade-left/fade-right elements without creating a scroll
+   container, so position: sticky keeps working. */
+html body.kini-landing {
+  @apply font-body text-slate-900 antialiased;
+  background: #eaeaec;
+  overflow-x: clip;
+}
+
+/* Dark-mode landing background: fixed + cover so it stays one seamless
+   backdrop as the page scrolls. */
+html.dark body.kini-landing {
+  background: var(--gradient-app-dark);
+  background-size: cover;
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+html body.kini-landing :focus-visible {
+  outline: 2px solid var(--color-primary-700);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Navy is too low-contrast against the dark navy backdrop to work as a
+   focus ring there, so dark mode swaps to the brand orange instead. */
+html.dark body.kini-landing :focus-visible {
+  outline-color: var(--color-secondary-500);
+}
+
+/* The app forces a beige border and orange focus glow on every form field;
+   hand landing fields back to their own Tailwind classes. */
+html body.kini-landing :is(input, select, textarea),
+html body.kini-landing :is(input, select, textarea):focus {
+  border-color: revert-layer;
+  box-shadow: revert-layer;
+}
+
+/* Registered via @utility (not a plain .class in @layer utilities) so that
+   Tailwind's variant engine can generate dark:bg-app-dark-gradient. */
+@utility bg-app-dark-gradient {
+  background-image: var(--gradient-app-dark);
+}
+
+/* :where() keeps these at the specificity they had in the standalone landing
+   while keeping the class names (some of which the app also uses) scoped. */
+@layer utilities {
+  :where(.kini-landing) .text-ascent {
+    background: linear-gradient(92deg, var(--color-primary-700) 0%, var(--color-secondary-500) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  :where(.kini-landing) .bg-ascent-gradient {
+    background-image: linear-gradient(92deg, var(--color-primary-700) 0%, var(--color-secondary-500) 100%);
+  }
+
+  :where(.kini-landing) .bg-ascent-gradient-vert {
+    background-image: linear-gradient(180deg, var(--color-primary-700) 0%, var(--color-secondary-500) 100%);
+  }
+
+  :where(.kini-landing) .glass-dark {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  :where(.kini-landing) .glass-light {
+    background: rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.8);
+  }
+
+  :where(.kini-landing) .shadow-glow {
+    box-shadow: 0 0 0 1px rgba(19, 59, 93, 0.12), 0 20px 50px -20px rgba(19, 59, 93, 0.45);
+  }
+
+  :where(.kini-landing) .shadow-glow-primary {
+    box-shadow: 0 0 0 1px rgba(19, 59, 93, 0.15), 0 20px 50px -18px rgba(19, 59, 93, 0.55);
+  }
+
+  :where(.kini-landing) .shadow-card-lg {
+    box-shadow: var(--shadow-elevated);
+  }
+
+  :where(.kini-landing) .rounded-2\.5xl {
+    border-radius: 1.25rem;
+  }
+
+  :where(.kini-landing) .rounded-3\.5xl {
+    border-radius: 1.75rem;
+  }
+
+  :where(.kini-landing) .bg-brand-gradient {
+    background-image: linear-gradient(92deg, var(--color-primary-500) 0%, var(--color-secondary-500) 100%);
+  }
+
+  :where(.kini-landing) .bg-skill-ring {
+    background-image: conic-gradient(
+      from 180deg,
+      var(--color-primary-500),
+      var(--color-secondary-500),
+      var(--color-brand-coral),
+      var(--color-primary-500)
+    );
+  }
+
+  :where(.kini-landing) .animate-float {
+    animation: landing-float 6s ease-in-out infinite;
+  }
+
+  :where(.kini-landing) .animate-spin-slow {
+    animation: landing-spin-slow 18s linear infinite;
+  }
+
+  :where(.kini-landing) .bg-grid {
+    background-image:
+      linear-gradient(rgba(148, 163, 184, 0.09) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(148, 163, 184, 0.09) 1px, transparent 1px);
+    background-size: 44px 44px;
+  }
+
+  :where(.kini-landing) .noise::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    opacity: 0.35;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.4'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+  }
+
+  :where(.kini-landing) .eyebrow {
+    @apply font-mono text-[11px] uppercase tracking-[0.28em];
+  }
+}
+
+/* Prefixed so they don't replace the app's own `float` / `spin-slow`. */
+@keyframes landing-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes landing-spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,0 +1,11 @@
+import { beforeEach, expect, it, vi } from 'vitest';
+import { loadStudentPayments, normalizeStudentPayment } from '../../src/shared/services/studentPaymentData';
+import invoiceService from '../../src/shared/services/invoiceService';
+import { paymentApi } from '../../src/shared/services/apiServices';
+vi.mock('../../src/shared/services/invoiceService',()=>({default:{list:vi.fn()}}));
+vi.mock('../../src/shared/services/apiServices',()=>({paymentApi:{paymentHistory:vi.fn()}}));
+beforeEach(()=>vi.clearAllMocks());
+it.each(['UPI','Card','NetBanking'])('preserves real method %s in history and receipt',method=>{expect(normalizeStudentPayment({paymentMethod:method,status:'Paid'})).toMatchObject({method,status:'Paid'});});
+it('does not invent missing method or pending status',()=>{expect(normalizeStudentPayment({})).toMatchObject({method:'Not available',status:'Not available',amount:null});});
+it('uses verified userId history query and excludes other owners',async()=>{paymentApi.paymentHistory.mockResolvedValue([{userId:22,studentId:5,paymentMethod:'Card'},{userId:99,studentId:6,paymentMethod:'UPI'}]);const rows=await loadStudentPayments(5,22);expect(paymentApi.paymentHistory).toHaveBeenCalledWith({userId:22});expect(rows).toHaveLength(1);expect(rows[0].method).toBe('Card');});
+it('never substitutes studentId for userId or includes unrelated invoices',async()=>{invoiceService.list.mockResolvedValue([{studentId:5,amount:100},{studentId:6,amount:200},{amount:300}]);const rows=await loadStudentPayments(5);expect(paymentApi.paymentHistory).not.toHaveBeenCalled();expect(rows).toHaveLength(1);expect(rows[0].amount).toBe(100);});

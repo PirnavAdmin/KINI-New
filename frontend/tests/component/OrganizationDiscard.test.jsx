@@ -1,0 +1,23 @@
+import { fireEvent, render, screen, within } from '@testing-library/react';
+import { expect, it, vi } from 'vitest';
+import TrainerForm from '../../src/pages/trainers/TrainerForm';
+it('X and Escape keep unsaved mentor data; discard closes the form', () => {
+  const onClose = vi.fn();
+  render(<TrainerForm open onClose={onClose} onSave={vi.fn()} />);
+  const input = screen.getByPlaceholderText('e.g. Rahul Sharma');
+  fireEvent.change(input, { target: { value: 'Anne-Marie Smith' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Close', exact: true }));
+  const title = screen.getByText('Discard unsaved changes?');
+  fireEvent.click(within(title.parentElement).getByRole('button', { name: 'Close', exact: true }));
+  expect(screen.queryByText('Discard unsaved changes?')).not.toBeInTheDocument();
+  expect(input).toHaveValue('Anne-Marie Smith');
+  expect(onClose).not.toHaveBeenCalled();
+  fireEvent.keyDown(window, { key: 'Escape' });
+  expect(screen.getByText('Discard unsaved changes?')).toBeInTheDocument();
+  fireEvent.keyDown(window, { key: 'Escape' });
+  expect(screen.queryByText('Discard unsaved changes?')).not.toBeInTheDocument();
+  expect(input).toHaveValue('Anne-Marie Smith');
+  fireEvent.keyDown(window, { key: 'Escape' });
+  fireEvent.click(screen.getByRole('button', { name: 'Discard', exact: true }));
+  expect(onClose).toHaveBeenCalledOnce();
+});

@@ -1,0 +1,227 @@
+{
+  "report": [
+    {
+      "scenario": "empty",
+      "width": 1249.25,
+      "columns": "428.828px 379.828px 416.578px",
+      "gap": "12px",
+      "cards": [
+        {
+          "width": 428.828125,
+          "height": 424,
+          "radius": "14px",
+          "heading": "16px"
+        },
+        {
+          "width": 379.828125,
+          "height": 424,
+          "radius": "14px",
+          "heading": "16px"
+        },
+        {
+          "width": 416.578125,
+          "height": 424,
+          "radius": "14px",
+          "heading": "16px"
+        }
+      ],
+      "donut": 180,
+      "images": [
+        {
+          "src": "/assets/Org/dashboard/learning-books.png",
+          "loaded": true
+        },
+        {
+          "src": "/assets/Org/dashboard/live-camera.png",
+          "loaded": true
+        }
+      ]
+    },
+    {
+      "scenario": "empty",
+      "width": 1093.25,
+      "columns": "374.234px 331.469px 363.547px",
+      "gap": "12px",
+      "cards": [
+        {
+          "width": 374.234375,
+          "height": 424,
+          "radius": "14px",
+          "heading": "16px"
+        },
+        {
+          "width": 331.46875,
+          "height": 424,
+          "radius": "14px",
+          "heading": "16px"
+        },
+        {
+          "width": 363.546875,
+          "height": 424,
+          "radius": "14px",
+          "heading": "16px"
+        }
+      ],
+      "donut": 168.015625,
+      "images": [
+        {
+          "src": "/assets/Org/dashboard/learning-books.png",
+          "loaded": true
+        },
+        {
+          "src": "/assets/Org/dashboard/live-camera.png",
+          "loaded": true
+        }
+      ]
+    },
+    {
+      "scenario": "empty",
+      "width": 366,
+      "columns": "366px",
+      "gap": "12px",
+      "cards": [
+        {
+          "width": 366,
+          "height": 360,
+          "radius": "14px",
+          "heading": "16px"
+        },
+        {
+          "width": 366,
+          "height": 428,
+          "radius": "14px",
+          "heading": "16px"
+        },
+        {
+          "width": 366,
+          "height": 370.09375,
+          "radius": "14px",
+          "heading": "16px"
+        }
+      ],
+      "donut": 175,
+      "images": [
+        {
+          "src": "/assets/Org/dashboard/learning-books.png",
+          "loaded": true
+        },
+        {
+          "src": "/assets/Org/dashboard/live-camera.png",
+          "loaded": true
+        }
+      ]
+    },
+    {
+      "scenario": "populated",
+      "width": 1249.25,
+      "columns": "428.828px 379.828px 416.578px",
+      "gap": "12px",
+      "cards": [
+        {
+          "width": 428.828125,
+          "height": 424,
+          "radius": "14px",
+          "heading": "16px"
+        },
+        {
+          "width": 379.828125,
+          "height": 424,
+          "radius": "14px",
+          "heading": "16px"
+        },
+        {
+          "width": 416.578125,
+          "height": 424,
+          "radius": "14px",
+          "heading": "16px"
+        }
+      ],
+      "donut": 180,
+      "images": [
+        {
+          "src": "/assets/Org/dashboard/learning-books.png",
+          "loaded": true
+        },
+        {
+          "src": "/assets/Org/dashboard/live-camera.png",
+          "loaded": true
+        }
+      ]
+    },
+    {
+      "scenario": "populated",
+      "width": 1093.25,
+      "columns": "374.234px 331.469px 363.547px",
+      "gap": "12px",
+      "cards": [
+        {
+          "width": 374.234375,
+          "height": 424,
+          "radius": "14px",
+          "heading": "16px"
+        },
+        {
+          "width": 331.46875,
+          "height": 424,
+          "radius": "14px",
+          "heading": "16px"
+        },
+        {
+          "width": 363.546875,
+          "height": 424,
+          "radius": "14px",
+          "heading": "16px"
+        }
+      ],
+      "donut": 168.015625,
+      "images": [
+        {
+          "src": "/assets/Org/dashboard/learning-books.png",
+          "loaded": true
+        },
+        {
+          "src": "/assets/Org/dashboard/live-camera.png",
+          "loaded": true
+        }
+      ]
+    },
+    {
+      "scenario": "populated",
+      "width": 366,
+      "columns": "366px",
+      "gap": "12px",
+      "cards": [
+        {
+          "width": 366,
+          "height": 427,
+          "radius": "14px",
+          "heading": "16px"
+        },
+        {
+          "width": 366,
+          "height": 428,
+          "radius": "14px",
+          "heading": "16px"
+        },
+        {
+          "width": 366,
+          "height": 370.09375,
+          "radius": "14px",
+          "heading": "16px"
+        }
+      ],
+      "donut": 175,
+      "images": [
+        {
+          "src": "/assets/Org/dashboard/learning-books.png",
+          "loaded": true
+        },
+        {
+          "src": "/assets/Org/dashboard/live-camera.png",
+          "loaded": true
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

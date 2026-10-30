@@ -1,0 +1,62 @@
+[
+  {
+    "id": "library-react-hooks-cheat-sheet",
+    "title": "React Hooks Cheat Sheet",
+    "course": "Full Stack MERN",
+    "type": "pdf",
+    "fileName": "react-hooks-cheat-sheet.pdf",
+    "url": "/resources/learning/react-hooks-cheat-sheet.pdf",
+    "size": "6.9 KB",
+    "description": "Built-in starter study guide with examples and practice tasks. Original learning material; not an HR upload."
+  },
+  {
+    "id": "library-python-pandas-guide",
+    "title": "Python Pandas Guide",
+    "course": "Python Data Science",
+    "type": "pdf",
+    "fileName": "python-pandas-guide.pdf",
+    "url": "/resources/learning/python-pandas-guide.pdf",
+    "size": "7.1 KB",
+    "description": "Built-in starter study guide with examples and practice tasks. Original learning material; not an HR upload."
+  },
+  {
+    "id": "library-express-api-template",
+    "title": "Express API Template",
+    "course": "Full Stack MERN",
+    "type": "code",
+    "fileName": "express-api-template.mjs",
+    "url": "/resources/learning/express-api-template.mjs",
+    "size": "1.3 KB",
+    "description": "Built-in teaching example. Setup instructions are included in the file."
+  },
+  {
+    "id": "library-ml-model-guide",
+    "title": "ML Model Guide",
+    "course": "AI & ML",
+    "type": "pdf",
+    "fileName": "ml-model-guide.pdf",
+    "url": "/resources/learning/ml-model-guide.pdf",
+    "size": "7.6 KB",
+    "description": "Built-in starter study guide with examples and practice tasks. Original learning material; not an HR upload."
+  },
+  {
+    "id": "library-typescript-handbook",
+    "title": "TypeScript Handbook",
+    "course": "TypeScript",
+    "type": "pdf",
+    "fileName": "typescript-handbook.pdf",
+    "url": "/resources/learning/typescript-handbook.pdf",
+    "size": "7.3 KB",
+    "description": "Built-in starter study guide with examples and practice tasks. Original learning material; not an HR upload."
+  },
+  {
+    "id": "library-nodejs-best-practices",
+    "title": "Node.js Best Practices",
+    "course": "Node.js",
+    "type": "code",
+    "fileName": "nodejs-best-practices.mjs",
+    "url": "/resources/learning/nodejs-best-practices.mjs",
+    "size": "1.3 KB",
+    "description": "Built-in teaching example. Setup instructions are included in the file."
+  }
+]

@@ -1,0 +1,1303 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap");
+@import "tailwindcss";
+@import "./styles/tokens.css";
+@import "./styles/dashboard-polish.css";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@import "@fontsource/sora";
+/* Public landing pages; scoped to body.kini-landing (see the file header). */
+@import "./landing/index.css";
+
+/* Mentor dashboard section headers must stay readable even when the legacy
+   dashboard-polish cascade is loaded after the page utility classes. */
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="mentor-section-header"] {
+  background: #0b3558 !important;
+  background-color: #0b3558 !important;
+  border-color: #0b3558 !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="mentor-section-header"] h2 {
+  color: #ffffff !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="mentor-section-header"] p {
+  color: #cbdce9 !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="mentor-section-header"] button {
+  color: #ffbf70 !important;
+}
+
+@custom-variant dark (&:is(.dark *));
+
+body {
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    system-ui,
+    sans-serif;
+  background: var(--app-background);
+  color: #17324a;
+  margin: 0;
+  min-width: 320px;
+  min-height: 100dvh;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+:root {
+  --brand-primary: #f39924;
+  --brand-mid: #133b5d;
+  --brand-teal: #133b5d;
+  --brand-dark: #0e2d47;
+  --brand-gradient: linear-gradient(135deg, #133b5d 0%, #0e2d47 100%);
+  --app-background: #F5F9FD;
+  --bg-page: var(--app-background);
+  --bg-card: #ffffff;
+  --bg-sidebar: #133b5d;
+  --text-primary: #17324a;
+  --text-secondary: #5f7180;
+  --text-muted: #5f7180;
+  --border: #d8d1c3;
+  --border-strong: #d5cec3;
+  --border-brand: #ffcf99;
+  --shadow-brand: 0 4px 16px rgba(9, 45, 78, 0.08);
+  --shadow-focus: 0 0 0 3px rgba(255, 136, 0, 0.16);
+  --font-sans:
+    Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.font-mono,
+[data-type="number"],
+.stat-value,
+.student-id {
+  font-family: var(--font-mono) !important;
+}
+
+.gradient-text {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.field {
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.75rem;
+  background: #ffffff;
+  padding: 0.625rem 0.75rem;
+  color: #0f172a;
+  font-size: 0.875rem;
+  outline: none;
+}
+
+.field:focus {
+  border-color: #0f55f7;
+  box-shadow: 0 0 0 3px rgba(15, 85, 247, 0.1);
+}
+
+@media (min-width: 1024px) {
+  /* Organization pages share a compact desktop workspace. Individual tables and
+     forms retain their own responsive behavior, while page-level whitespace is
+     kept consistent across the admin area. */
+  .organization-workspace > main {
+    padding: 0.5rem 1rem 1rem !important;
+  }
+
+  .organization-workspace > main > div[class*="max-w"] {
+    max-width: 1600px;
+  }
+
+  /* Mentor pages were implemented over time with two different content
+     widths. Keep every legacy max-w-7xl screen aligned with the current
+     dashboard workspace, without changing any table or mobile behavior. */
+  [data-dashboard-role="mentor"] .organization-workspace > div[class*="max-w-7xl"] {
+    max-width: 1500px !important;
+    padding: 0.75rem 1.25rem !important;
+  }
+}
+
+/* Keep the desktop login usable on laptops using 125%-150% OS display scaling. */
+@media (min-width: 1024px) and (max-height: 700px) {
+  .register-page {
+    padding: 0.5rem;
+  }
+
+  .register-shell {
+    height: calc(100dvh - 1rem);
+    min-height: 0;
+    border-radius: 1.25rem;
+  }
+
+  .register-actions {
+    top: 0.65rem;
+    right: 0.65rem;
+    gap: 0.4rem;
+  }
+
+  .register-action {
+    width: 36px;
+    height: 36px;
+    border-radius: 0.7rem;
+  }
+
+  .register-panel {
+    padding: 0.7rem 1.25rem;
+  }
+
+  .register-scroll {
+    align-items: flex-start;
+    padding-block: 0.2rem;
+  }
+
+  .register-scroll:has(.account-selector) {
+    align-items: center;
+  }
+
+  .register-scroll:has(.student-registration-details) {
+    align-items: center;
+  }
+
+  .account-selector {
+    max-width: 430px;
+    padding-inline: 0;
+  }
+
+  .account-selector-header {
+    margin-bottom: 0.7rem;
+  }
+
+  .account-selector-kicker {
+    font-size: 0.6rem;
+  }
+
+  .account-selector-title {
+    margin-block: 0.25rem 0.35rem !important;
+    font-size: 1.5rem !important;
+  }
+
+  .account-selector-subtitle,
+  .account-selector-footer {
+    font-size: 0.7rem;
+  }
+
+  .account-type-card {
+    margin-bottom: 0.55rem;
+    padding: 0.7rem;
+    border-width: 1px;
+  }
+
+  .account-type-content {
+    gap: 0.7rem;
+  }
+
+  .account-type-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 0.65rem;
+  }
+
+  .account-type-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .account-type-content h3 {
+    font-size: 0.82rem;
+  }
+
+  .account-type-features {
+    margin-top: 0.3rem;
+    font-size: 0.68rem;
+    line-height: 1rem;
+  }
+
+  .account-type-features > :not(:first-child) {
+    margin-top: 0.05rem;
+  }
+
+  .account-type-cta {
+    margin-top: 0.45rem;
+    font-size: 0.65rem;
+  }
+
+  .student-registration-form {
+    max-width: 430px;
+    padding-inline: 0;
+  }
+
+  .student-registration-header {
+    margin-bottom: 0.65rem;
+  }
+
+  .student-registration-back {
+    margin-bottom: 0.4rem;
+    font-size: 0.68rem;
+  }
+
+  .student-registration-kicker {
+    font-size: 0.6rem;
+  }
+
+  .student-registration-title {
+    margin-bottom: 0.3rem !important;
+    font-size: 1.45rem !important;
+    line-height: 1.12 !important;
+  }
+
+  .student-registration-subtitle {
+    max-width: 390px;
+    font-size: 0.68rem;
+    line-height: 1rem;
+  }
+
+  .student-registration-fields,
+  .student-personal-fields {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .student-registration-fields {
+    gap: 0.5rem;
+  }
+
+  .student-personal-fields {
+    gap: 0.45rem;
+  }
+
+  .student-registration-fields > *,
+  .student-personal-fields > * {
+    margin-block-start: 0 !important;
+  }
+
+  .student-name-grid {
+    gap: 0.45rem;
+  }
+
+  .registration-floating-input {
+    gap: 0.2rem;
+  }
+
+  .registration-floating-input > label {
+    font-size: 0.65rem;
+    line-height: 0.85rem;
+  }
+
+  .registration-input-shell {
+    height: 38px !important;
+    border-radius: 0.75rem;
+  }
+
+  .registration-input-shell input {
+    font-size: 0.7rem;
+  }
+
+  .registration-input-shell svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .registration-primary-button {
+    height: 38px !important;
+    border-radius: 0.75rem;
+    font-size: 0.72rem !important;
+  }
+
+  .registration-otp-input {
+    width: 38px !important;
+    height: 38px !important;
+    font-size: 0.8rem;
+  }
+
+  .student-registration-footer {
+    font-size: 0.68rem;
+  }
+
+  .login-panel {
+    justify-content: flex-start;
+    padding-block: 3.5rem 0.75rem;
+    scrollbar-gutter: stable;
+    scroll-padding-top: 3.5rem;
+  }
+
+  .login-actions {
+    top: 0.75rem;
+    right: 0.9rem;
+  }
+
+  .login-form-shell {
+    max-width: 330px;
+    flex: 0 0 auto;
+    justify-content: flex-start;
+    padding: 0.4rem 0.8rem 0.55rem;
+  }
+
+  .login-form-header {
+    margin-bottom: 0.4rem;
+  }
+
+  .login-form-title {
+    font-size: 1.3rem;
+    line-height: 1.15;
+  }
+
+  .login-form-subtitle {
+    margin-top: 0.15rem;
+    font-size: 0.65rem;
+    line-height: 1rem;
+  }
+
+  .login-form-fields {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+  }
+
+  .login-form-fields > * {
+    margin-block-start: 0 !important;
+  }
+
+  .login-form-fields label {
+    margin-bottom: 0.15rem;
+    font-size: 0.65rem;
+    line-height: 0.85rem;
+  }
+
+  .login-control {
+    height: 36px;
+    font-size: 0.7rem;
+  }
+
+  .login-demo-control {
+    height: 34px;
+    font-size: 0.68rem;
+  }
+
+  .login-remember {
+    padding-top: 0;
+  }
+
+  .login-remember label {
+    font-size: 0.7rem;
+  }
+
+  .login-divider {
+    margin-block: 0.75rem 0.5rem;
+  }
+
+  .login-social {
+    gap: 0.4rem;
+  }
+
+  .login-social-control {
+    height: 32px;
+    font-size: 0.68rem;
+  }
+
+  .login-register {
+    margin-top: 0.35rem;
+    font-size: 0.7rem;
+  }
+}
+
+/* =========================
+   CUSTOM CURSOR
+========================= */
+
+/* ── Cursor disabled on touch devices & small screens ─── */
+@media (max-width: 768px) {
+  .premium-cursor-enabled {
+    display: none !important;
+  }
+}
+
+/* ── Ensure cursor elements never block interaction ───── */
+[aria-hidden="true"] {
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+/* ── Data-cursor attribute helper — elements opt in ──── */
+[data-cursor] {
+  cursor: default;
+}
+
+/* =========================
+   GLOBAL RESET
+========================= */
+html {
+  height: 100%;
+}
+
+/*
+ * Compact desktop design scale.
+ * Tailwind's rem-based typography and spacing now render close to the former
+ * 90% browser-zoom appearance while the browser remains at 100%. Mobile keeps
+ * the standard 16px root size for comfortable touch targets and readability.
+ */
+@media (min-width: 768px) {
+  html {
+    font-size: 15px;
+  }
+}
+
+body,
+#root {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  overflow-x: hidden;
+  font-family: var(--font-sans);
+  background: var(--app-background);
+  background-image: none;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* ── Scrollbar styling (theme-aware via CSS variable) ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb, rgba(255, 255, 255, 0.08));
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover, rgba(255, 255, 255, 0.14));
+}
+
+/* =========================
+   SCROLLBAR HIDE
+========================= */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+/* =========================
+   SWIPER PAGINATION
+========================= */
+.swiper-pagination-bullet {
+  background: #94a3b8 !important;
+  opacity: 1 !important;
+  width: 10px;
+  height: 10px;
+}
+
+.swiper-pagination-bullet-active {
+  background: #0f55f7 !important;
+  width: 22px !important;
+  border-radius: 20px !important;
+}
+
+/* Oracle Swiper Pagination */
+.oracleSwiper .swiper-pagination {
+  margin-top: 30px;
+}
+
+.oracleSwiper .swiper-pagination-bullet {
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.4);
+  opacity: 1;
+}
+
+.oracleSwiper .swiper-pagination-bullet-active {
+  width: 32px;
+  border-radius: 999px;
+  background: #22d3ee;
+}
+
+/* =========================
+   SWIPER NAVIGATION BUTTONS
+========================= */
+.swiper-button-next,
+.swiper-button-prev {
+  width: 56px !important;
+  height: 56px !important;
+  background: white;
+  border-radius: 50%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  color: #0f55f7 !important;
+}
+
+.swiper-button-next::after,
+.swiper-button-prev::after {
+  font-size: 18px !important;
+  font-weight: bold;
+}
+
+/* =========================
+   ANIMATIONS
+========================= */
+
+/* Gradient shift for Hero headline */
+@keyframes gradientShift {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+@keyframes gradientShift2 {
+  0%,
+  100% {
+    background-position: 100% 50%;
+  }
+  50% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Generic scroll (marquee base) */
+@keyframes scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll {
+  animation: scroll 20s linear infinite;
+}
+
+/* Success scroll */
+@keyframes success-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-success-scroll {
+  animation: success-scroll 30s linear infinite;
+}
+
+/* Spin */
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 8s linear infinite;
+}
+
+/* Floating logo */
+@keyframes floatLogo {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.logo-float {
+  animation: floatLogo 3s ease-in-out infinite;
+}
+
+/* Ripple for button click effect */
+@keyframes ripple {
+  from {
+    transform: scale(0);
+    opacity: 0.6;
+  }
+  to {
+    transform: scale(8);
+    opacity: 0;
+  }
+}
+
+/* Shine sweep for CTA buttons */
+@keyframes shine {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* =========================
+   MARQUEE
+========================= */
+.marquee {
+  animation: scroll 60s linear infinite;
+}
+
+.marquee:hover {
+  animation-duration: 60s;
+}
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: "Sora", sans-serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --brand-blue: #133b5d;
+  --brand-teal: #2e8b57;
+  --brand-cyan: #f39924;
+  --brand-gradient: linear-gradient(135deg, #133b5d 0%, #0e2d47 100%);
+  --brand-bg: var(--app-background);
+  --brand-bg-soft: #e8eff5;
+  --brand-text: #17324a;
+  --brand-muted: #5f7180;
+  --background: var(--app-background);
+  --foreground: #17324a;
+  --card: oklch(1 0 0);
+  --card-foreground: #0f172a;
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #133b5d;
+  --primary-foreground: #ffffff;
+  --secondary: #f39924;
+  --secondary-foreground: #ffffff;
+  --muted: #e8eff5;
+  --muted-foreground: #5f7180;
+  --accent: #fff1dc;
+  --accent-foreground: #17324a;
+  --destructive: #d64545;
+  --border: #d8d1c3;
+  --input: #d8d1c3;
+  --ring: #f39924;
+  --chart-1: #133b5d;
+  --chart-2: #f39924;
+  --chart-3: #2e8b57;
+  --chart-4: #5f7180;
+  --chart-5: #d64545;
+  --radius: 0.625rem;
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: #133b5d;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #fff1dc;
+  --sidebar-accent-foreground: #17324a;
+  --sidebar-border: #d8d1c3;
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.87 0 0);
+  --chart-2: oklch(0.556 0 0);
+  --chart-3: oklch(0.439 0 0);
+  --chart-4: oklch(0.371 0 0);
+  --chart-5: oklch(0.269 0 0);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.488 0.243 264.376);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}
+
+/* Compact Super Admin workspace: keeps dense operational screens readable
+   without changing spacing in organization, mentor, employee or student areas. */
+[data-dashboard-role="super-admin"] .organization-workspace {
+  padding: 0.5rem 0.625rem 4.5rem;
+}
+
+[data-dashboard-role="super-admin"] .organization-workspace .gap-6 {
+  gap: 1rem;
+}
+
+[data-dashboard-role="super-admin"] .organization-workspace .space-y-6 > :not([hidden]) ~ :not([hidden]) {
+  margin-top: 1rem;
+}
+
+[data-dashboard-role="super-admin"] .organization-workspace .p-6 {
+  padding: 1rem;
+}
+
+@media (min-width: 1024px) {
+  [data-dashboard-role="super-admin"] .organization-workspace {
+    padding: 0.625rem 0.75rem 4rem;
+  }
+}
+
+/* Mentor attendance page: warm, structured surfaces instead of the legacy
+   blue/teal treatment. */
+body [data-dashboard-role="mentor"] .mentor-attendance-page {
+  background: var(--app-background) !important;
+  background-image: none !important;
+  color: #0b3558 !important;
+}
+
+body [data-dashboard-role="mentor"] .mentor-attendance-page .mentor-attendance-panel,
+body [data-dashboard-role="mentor"] .mentor-attendance-page > div > section:last-child,
+body [data-dashboard-role="mentor"] .mentor-attendance-page .mentor-attendance-panel > div > div {
+  background: #ffffff !important;
+  background-image: none !important;
+  border-color: #e6dcc7 !important;
+}
+
+body [data-dashboard-role="mentor"] .mentor-attendance-page .mentor-attendance-panel > div:first-child {
+  background: linear-gradient(180deg, #fffdf8 0%, #ffffff 100%) !important;
+}
+
+body [data-dashboard-role="mentor"] .mentor-attendance-page [class*="bg-teal-"],
+body [data-dashboard-role="mentor"] .mentor-attendance-page [class*="bg-cyan-"],
+body [data-dashboard-role="mentor"] .mentor-attendance-page [class*="bg-blue-"] {
+  background-color: #fff7eb !important;
+  color: #c76600 !important;
+}
+
+body [data-dashboard-role="mentor"] .mentor-attendance-page button.bg-emerald-600,
+body [data-dashboard-role="mentor"] .mentor-attendance-page button[class*="bg-emerald-"] {
+  background: #16a765 !important;
+  color: #ffffff !important;
+}
+
+body [data-dashboard-role="mentor"] .mentor-attendance-page table thead,
+body [data-dashboard-role="mentor"] .mentor-attendance-page table tbody,
+body [data-dashboard-role="mentor"] .mentor-attendance-page table tr {
+  background: #ffffff !important;
+  background-image: none !important;
+}
+
+/* Keep mentor dashboard section labels readable after every imported theme
+   rule has been evaluated. */
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="mentor-section-header"] {
+  background: #0b3558 !important;
+  background-color: #0b3558 !important;
+  border-color: #0b3558 !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="mentor-section-header"] h2 {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="mentor-section-header"] p {
+  color: #cbdce9 !important;
+  -webkit-text-fill-color: #cbdce9 !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="mentor-section-header"] button {
+  color: #ffbf70 !important;
+  -webkit-text-fill-color: #ffbf70 !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-ui="mentor-section-header"] ::selection {
+  background: #dbeafe !important;
+  color: #0b3558 !important;
+  -webkit-text-fill-color: #0b3558 !important;
+}
+
+html body [data-mentor-section-header="true"] {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  border-bottom: 1px solid #e6dcc7 !important;
+}
+
+html body [data-mentor-section-header="true"] h2 {
+  color: #0b3558 !important;
+  -webkit-text-fill-color: #0b3558 !important;
+}
+
+html body [data-mentor-section-header="true"] p {
+  color: #667587 !important;
+  -webkit-text-fill-color: #667587 !important;
+}
+
+/* Match the specificity of the older mentor theme selectors. */
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-mentor-section-header="true"] {
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-mentor-section-header="true"] h2 {
+  color: #0b3558 !important;
+  -webkit-text-fill-color: #0b3558 !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home [data-mentor-section-header="true"] p {
+  color: #667587 !important;
+  -webkit-text-fill-color: #667587 !important;
+}
+
+/* Use one consistent mentor dashboard canvas across every mentor screen and
+   remove white gaps caused by nested workspace wrappers. */
+html body [data-dashboard-role="mentor"] .mentor-content-shell,
+html body [data-dashboard-role="mentor"] .dashboard-home-workspace,
+html body [data-dashboard-role="mentor"] .mentor-content-shell > main,
+html body [data-dashboard-role="mentor"] .mentor-content-shell > main > div,
+html body [data-dashboard-role="mentor"] main.mentor-dashboard-home {
+  background: #fbf8f2 !important;
+  background-color: #fbf8f2 !important;
+  background-image: none !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home > div > section,
+html body [data-dashboard-role="mentor"] .mentor-dashboard-home > div > article {
+  border-color: #e6dcc7 !important;
+}
+
+/* Remove the duplicate top padding around the mentor dashboard. The page
+   already sits directly below the shared header. */
+html body [data-dashboard-role="mentor"] .dashboard-home-workspace:has(.mentor-dashboard-home),
+html body [data-dashboard-role="mentor"] .dashboard-home-workspace:has(.mentor-dashboard-home) > .mentor-dashboard-home {
+  padding-top: 0 !important;
+}
+
+html body [data-dashboard-role="mentor"] main.mentor-dashboard-home {
+  padding-top: 0 !important;
+}
+
+/* Give the attendance action area a clear, premium focal point. */
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-panel"] {
+  border-color: #d7c5ae !important;
+  box-shadow: 0 18px 36px -26px rgba(11, 53, 88, 0.45) !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-hero"] {
+  background: linear-gradient(135deg, #0b3558 0%, #164d76 100%) !important;
+  border-bottom-color: #082b48 !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-hero"] h2,
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-hero"] p.text-slate-950 {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-hero"] p.text-slate-500 {
+  color: #cbdce9 !important;
+  -webkit-text-fill-color: #cbdce9 !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-hero"] .mentor-attendance-identity {
+  border: 1px solid rgba(255, 255, 255, 0.24) !important;
+  border-radius: 999px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  padding: 0.35rem 0.8rem 0.35rem 0.35rem !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-hero"] > div > div > div:first-child {
+  border-color: rgba(255, 191, 112, 0.7) !important;
+  background: rgba(255, 191, 112, 0.12) !important;
+  color: #ffcf91 !important;
+}
+
+html body [data-dashboard-role="mentor"] .mentor-attendance-page [data-ui="mentor-attendance-panel"] > div:last-child {
+  background: #f8f4ed !important;
+}
+
+/* Attendance is also reachable outside the dashboard shell, so keep these
+   visibility rules scoped to the page itself as the final source of truth. */
+html body .mentor-attendance-page [data-ui="mentor-attendance-hero"] {
+  background: linear-gradient(135deg, #0b3558 0%, #164d76 100%) !important;
+  border-bottom-color: #082b48 !important;
+}
+
+html body .mentor-attendance-page [data-ui="mentor-attendance-hero"] h2,
+html body .mentor-attendance-page [data-ui="mentor-attendance-hero"] p.text-slate-950 {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+html body .mentor-attendance-page [data-ui="mentor-attendance-hero"] p.text-slate-500 {
+  color: #cbdce9 !important;
+  -webkit-text-fill-color: #cbdce9 !important;
+}
+
+html body .mentor-attendance-page [data-ui="mentor-attendance-hero"] .mentor-attendance-identity {
+  border: 1px solid rgba(255, 255, 255, 0.24) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+html body .mentor-attendance-page [data-ui="mentor-attendance-panel"] > div:last-child {
+  background: #f8f4ed !important;
+}
+
+/* Final readability guard for the nested hero wrapper. */
+html body .mentor-attendance-page [data-ui="mentor-attendance-hero"] > div {
+  background: transparent !important;
+  background-image: none !important;
+}
+
+html body .mentor-attendance-page [data-ui="mentor-attendance-hero"] h2,
+html body .mentor-attendance-page [data-ui="mentor-attendance-hero"] p,
+html body .mentor-attendance-page [data-ui="mentor-attendance-hero"] .mentor-attendance-identity p {
+  color: #0b3558 !important;
+  -webkit-text-fill-color: #0b3558 !important;
+  opacity: 1 !important;
+}
+
+html body .mentor-attendance-page [data-ui="mentor-attendance-hero"] > div > div > p {
+  color: #567087 !important;
+  -webkit-text-fill-color: #567087 !important;
+}
+
+html body .mentor-attendance-page [data-ui="mentor-attendance-name"] {
+  color: #0b3558 !important;
+  -webkit-text-fill-color: #0b3558 !important;
+  opacity: 1 !important;
+}
+
+html body .mentor-attendance-page [data-ui="mentor-attendance-role"] {
+  color: #567087 !important;
+  -webkit-text-fill-color: #567087 !important;
+  opacity: 1 !important;
+}
+
+html body .mentor-attendance-page [data-ui="mentor-attendance-title"],
+html body .mentor-attendance-page [data-ui="mentor-attendance-date"] {
+  color: #0b3558 !important;
+  -webkit-text-fill-color: #0b3558 !important;
+  opacity: 1 !important;
+}
+
+html body .mentor-attendance-page [data-ui="mentor-attendance-status"] {
+  color: #567087 !important;
+  -webkit-text-fill-color: #567087 !important;
+  opacity: 1 !important;
+}
+
+/* Almond workspace treatment for course and calendar pages. */
+html body [data-ui="organization-course-detail"],
+html body [data-ui="mentor-calendar-page"] {
+  background: var(--app-background) !important;
+  background-image: none !important;
+}
+
+/* v6: organization course detail hero is styled in CourseDetail.jsx (design reference). */
+
+html body [data-ui="mentor-calendar-page"] [data-ui="mentor-calendar-workspace"] {
+  background: #f8f1e3 !important;
+}
+
+html body [data-ui="mentor-calendar-page"] .mentor-calendar-hero {
+  background: #f8f1e3 !important;
+  background-image: none !important;
+  border-color: #d9c9b4 !important;
+  box-shadow: 0 10px 24px -20px rgba(11, 53, 88, 0.3) !important;
+}
+
+html body [data-ui="mentor-calendar-page"] .mentor-calendar-hero h1,
+html body [data-ui="mentor-calendar-page"] .mentor-calendar-hero p,
+html body [data-ui="mentor-calendar-page"] .mentor-calendar-hero nav button:not([aria-current="page"]) {
+  color: #0b3558 !important;
+  -webkit-text-fill-color: #0b3558 !important;
+}
+
+html body [data-ui="mentor-calendar-page"] .mentor-calendar-hero nav button[aria-current="page"] {
+  background: #ff8800 !important;
+  border-color: #ff8800 !important;
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+
+html body [data-ui="mentor-calendar-page"] .mentor-calendar-hero nav {
+  background: #ffffff !important;
+  border-radius: 0.75rem !important;
+  padding: 0.2rem !important;
+}
+
+html body [data-ui="mentor-calendar-page"] .mentor-calendar-hero nav button:not([aria-current="page"]) {
+  background: transparent !important;
+  color: #0b3558 !important;
+  -webkit-text-fill-color: #0b3558 !important;
+}
+
+html body [data-ui="mentor-calendar-page"] .mentor-calendar-hero nav button:not([aria-current="page"]):hover,
+html body [data-ui="mentor-calendar-page"] .mentor-calendar-hero nav button:not([aria-current="page"]):focus-visible {
+  background: #fff0dc !important;
+  border-color: #ffb562 !important;
+  color: #c76600 !important;
+  -webkit-text-fill-color: #c76600 !important;
+}
+
+/* Organization workspace palette: keep the admin shell warm and remove the
+   blue/cyan utility treatment from newer organization screens. */
+html body [data-dashboard-role="org-admin"] .organization-workspace,
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace {
+  background: var(--app-background) !important;
+  background-image: none !important;
+}
+
+html body [data-dashboard-role="org-admin"] .organization-workspace [class*="bg-blue-"],
+html body [data-dashboard-role="org-admin"] .organization-workspace [class*="bg-cyan-"],
+html body [data-dashboard-role="org-admin"] .organization-workspace [class*="bg-indigo-"],
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace [class*="bg-blue-"],
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace [class*="bg-cyan-"],
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace [class*="bg-indigo-"] {
+  background-color: #fff1dc !important;
+  background-image: none !important;
+}
+
+html body [data-dashboard-role="org-admin"] .organization-workspace [class*="from-blue-"],
+html body [data-dashboard-role="org-admin"] .organization-workspace [class*="from-cyan-"],
+html body [data-dashboard-role="org-admin"] .organization-workspace [class*="from-indigo-"],
+html body [data-dashboard-role="org-admin"] .organization-workspace [class*="to-blue-"],
+html body [data-dashboard-role="org-admin"] .organization-workspace [class*="to-cyan-"],
+html body [data-dashboard-role="org-admin"] .organization-workspace [class*="to-indigo-"],
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace [class*="from-blue-"],
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace [class*="from-cyan-"],
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace [class*="from-indigo-"],
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace [class*="to-blue-"],
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace [class*="to-cyan-"],
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace [class*="to-indigo-"] {
+  --tw-gradient-from: #fff4e2 !important;
+  --tw-gradient-to: #f8e7cf !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+
+html body [data-dashboard-role="org-admin"] .organization-workspace [class*="text-blue-"],
+html body [data-dashboard-role="org-admin"] .organization-workspace [class*="text-cyan-"],
+html body [data-dashboard-role="org-admin"] .organization-workspace [class*="text-indigo-"],
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace [class*="text-blue-"],
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace [class*="text-cyan-"],
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace [class*="text-indigo-"] {
+  color: #a85f22 !important;
+  -webkit-text-fill-color: #a85f22 !important;
+}
+
+html body [data-dashboard-role="org-admin"] .organization-workspace [class*="border-blue-"],
+html body [data-dashboard-role="org-admin"] .organization-workspace [class*="border-cyan-"],
+html body [data-dashboard-role="org-admin"] .organization-workspace [class*="border-indigo-"],
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace [class*="border-blue-"],
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace [class*="border-cyan-"],
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace [class*="border-indigo-"] {
+  border-color: #ead8bd !important;
+}
+
+html body [data-dashboard-role="org-admin"] .organization-workspace [class*="ring-blue-"],
+html body [data-dashboard-role="org-admin"] .organization-workspace [class*="ring-cyan-"],
+html body [data-dashboard-role="org-admin"] .organization-workspace [class*="ring-indigo-"],
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace [class*="ring-blue-"],
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace [class*="ring-cyan-"],
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace [class*="ring-indigo-"] {
+  --tw-ring-color: rgba(199, 122, 43, 0.28) !important;
+}
+
+html body [data-dashboard-role="org-admin"] .organization-workspace [class*="bg-blue-5"],
+html body [data-dashboard-role="org-admin"] .organization-workspace [class*="bg-blue-6"],
+html body [data-dashboard-role="org-admin"] .organization-workspace [class*="bg-blue-7"],
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace [class*="bg-blue-5"],
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace [class*="bg-blue-6"],
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace [class*="bg-blue-7"] {
+  background-color: #c8752d !important;
+  color: #ffffff !important;
+}
+
+/* The solid-blue override above must never repaint pale blue-50 icon chips
+   (their class names also contain "bg-blue-5"), so restore those to the warm
+   card palette. Solid blue-500/600/700 chips keep the coffee accent. */
+html body [data-dashboard-role="org-admin"] .organization-workspace [class*="bg-blue-50"]:not([class~="bg-blue-500"]),
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace [class*="bg-blue-50"]:not([class~="bg-blue-500"]) {
+  background-color: #fff1dc !important;
+  color: inherit !important;
+}
+
+/* Table rows inside organization workspaces always stay white — hover-tinted
+   rows must not be repainted by the chip overrides above. The :not() raises
+   specificity above the blue-50 restore rule that matches the same rows. */
+html body [data-dashboard-role="org-admin"] .organization-workspace table tbody tr[class*="bg-blue"]:not([class~="bg-blue-500"]),
+html body [data-dashboard-role="org-admin"] .organization-workspace table tbody tr[class*="bg-cyan"]:not([class~="bg-blue-500"]),
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace table tbody tr[class*="bg-blue"]:not([class~="bg-blue-500"]),
+html body [data-dashboard-role="org-admin"] .dashboard-home-workspace table tbody tr[class*="bg-cyan"]:not([class~="bg-blue-500"]) {
+  background-color: #ffffff !important;
+  color: inherit !important;
+}
+
+/* The organization sidebar is intentionally deep coffee-brown so the almond
+   content canvas stays bright without leaving any blue surface behind. */
+html body [data-dashboard-role="org-admin"] [data-ui="dashboard-sidebar"] {
+  background: linear-gradient(180deg, #6f4528 0%, #81502b 55%, #98602e 100%) !important;
+  border-color: #9d6b3f !important;
+  box-shadow: 10px 0 36px rgba(91, 56, 28, 0.22) !important;
+}
+
+html body [data-dashboard-role="org-admin"] [data-ui="dashboard-sidebar"] [class*="text-[#b9"],
+html body [data-dashboard-role="org-admin"] [data-ui="dashboard-sidebar"] [class*="text-[#72e4e1"],
+html body [data-dashboard-role="org-admin"] [data-ui="dashboard-sidebar"] [class*="text-[#0f55f7"],
+html body [data-dashboard-role="org-admin"] [data-ui="dashboard-sidebar"] [class*="text-blue-"] {
+  color: #ffe3b4 !important;
+  -webkit-text-fill-color: #ffe3b4 !important;
+}
+
+html body [data-dashboard-role="org-admin"] [data-ui="dashboard-sidebar"] [class*="bg-[#0f55f7"],
+html body [data-dashboard-role="org-admin"] [data-ui="dashboard-sidebar"] [class*="from-[#0f55f7"],
+html body [data-dashboard-role="org-admin"] [data-ui="dashboard-sidebar"] [class*="to-[#06b6a8"] {
+  background: #f39924 !important;
+}
+
+html body [data-dashboard-role="org-admin"] .employee-management-page,
+html body [data-dashboard-role="org-admin"] .employee-management-page > div,
+html body [data-dashboard-role="org-admin"] .employee-management-page [class*="border-[#c8dbea"] {
+  background-color: var(--app-background) !important;
+  border-color: #e5d4bb !important;
+}
+
+html body [data-dashboard-role="org-admin"] .employee-management-page [class*="text-[#0f55f7"],
+html body [data-dashboard-role="org-admin"] .employee-management-page [class*="text-blue-"] {
+  color: #a85f22 !important;
+  -webkit-text-fill-color: #a85f22 !important;
+}
+
+html body [data-dashboard-role="org-admin"] .employee-management-page [class*="bg-blue-50"],
+html body [data-dashboard-role="org-admin"] .employee-management-page [class*="bg-[#EEF6FF"] {
+  background-color: #fff1dc !important;
+}
+
+html body [data-dashboard-role="org-admin"] main {
+  background: var(--app-background) !important;
+  background-image: none !important;
+}
+
+/* Keep mentor records as readable white rows when the pointer is over them. */
+html body [data-dashboard-role="org-admin"] .mentor-management-page table tbody tr,
+html body [data-dashboard-role="org-admin"] .mentor-management-page table tbody td {
+  background: #fffdf9 !important;
+  border-color: #eadfce !important;
+  color: #4b3a2a !important;
+}
+
+html body [data-dashboard-role="org-admin"] .mentor-management-page table tbody tr:hover {
+  background: #fff7eb !important;
+}
+/* The supplied square JPEG has wide blank margins. Keep its full artwork in
+   view while each logo window trims only that empty canvas. */
+.brand-logo-viewport {
+  overflow: hidden;
+}
+
+.brand-logo-viewport .brand-logo-image {
+  flex: none !important;
+  width: auto !important;
+  max-width: none !important;
+  height: 216% !important;
+  max-height: none !important;
+  object-fit: contain !important;
+}
+
+html body [data-dashboard-role] aside[data-ui="dashboard-sidebar"] .brand-logo-viewport .brand-logo-image {
+  flex: none !important;
+  width: 204px !important;
+  min-width: 204px !important;
+  max-width: none !important;
+  height: 204px !important;
+  max-height: none !important;
+  object-fit: contain !important;
+  transform: translateY(-3px);
+}
+
+html body [data-dashboard-role] aside[data-ui="dashboard-sidebar"] .brand-logo-viewport.w-12 .brand-logo-image {
+  width: 73px !important;
+  min-width: 73px !important;
+  height: 73px !important;
+  max-height: none !important;
+  transform: none;
+}

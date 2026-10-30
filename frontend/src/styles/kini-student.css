@@ -1,0 +1,1243 @@
+/* ═══════════════════════════════════════════════════════════════
+   KINI STUDENT MODULE — ENTERPRISE DESIGN LAYER
+   ═══════════════════════════════════════════════════════════════
+   Single visual system for every Student screen, mirroring the Mentor
+   and Organization workspaces. Loaded last (after the legacy theme
+   sheets) so these rules are the final word for the Student role only.
+   This file changes presentation only — no logic, no APIs, no routing,
+   no event handlers.
+
+   Palette:
+     navy #133B5D  — page titles, secondary actions, accents
+     orange #F39924 — primary actions, active states, focus
+     canvas #F5F1E8 — main content background
+     surfaces stay #FFFFFF with #DFE7EE borders; semantic states keep
+     their colors (success/emerald, danger/red, warning/amber...).
+   ═══════════════════════════════════════════════════════════════ */
+
+[data-dashboard-role="student"] {
+  --kini-navy: #133b5d;
+  --kini-navy-soft: #e8eff5;
+  --kini-orange: #f39924;
+  --kini-orange-dark: #d97f0d;
+  --kini-orange-soft: #fff1dc;
+  --kini-page: #f5f1e8;
+  --kini-surface: #ffffff;
+  --kini-surface-alt: #fbfbfb;
+  --kini-border: #dfe7ee;
+  --kini-border-strong: #cfd8e0;
+  --kini-border-light: #eef0f3;
+  --kini-table-border: #e8ebef;
+  --kini-input-border: #d9e0e7;
+  --kini-text: #17324a;
+  --kini-text-muted: #5f7180;
+  --kini-heading: #133b5d;
+}
+
+/* Semantic chips (emerald/red/amber statuses and success/danger states)
+   are left untouched — selectors below explicitly avoid those classes. */
+
+/* Match the content offset to the actual rail width; the shared layout uses
+   256px while the student rail is 230px. Keep one source for both sizes. */
+html body [data-dashboard-role="student"] {
+  --student-sidebar-width: 230px;
+}
+
+html body [data-dashboard-role="student"][data-sidebar-collapsed="true"] {
+  --student-sidebar-width: 76px;
+}
+
+@media (min-width: 1024px) {
+  html body [data-dashboard-role="student"] aside[data-ui="dashboard-sidebar"] {
+    width: var(--student-sidebar-width) !important;
+    min-width: var(--student-sidebar-width) !important;
+  }
+
+  html body [data-dashboard-role="student"] .mentor-content-shell {
+    margin-left: var(--student-sidebar-width) !important;
+    width: calc(100% - var(--student-sidebar-width)) !important;
+  }
+}
+
+/* Apply the dashboard gutter once, instead of stacking wrapper padding. */
+html body [data-dashboard-role="student"] main > [data-dashboard-home="true"] {
+  padding: calc(12px * var(--ui-space)) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard {
+  padding: 0 !important;
+}
+
+/* Keep student navigation on the solid navy rail without pale tab fills. */
+html body [data-dashboard-role="student"] aside[data-ui="dashboard-sidebar"] .mentor-sidebar-item,
+html body [data-dashboard-role="student"] aside[data-ui="dashboard-sidebar"] nav a:hover > .mentor-sidebar-item,
+html body [data-dashboard-role="student"] aside[data-ui="dashboard-sidebar"] nav button:hover > .mentor-sidebar-item {
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+html body [data-dashboard-role="student"] aside[data-ui="dashboard-sidebar"] nav a[aria-current="page"] > .mentor-sidebar-item,
+html body [data-dashboard-role="student"] aside[data-ui="dashboard-sidebar"] nav a[aria-current="page"]:hover > .mentor-sidebar-item {
+  background: var(--kini-orange) !important;
+}
+
+/* ── Main content canvas: warm almond everywhere in the module ── */
+html body [data-dashboard-role="student"],
+html body [data-dashboard-role="student"]:has([data-dashboard-home="true"]),
+html body [data-dashboard-role="student"] main,
+html body [data-dashboard-role="student"] .mentor-content-shell > main,
+html body [data-dashboard-role="student"] .student-premium-dashboard,
+html body [data-dashboard-role="student"] .student-my-batch,
+html body [data-dashboard-role="student"] .student-learning-calendar,
+html body [data-dashboard-role="student"] .student-courses-page {
+  background-color: var(--kini-page) !important;
+  background-image: none !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard,
+html body [data-dashboard-role="student"] .student-my-batch,
+html body [data-dashboard-role="student"] .student-learning-calendar,
+html body [data-dashboard-role="student"] .student-courses-page,
+html body [data-dashboard-role="student"] main > div:not([data-dashboard-home="true"]) {
+  background-color: var(--kini-page) !important;
+  background-image: none !important;
+}
+
+/* Decorative page-level gradient washes that sit behind content are
+   removed so the single almond canvas shows through everywhere. */
+html body [data-dashboard-role="student"] main [class*="bg-[radial-gradient"],
+html body [data-dashboard-role="student"] main [class*="pointer-events-none absolute"] {
+  background-image: none !important;
+}
+
+/* ── Page title typography baseline ───────────────────────────── */
+html body [data-dashboard-role="student"] main h1 {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+  font-weight: 800 !important;
+  letter-spacing: -0.02em !important;
+  font-size: calc(1.375rem * var(--ui-display)) !important;
+}
+
+/* ── Shared PageHeader (student role): compact, transparent ───── */
+html body [data-dashboard-role="student"] [data-ui="student-page-header"] {
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: calc(0.125rem * var(--ui-space)) 0 calc(0.9rem * var(--ui-space)) !important;
+}
+
+/* The in-page breadcrumb duplicates the global header for student
+   routes; keep the page title clean and compact. */
+html body [data-dashboard-role="student"] [data-ui="student-page-header"] nav {
+  display: none !important;
+}
+
+html body [data-dashboard-role="student"] [data-ui="student-page-header"] header {
+  display: flex;
+  flex-direction: column;
+}
+
+html body [data-dashboard-role="student"] [data-ui="student-page-header"] h1 {
+  margin: 0 !important;
+  font-size: calc(1.375rem * var(--ui-display)) !important;
+  font-weight: 800 !important;
+  line-height: 1.25 !important;
+  letter-spacing: -0.02em !important;
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] [data-ui="student-page-header"] p {
+  margin: calc(0.3rem * var(--ui-space)) 0 0 !important;
+  font-size: calc(0.85rem * var(--ui-text)) !important;
+  line-height: 1.45 !important;
+  color: var(--kini-text-muted) !important;
+  -webkit-text-fill-color: var(--kini-text-muted) !important;
+}
+
+@media (max-width: 640px) {
+  html body [data-dashboard-role="student"] [data-ui="student-page-header"] > div {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+}
+
+/* ── Dashboard welcome hero: compact white card, no gradient ──── */
+html body [data-dashboard-role="student"] .student-premium-dashboard .premium-welcome {
+  display: flex !important;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(0.5rem * var(--ui-space)) calc(1.5rem * var(--ui-space));
+  min-height: 0 !important;
+  margin: 0 0 calc(0.65rem * var(--ui-space)) !important;
+  padding: calc(0.8rem * var(--ui-space)) calc(1rem * var(--ui-space)) !important;
+  border: 1px solid var(--kini-border) !important;
+  border-radius: 0.875rem !important;
+  background: var(--kini-surface) !important;
+  background-image: none !important;
+  box-shadow: 0 1px 2px rgba(19, 59, 93, 0.05) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .premium-welcome::after,
+html body [data-dashboard-role="student"] .student-premium-dashboard .premium-welcome::before {
+  display: none !important;
+}
+
+/* Remove decorative ring art inside the welcome panel. */
+html body [data-dashboard-role="student"] .student-premium-dashboard .premium-welcome > span,
+html body [data-dashboard-role="student"] .student-premium-dashboard .premium-welcome [class*="border-white"] {
+  display: none !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .premium-welcome > .time-greeting {
+  display: flex !important;
+  flex-direction: column;
+  align-items: flex-start;
+  flex: 1 1 calc(20rem * var(--ui-space));
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-hero-kicker {
+  display: none !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .premium-welcome h1 {
+  margin: 0 !important;
+  font-size: calc(1.4rem * var(--ui-display)) !important;
+  font-weight: 800 !important;
+  line-height: 1.25;
+  letter-spacing: -0.02em !important;
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .premium-welcome h1 > span:first-child {
+  font-size: inherit !important;
+  line-height: inherit !important;
+  background: none !important;
+  color: var(--kini-orange) !important;
+  -webkit-text-fill-color: var(--kini-orange) !important;
+  font-weight: 800 !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .premium-welcome p {
+  margin: calc(0.3rem * var(--ui-space)) 0 0 !important;
+  color: var(--kini-text-muted) !important;
+  -webkit-text-fill-color: var(--kini-text-muted) !important;
+  font-size: calc(0.85rem * var(--ui-text)) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .premium-welcome p strong {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+/* Welcome right-hand actions (course pill + continue). */
+html body [data-dashboard-role="student"] .student-premium-dashboard .premium-welcome > div:not(.time-greeting) {
+  display: flex !important;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: calc(0.6rem * var(--ui-space));
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-course-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(0.4rem * var(--ui-space));
+  padding: calc(0.35rem * var(--ui-space)) calc(0.7rem * var(--ui-space));
+  border: 1px solid transparent !important;
+  border-radius: 999px;
+  background: var(--kini-navy-soft) !important;
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+  font-size: calc(0.75rem * var(--ui-text));
+  font-weight: 700;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-course-pill svg {
+  width: calc(14px * var(--ui-space));
+  height: calc(14px * var(--ui-space));
+  color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-hero-action button,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-activity-empty button {
+  border: 0 !important;
+  border-radius: 0.55rem !important;
+  background: var(--kini-orange) !important;
+  background-image: none !important;
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+  box-shadow: 0 2px 6px rgba(217, 127, 13, 0.22) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-hero-action button:hover,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-activity-empty button:hover {
+  background: var(--kini-orange-dark) !important;
+  color: #ffffff !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-hero-action button svg,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-hero-action button {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+@media (max-width: 720px) {
+  html body [data-dashboard-role="student"] .student-premium-dashboard .premium-welcome {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  html body [data-dashboard-role="student"] .student-premium-dashboard .premium-welcome > .time-greeting {
+    flex-basis: auto;
+  }
+  html body [data-dashboard-role="student"] .student-premium-dashboard .premium-welcome > div:not(.time-greeting) {
+    align-items: flex-start;
+    justify-content: flex-start;
+  }
+}
+
+/* ── Dashboard KPI cards: uniform white cards, navy icon chips ── */
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-stat-grid > * .premium-card,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-stat-grid > :nth-child(1) .premium-card,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-stat-grid > :nth-child(2) .premium-card,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-stat-grid > :nth-child(3) .premium-card,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-stat-grid > :nth-child(4) .premium-card {
+  background: var(--kini-surface) !important;
+  background-image: none !important;
+  border: 1px solid var(--kini-border) !important;
+  box-shadow: 0 1px 2px rgba(19, 59, 93, 0.05) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-stat-grid > * .premium-card::before,
+html body [data-dashboard-role="student"] .student-premium-dashboard .stat-card-accent {
+  background: linear-gradient(90deg, var(--kini-orange), #ffb54d) !important;
+  background-image: linear-gradient(90deg, var(--kini-orange), #ffb54d) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .stat-card-violet .stat-card-accent,
+html body [data-dashboard-role="student"] .student-premium-dashboard .stat-card-teal .stat-card-accent,
+html body [data-dashboard-role="student"] .student-premium-dashboard .stat-card-amber .stat-card-accent {
+  background: linear-gradient(90deg, var(--kini-orange), #ffb54d) !important;
+}
+
+/* Uniform icon wells: soft navy chips with navy glyphs. */
+html body [data-dashboard-role="student"] .student-premium-dashboard .stat-icon,
+html body [data-dashboard-role="student"] .student-premium-dashboard .stat-card-violet .stat-icon,
+html body [data-dashboard-role="student"] .student-premium-dashboard .stat-card-teal .stat-icon,
+html body [data-dashboard-role="student"] .student-premium-dashboard .stat-card-amber .stat-icon,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-stat-grid > :nth-child(4) .stat-icon {
+  border-color: var(--kini-border) !important;
+  background: var(--kini-navy-soft) !important;
+  background-image: none !important;
+  color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .stat-icon svg {
+  color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .stat-card h2 {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .stat-card > p,
+html body [data-dashboard-role="student"] .student-premium-dashboard .stat-metric p {
+  color: var(--kini-text-muted) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .stat-card small {
+  color: var(--kini-text-muted) !important;
+  -webkit-text-fill-color: var(--kini-text-muted) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .stat-trend {
+  background: var(--kini-orange-soft) !important;
+  color: var(--kini-orange-dark) !important;
+}
+
+/* ── Quick access section: quiet heading + white action cards ─── */
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-quick-access {
+  margin-top: calc(0.65rem * var(--ui-space)) !important;
+  padding: calc(0.85rem * var(--ui-space)) calc(1rem * var(--ui-space)) !important;
+  border: 1px solid var(--kini-border) !important;
+  border-radius: 0.875rem !important;
+  background: var(--kini-surface) !important;
+  background-image: none !important;
+  box-shadow: 0 1px 2px rgba(19, 59, 93, 0.05) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-section-heading p {
+  display: none !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-section-heading {
+  margin-bottom: calc(0.6rem * var(--ui-space)) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-section-heading h2 {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-section-heading > span {
+  color: var(--kini-text-muted) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-quick-access-card {
+  min-height: calc(64px * var(--ui-space)) !important;
+  padding: calc(0.65rem * var(--ui-space)) calc(0.75rem * var(--ui-space)) !important;
+  border: 1px solid var(--kini-border) !important;
+  border-radius: 0.7rem !important;
+  background: var(--kini-surface) !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-quick-access-card:hover {
+  border-color: var(--kini-orange) !important;
+  background: var(--kini-surface) !important;
+  background-image: none !important;
+  box-shadow: 0 6px 14px rgba(19, 59, 93, 0.08) !important;
+  transform: translateY(-1px);
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-quick-access-card b {
+  color: var(--kini-text) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-quick-access-card small {
+  color: var(--kini-text-muted) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-quick-access-icon,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-quick-access-card.teal .student-quick-access-icon,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-quick-access-card.orange .student-quick-access-icon,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-quick-access-card.violet .student-quick-access-icon,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-quick-access-card.rose .student-quick-access-icon {
+  background: var(--kini-navy-soft) !important;
+  color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-quick-access-icon svg {
+  color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-quick-access-card > svg {
+  color: var(--kini-text-muted) !important;
+}
+
+/* Dashboard content must remain readable with real, variable-length data. */
+html body [data-dashboard-role="student"] .student-premium-dashboard .premium-welcome {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .time-greeting,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-hero-action,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-progress-card > div:last-child {
+  min-width: 0;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-course-pill {
+  max-width: min(calc(34rem * var(--ui-space)), 100%);
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-quick-access-grid {
+  grid-template-columns: repeat(auto-fit, minmax(calc(190px * var(--ui-space)), 1fr)) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-quick-access-card {
+  min-height: calc(72px * var(--ui-space)) !important;
+  align-items: flex-start !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-quick-access-card b,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-quick-access-card small,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-progress-course,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-progress-copy {
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-progress-card {
+  align-items: flex-start !important;
+  min-width: 0;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-class-card {
+  min-width: 0;
+  padding: calc(1rem * var(--ui-space));
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-class-card > header,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-class-card > header > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(0.65rem * var(--ui-space));
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-class-card > header > div {
+  justify-content: flex-start;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-class-card > header svg {
+  width: calc(1.1rem * var(--ui-space));
+  height: calc(1.1rem * var(--ui-space));
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-class-card > header h2 {
+  font-size: calc(0.95rem * var(--ui-text));
+  font-weight: 800;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-class-card > header button {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: calc(0.3rem * var(--ui-space));
+  color: var(--kini-navy);
+  font-size: calc(0.75rem * var(--ui-text));
+  font-weight: 700;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-class-list {
+  margin-top: calc(0.75rem * var(--ui-space));
+  border-top: 1px solid var(--kini-border-light);
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-class-list > button {
+  display: grid;
+  width: 100%;
+  grid-template-columns: minmax(0, 1fr) minmax(calc(150px * var(--ui-space)), auto);
+  gap: calc(1rem * var(--ui-space));
+  padding: calc(0.8rem * var(--ui-space)) 0;
+  border-bottom: 1px solid var(--kini-border-light);
+  text-align: left;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-class-list span {
+  min-width: 0;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-class-list span:last-child {
+  text-align: right;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-class-list b,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-class-list small {
+  display: block;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-class-list b {
+  color: var(--kini-navy);
+  font-size: calc(0.8rem * var(--ui-text));
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-class-list small,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-class-empty {
+  margin-top: calc(0.2rem * var(--ui-space));
+  color: var(--kini-text-muted);
+  font-size: 0.72rem;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-class-empty {
+  padding: calc(1.5rem * var(--ui-space)) 0;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  html body [data-dashboard-role="student"] .student-premium-dashboard .premium-welcome {
+    grid-template-columns: 1fr;
+  }
+
+  html body [data-dashboard-role="student"] .student-premium-dashboard .student-class-list > button {
+    grid-template-columns: 1fr;
+    gap: calc(0.4rem * var(--ui-space));
+  }
+
+  html body [data-dashboard-role="student"] .student-premium-dashboard .student-class-list span:last-child {
+    text-align: left;
+  }
+}
+
+/* ── Dashboard data panels (Learning Progress / Activity / Live) ─ */
+html body [data-dashboard-role="student"] .student-premium-dashboard .content-card,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-primary-grid > article,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-secondary-grid > article,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-primary-grid > :nth-child(1),
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-primary-grid > :nth-child(2),
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-primary-grid > :nth-child(3),
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-secondary-grid > :nth-child(1),
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-secondary-grid > :nth-child(2),
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-secondary-grid > :nth-child(3) {
+  background: var(--kini-surface) !important;
+  background-image: none !important;
+  border-color: var(--kini-border) !important;
+  box-shadow: 0 1px 2px rgba(19, 59, 93, 0.05) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .content-card > header {
+  border-bottom: 1px solid var(--kini-border-light) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .content-card > header h2,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-progress-course,
+html body [data-dashboard-role="student"] .student-premium-dashboard .legend em,
+html body [data-dashboard-role="student"] .student-premium-dashboard .legend b,
+html body [data-dashboard-role="student"] .student-premium-dashboard .live-box h3 {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-progress-copy,
+html body [data-dashboard-role="student"] .student-premium-dashboard .legend,
+html body [data-dashboard-role="student"] .student-premium-dashboard .live-box p,
+html body [data-dashboard-role="student"] .student-premium-dashboard .live-box div {
+  color: var(--kini-text-muted) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .select-button {
+  border: 0 !important;
+  background: var(--kini-navy-soft) !important;
+  color: var(--kini-navy) !important;
+  font-weight: 700;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .view-link,
+html body [data-dashboard-role="student"] .student-premium-dashboard .soft-link {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .view-link:hover {
+  color: var(--kini-orange-dark) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .soft-link {
+  border: 1px solid var(--kini-border-strong) !important;
+  border-radius: 0.6rem !important;
+  background: var(--kini-surface) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .soft-link:hover {
+  background: var(--kini-orange-soft) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .live-box {
+  border: 1px solid var(--kini-border) !important;
+  border-radius: 0.75rem !important;
+  background: var(--kini-surface) !important;
+  background-image: none !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .live-box > span {
+  border-radius: 0.375rem !important;
+  background: var(--kini-orange-soft) !important;
+  color: var(--kini-orange-dark) !important;
+  -webkit-text-fill-color: var(--kini-orange-dark) !important;
+}
+
+/* Primary action and quiet secondary action in the live-class panel. */
+html body [data-dashboard-role="student"] .student-premium-dashboard .join-button {
+  border-radius: 0.55rem !important;
+  background: var(--kini-surface) !important;
+  background-image: none !important;
+  border: 1px solid var(--kini-border-strong) !important;
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .join-button + .join-button {
+  border-color: var(--kini-orange) !important;
+  background: var(--kini-orange) !important;
+  color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .join-button:hover {
+  background: var(--kini-orange-soft) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .join-button + .join-button:hover {
+  background: var(--kini-orange-dark) !important;
+  color: #ffffff !important;
+}
+
+/* ── Empty states: quiet white surfaces, navy icons ───────────── */
+html body [data-dashboard-role="student"] .student-premium-dashboard .dashboard-empty-state {
+  border-color: var(--kini-border-strong) !important;
+  background: var(--kini-surface) !important;
+  background-image: none !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .dashboard-empty-icon,
+html body [data-dashboard-role="student"] .student-premium-dashboard .dashboard-empty-icon svg {
+  background: var(--kini-navy-soft) !important;
+  color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-activity-empty p,
+html body [data-dashboard-role="student"] .student-premium-dashboard .student-activity-empty small {
+  color: var(--kini-text-muted) !important;
+}
+
+/* ── White surfaces: cards, panels, tables, modals ─────────────── */
+html body [data-dashboard-role="student"] main :is(section, article, div, aside)[class*="bg-white/90"],
+html body [data-dashboard-role="student"] main :is(section, article, div, aside)[class*="bg-white/80"],
+html body [data-dashboard-role="student"] main :is(section, article, div, aside)[class*="bg-white/75"],
+html body [data-dashboard-role="student"] main :is(section, article, div, aside)[class*="bg-white/65"],
+html body [data-dashboard-role="student"] main :is(section, article, div, aside)[class*="bg-white/60"],
+html body [data-dashboard-role="student"] main :is(section, article, div, aside)[class*="bg-white/50"] {
+  background-color: #ffffff !important;
+}
+
+html body [data-dashboard-role="student"] main :is(section, article, div, aside)[class*="backdrop-blur"] {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html body [data-dashboard-role="student"] main :is(section, article, div)[class*="border-slate-200/70"],
+html body [data-dashboard-role="student"] main :is(section, article, div)[class*="border-slate-200/80"],
+html body [data-dashboard-role="student"] main :is(section, article, div)[class*="border-slate-200/90"] {
+  border-color: var(--kini-border) !important;
+}
+
+html body [data-dashboard-role="student"] main :is(section, article, div, aside)[class*="ring-slate-900/"] {
+  --tw-ring-color: rgba(19, 59, 93, 0.05) !important;
+}
+
+html body [data-dashboard-role="student"] main :is(input, select, textarea):not([class*="bg-rose-"]):not([class*="bg-emerald-"]) {
+  background-color: #ffffff !important;
+  border-color: var(--kini-input-border) !important;
+}
+
+html body [data-dashboard-role="student"] main :is(input, select, textarea):focus {
+  border-color: var(--kini-orange) !important;
+  box-shadow: 0 0 0 3px rgba(243, 153, 36, 0.16) !important;
+  outline: none;
+}
+
+html body [data-dashboard-role="student"] main :is(input, select, textarea)::placeholder {
+  color: var(--kini-text-muted) !important;
+}
+
+/* ── Tables: white workspace, neutral header, #E8EBEF dividers ── */
+html body [data-dashboard-role="student"] main .overflow-x-auto:has(> table),
+html body [data-dashboard-role="student"] main .student-table-scroll {
+  border: 1px solid var(--kini-border) !important;
+  border-radius: 0.75rem !important;
+  background: #ffffff !important;
+  background-image: none !important;
+  box-shadow: 0 1px 2px rgba(19, 59, 93, 0.05) !important;
+}
+
+html body [data-dashboard-role="student"] main table thead {
+  background: var(--kini-surface-alt) !important;
+  background-image: none !important;
+}
+
+html body [data-dashboard-role="student"] main table th {
+  border-bottom: 1px solid var(--kini-table-border) !important;
+  color: var(--kini-text-muted) !important;
+  -webkit-text-fill-color: var(--kini-text-muted) !important;
+}
+
+html body [data-dashboard-role="student"] main table tbody tr {
+  background: #ffffff !important;
+  border-color: var(--kini-table-border) !important;
+}
+
+html body [data-dashboard-role="student"] main table tbody td {
+  border-color: var(--kini-table-border) !important;
+}
+
+html body [data-dashboard-role="student"] main table tbody tr:hover {
+  background: var(--kini-orange-soft) !important;
+}
+
+/* ── Action hierarchy: orange primary, navy secondary ─────────── */
+html body [data-dashboard-role="student"] main button[class*="from-[#0f55f7]"],
+html body [data-dashboard-role="student"] main button[class*="from-[#0F55F7]"],
+html body [data-dashboard-role="student"] main a[class*="from-[#0f55f7]"],
+html body [data-dashboard-role="student"] main button[class*="from-blue-600"],
+html body [data-dashboard-role="student"] main button[class*="from-blue-500"],
+html body [data-dashboard-role="student"] main button[class*="from-violet-600"],
+html body [data-dashboard-role="student"] main button[class*="from-purple-600"],
+html body [data-dashboard-role="student"] main button[class*="from-indigo-600"],
+html body [data-dashboard-role="student"] main button[class*="bg-[#0f55f7]"],
+html body [data-dashboard-role="student"] main button[class*="bg-[#0F55F7]"],
+html body [data-dashboard-role="student"] main button[class*="bg-blue-600"],
+html body [data-dashboard-role="student"] main button[class*="bg-blue-700"] {
+  background: var(--kini-orange) !important;
+  background-image: none !important;
+  border-color: transparent !important;
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+  box-shadow: 0 2px 6px rgba(217, 127, 13, 0.22) !important;
+}
+
+html body [data-dashboard-role="student"] main button[class*="from-[#0f55f7]"]:hover,
+html body [data-dashboard-role="student"] main button[class*="from-blue-600"]:hover,
+html body [data-dashboard-role="student"] main button[class*="bg-[#0f55f7]"]:hover,
+html body [data-dashboard-role="student"] main button[class*="bg-blue-600"]:hover {
+  background: var(--kini-orange-dark) !important;
+  color: #ffffff !important;
+}
+
+/* Secondary navy actions (orange chip buttons on My Batch, etc.). */
+html body [data-dashboard-role="student"] main button[class*="bg-orange-500"],
+html body [data-dashboard-role="student"] main button[class*="bg-amber-600"],
+html body [data-dashboard-role="student"] main button[class*="bg-orange-600"] {
+  background: var(--kini-navy) !important;
+  color: #ffffff !important;
+}
+
+html body [data-dashboard-role="student"] main button[class*="bg-orange-500"]:hover,
+html body [data-dashboard-role="student"] main button[class*="bg-orange-600"]:hover {
+  background: #0e2d47 !important;
+}
+
+/* White/neutral bordered buttons. */
+html body [data-dashboard-role="student"] main button[class*="border-slate-200"]:not([class*="bg-blue-"]),
+html body [data-dashboard-role="student"] main button[class*="border-slate-300"] {
+  background-color: #ffffff !important;
+  border-color: var(--kini-border-strong) !important;
+  color: var(--kini-navy) !important;
+}
+
+/* Accent links and row actions read in KINI navy/orange. */
+html body [data-dashboard-role="student"] main :is(a, button)[class*="text-[#0f55f7]"],
+html body [data-dashboard-role="student"] main :is(a, button)[class*="text-[#0F55F7]"],
+html body [data-dashboard-role="student"] main :is(a, button)[class*="text-blue-600"],
+html body [data-dashboard-role="student"] main :is(a, button)[class*="text-blue-700"],
+html body [data-dashboard-role="student"] main :is(a, button)[class*="text-violet-600"],
+html body [data-dashboard-role="student"] main :is(a, button)[class*="text-purple-600"],
+html body [data-dashboard-role="student"] main :is(a, button)[class*="text-indigo-600"] {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] main :is(a, button)[class*="text-[#0f55f7]"]:hover,
+html body [data-dashboard-role="student"] main :is(a, button)[class*="text-blue-600"]:hover,
+html body [data-dashboard-role="student"] main :is(a, button)[class*="text-violet-600"]:hover {
+  color: var(--kini-orange-dark) !important;
+}
+
+/* Icon chips / wells that previously used blue/teal/violet washes. */
+html body [data-dashboard-role="student"] main :is(span, div)[class*="bg-[#0f55f7]/8"],
+html body [data-dashboard-role="student"] main :is(span, div)[class*="bg-[#0f55f7]/10"],
+html body [data-dashboard-role="student"] main :is(span, div)[class*="bg-[#06b6a8]/10"],
+html body [data-dashboard-role="student"] main :is(span, div)[class*="bg-blue-50"],
+html body [data-dashboard-role="student"] main :is(span, div)[class*="bg-teal-50"],
+html body [data-dashboard-role="student"] main :is(span, div)[class*="bg-sky-50"],
+html body [data-dashboard-role="student"] main :is(span, div)[class*="bg-cyan-50"],
+html body [data-dashboard-role="student"] main :is(span, div)[class*="bg-violet-50"],
+html body [data-dashboard-role="student"] main :is(span, div)[class*="bg-purple-50"],
+html body [data-dashboard-role="student"] main :is(span, div)[class*="bg-indigo-50"] {
+  background-color: var(--kini-navy-soft) !important;
+  background-image: none !important;
+  color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] main :is(span, div)[class*="bg-blue-50"] :is(svg, i),
+html body [data-dashboard-role="student"] main :is(span, div)[class*="bg-teal-50"] :is(svg, i),
+html body [data-dashboard-role="student"] main :is(span, div)[class*="bg-[#0f55f7]/8"] :is(svg, i),
+html body [data-dashboard-role="student"] main :is(span, div)[class*="bg-[#0f55f7]/10"] :is(svg, i),
+html body [data-dashboard-role="student"] main :is(span, div)[class*="bg-[#06b6a8]/10"] :is(svg, i),
+html body [data-dashboard-role="student"] main [class*="bg-[linear-gradient(135deg,rgba(15,85,247,0.14)"] :is(svg, i) {
+  color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] main :is(span, div)[class*="bg-[linear-gradient(135deg,rgba(15,85,247,0.14)"],
+html body [data-dashboard-role="student"] main :is(span, div)[class*="bg-[linear-gradient(135deg,rgba(15,85,247,0.12)"] {
+  background-color: var(--kini-navy-soft) !important;
+  background-image: none !important;
+  color: var(--kini-navy) !important;
+}
+
+/* Translucent icon wells inside neutralized detail-page bands. */
+html body [data-dashboard-role="student"] main :is(section, div):has(h1)[class*="via-[#087fdc]"] [class*="bg-white/15"] {
+  background: var(--kini-navy-soft) !important;
+  border-color: var(--kini-border) !important;
+  color: var(--kini-navy) !important;
+}
+
+/* Progress/stat bars in blue→teal read as navy. */
+html body [data-dashboard-role="student"] main div[class*="from-[#0f55f7] to-[#06b6a8]"],
+html body [data-dashboard-role="student"] main div[class*="from-blue-600 to-teal-500"],
+html body [data-dashboard-role="student"] main div[class*="from-[#0f55f7]"],
+html body [data-dashboard-role="student"] main div[class*="from-blue-600"] {
+  background: linear-gradient(90deg, var(--kini-navy) 0%, #3e6684 100%) !important;
+  background-image: linear-gradient(90deg, var(--kini-navy) 0%, #3e6684 100%) !important;
+}
+
+/* ── Neutralize legacy blue/teal hero bands used as page headers ──
+   Work Center / Progress / assessment detail bands become quiet white
+   cards with KINI navy titles, mirroring the mentor hero treatment. */
+html body [data-dashboard-role="student"] main header[data-ui="dashboard-hero"]:has(h1),
+html body [data-dashboard-role="student"] main header[data-ui="dashboard-hero"],
+html body [data-dashboard-role="student"] main :is(header, section, div):has(h1)[class*="via-blue-500"],
+html body [data-dashboard-role="student"] main :is(header, section, div):has(h1)[class*="to-cyan-500"],
+html body [data-dashboard-role="student"] main :is(header, section, div):has(h1)[class*="from-blue-600"] {
+  background: #ffffff !important;
+  background-image: none !important;
+  border: 1px solid var(--kini-border) !important;
+  border-radius: 0.875rem !important;
+  box-shadow: 0 1px 2px rgba(19, 59, 93, 0.05) !important;
+  color: var(--kini-navy) !important;
+  text-shadow: none !important;
+}
+
+html body [data-dashboard-role="student"] main header[data-ui="dashboard-hero"] :is(h1, h2, h3, p, span, strong, b, svg),
+html body [data-dashboard-role="student"] main :is(header, section, div):has(h1)[class*="via-blue-500"] :is(h1, h2, h3, p, span, strong, b, svg),
+html body [data-dashboard-role="student"] main :is(header, section, div):has(h1)[class*="from-blue-600"] :is(h1, h2, h3, p, span, strong, b, svg) {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+/* Kicker + subtitle inside the hero read as muted supporting text. */
+html body [data-dashboard-role="student"] main header[data-ui="dashboard-hero"] p,
+html body [data-dashboard-role="student"] main header[data-ui="dashboard-hero"] h1,
+html body [data-dashboard-role="student"] main header[data-ui="dashboard-hero"] h1,
+html body [data-dashboard-role="student"] main :is(header, section, div):has(h1)[class*="via-blue-500"] p {
+  color: var(--kini-text-muted) !important;
+  -webkit-text-fill-color: var(--kini-text-muted) !important;
+}
+
+html body [data-dashboard-role="student"] main header[data-ui="dashboard-hero"] h1,
+html body [data-dashboard-role="student"] main :is(header, section, div):has(h1)[class*="via-blue-500"] h1 {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+/* Translucent chips/icon wells inside the hero → soft navy surfaces. */
+html body [data-dashboard-role="student"] main header[data-ui="dashboard-hero"] :is(span, div)[class*="bg-white/15"],
+html body [data-dashboard-role="student"] main header[data-ui="dashboard-hero"] [class*="bg-white/15"] {
+  background: var(--kini-navy-soft) !important;
+  background-image: none !important;
+  border-color: var(--kini-border) !important;
+  backdrop-filter: none !important;
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+/* Primary CTA inside the hero uses the KINI orange. */
+html body [data-dashboard-role="student"] main header[data-ui="dashboard-hero"] button[class*="bg-white/15"] {
+  border: 0 !important;
+  border-radius: 0.6rem !important;
+  background: var(--kini-orange) !important;
+  background-image: none !important;
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+  box-shadow: 0 2px 6px rgba(217, 127, 13, 0.22) !important;
+}
+
+html body [data-dashboard-role="student"] main header[data-ui="dashboard-hero"] button[class*="bg-white/15"]:hover {
+  background: var(--kini-orange-dark) !important;
+  color: #ffffff !important;
+}
+
+/* Solid blue chips (e.g. current lifecycle step) become orange. */
+html body [data-dashboard-role="student"] main :is(span, div)[class~="bg-blue-600"] {
+  background-color: var(--kini-orange) !important;
+  background-image: none !important;
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+/* ── Neutralize legacy blue/teal "premium" section headers ───────
+   Detail-page hero bands and batch banners become quiet white cards
+   with KINI navy titles. */
+html body [data-dashboard-role="student"] main :is(section, div):has(h1)[class*="from-[#0f55f7]"],
+html body [data-dashboard-role="student"] main :is(section, div):has(h1)[class*="via-[#087fdc]"],
+html body [data-dashboard-role="student"] main :is(section, div):has(h1)[class*="bg-gradient-to-r"],
+html body [data-dashboard-role="student"] main :is(section, div):has(h1)[class*="bg-gradient-to-br"] {
+  background: #ffffff !important;
+  background-image: none !important;
+  border: 1px solid var(--kini-border) !important;
+  border-radius: 0.875rem !important;
+  box-shadow: 0 1px 2px rgba(19, 59, 93, 0.05) !important;
+  color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] main :is(section, div):has(h1)[class*="from-[#0f55f7]"] :is(p, span, h1, svg, div),
+html body [data-dashboard-role="student"] main :is(section, div):has(h1)[class*="via-[#087fdc]"] :is(p, span, h1, svg, div),
+html body [data-dashboard-role="student"] main :is(section, div):has(h1)[class*="from-blue-600"] :is(p, span, h1, svg, div) {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] main :is(section, div):has(h1)[class*="from-[#0f55f7]"] h1,
+html body [data-dashboard-role="student"] main :is(section, div):has(h1)[class*="via-[#087fdc]"] h1,
+html body [data-dashboard-role="student"] main :is(section, div):has(h1)[class*="from-blue-600"] h1 {
+  font-size: calc(1.375rem * var(--ui-display)) !important;
+  font-weight: 800 !important;
+}
+
+/* H1-bearing module header cards (My Classes, course shell, etc.). */
+html body [data-dashboard-role="student"] main section:has(h1) h1 {
+  font-size: calc(1.375rem * var(--ui-display)) !important;
+  font-weight: 800 !important;
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+/* Small uppercase kickers above module titles read as muted labels. */
+html body [data-dashboard-role="student"] main section:has(h1) :is(
+  p[class*="text-[#0f55f7]"], p[class*="text-[#0F55F7]"],
+  p[class*="text-blue-100"], p[class*="text-blue-50"], p[class*="text-blue-200"]
+) {
+  color: var(--kini-text-muted) !important;
+  -webkit-text-fill-color: var(--kini-text-muted) !important;
+}
+
+/* Keep modal/dialog surfaces and text neutral. */
+html body [data-dashboard-role="student"] [role="dialog"] {
+  background: #ffffff !important;
+  border-color: var(--kini-border) !important;
+}
+
+/* Neutral pill navs / active tabs use the KINI orange accent. */
+html body [data-dashboard-role="student"] main [aria-pressed="true"],
+html body [data-dashboard-role="student"] main button[class*="bg-[#0f55f7]/10"] {
+  background-color: var(--kini-orange-soft) !important;
+  color: var(--kini-navy) !important;
+}
+
+/* Focus ring uses the KINI orange accent for keyboard users. */
+html body [data-dashboard-role="student"] main :is(button, a, input, select, textarea):focus-visible {
+  outline: 3px solid rgba(243, 153, 36, 0.45) !important;
+  outline-offset: 2px;
+}
+
+html body [data-dashboard-role="student"] main [class*="ring-[#0f55f7]"] {
+  --tw-ring-color: rgba(243, 153, 36, 0.35) !important;
+}
+
+/* ── My Courses overview shell ─────────────────────────────────── */
+html body [data-dashboard-role="student"] .student-courses-shell {
+  background: #ffffff !important;
+  background-image: none !important;
+  border-color: var(--kini-border) !important;
+  box-shadow: 0 1px 2px rgba(19, 59, 93, 0.05) !important;
+}
+
+html body [data-dashboard-role="student"] .student-courses-shell > :first-child {
+  background: transparent !important;
+  background-image: none !important;
+  border-bottom: 1px solid var(--kini-border-light) !important;
+}
+
+html body [data-dashboard-role="student"] .student-courses-shell input {
+  border-color: var(--kini-input-border) !important;
+  background: #ffffff !important;
+}
+
+html body [data-dashboard-role="student"] .student-courses-shell article {
+  background: #ffffff !important;
+  background-image: none !important;
+  border-color: var(--kini-border) !important;
+  box-shadow: 0 1px 2px rgba(19, 59, 93, 0.05) !important;
+}
+
+html body [data-dashboard-role="student"] .student-assigned-course-card {
+  background: #ffffff !important;
+  background-image: none !important;
+  border-color: var(--kini-border) !important;
+}
+
+html body [data-dashboard-role="student"] .student-assigned-course-icon {
+  border-color: var(--kini-border) !important;
+  background: var(--kini-navy-soft) !important;
+  color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] .student-assigned-course-icon svg {
+  color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] .student-assigned-course-label {
+  color: var(--kini-text-muted) !important;
+}
+
+html body [data-dashboard-role="student"] .student-assigned-course-card h3 {
+  color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] .student-assigned-course-details {
+  color: var(--kini-text-muted) !important;
+}
+
+html body [data-dashboard-role="student"] .student-assigned-course-details strong {
+  color: var(--kini-text) !important;
+}
+
+html body [data-dashboard-role="student"] .student-assigned-course-details svg {
+  color: var(--kini-orange-dark) !important;
+}
+
+html body [data-dashboard-role="student"] .student-course-status {
+  border-color: #e8d5bd !important;
+  background: var(--kini-orange-soft) !important;
+  color: #9a5b13 !important;
+}
+
+html body [data-dashboard-role="student"] .student-assigned-course-action button {
+  background: var(--kini-orange) !important;
+  background-image: none !important;
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] .student-assigned-course-action button:hover {
+  background: var(--kini-orange-dark) !important;
+  color: #ffffff !important;
+}
+
+/* ── My Batch workspace ────────────────────────────────────────── */
+html body [data-dashboard-role="student"] .student-my-batch .space-y-4 > section:first-child {
+  background: #ffffff !important;
+  background-image: none !important;
+  border: 1px solid var(--kini-border) !important;
+  border-radius: 0.875rem !important;
+  box-shadow: 0 1px 2px rgba(19, 59, 93, 0.05) !important;
+  padding: calc(1.1rem * var(--ui-space)) calc(1.25rem * var(--ui-space)) !important;
+}
+
+html body [data-dashboard-role="student"] .student-my-batch .space-y-4 > section:first-child :is(h1, p, span, svg) {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] .student-my-batch .space-y-4 > section:first-child h1 {
+  font-size: calc(1.375rem * var(--ui-display)) !important;
+  font-weight: 800 !important;
+}
+
+html body [data-dashboard-role="student"] .student-my-batch .space-y-4 > section:first-child p:first-child {
+  color: var(--kini-text-muted) !important;
+  -webkit-text-fill-color: var(--kini-text-muted) !important;
+}
+
+html body [data-dashboard-role="student"] .student-my-batch .space-y-4 > section:first-child span {
+  border-color: var(--kini-border) !important;
+  background: var(--kini-navy-soft) !important;
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] .student-my-batch [class~="lg:grid-cols-3"] > article,
+html body [data-dashboard-role="student"] .student-my-batch [class~="lg:grid-cols-3"] > div > article {
+  border-color: var(--kini-border) !important;
+  background: #ffffff !important;
+  box-shadow: 0 1px 2px rgba(19, 59, 93, 0.05) !important;
+}
+
+html body [data-dashboard-role="student"] .student-my-batch [class~="lg:grid-cols-3"] h2,
+html body [data-dashboard-role="student"] .student-my-batch h2 {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] .student-my-batch [class~="lg:grid-cols-3"] > article dl > div {
+  border-color: var(--kini-border-light) !important;
+  background: var(--kini-surface-alt) !important;
+}
+
+html body [data-dashboard-role="student"] .student-my-batch [class~="lg:grid-cols-3"] dt {
+  color: var(--kini-text-muted) !important;
+}
+
+html body [data-dashboard-role="student"] .student-my-batch [class~="lg:grid-cols-3"] dd,
+html body [data-dashboard-role="student"] .student-my-batch [class~="lg:grid-cols-3"] p {
+  color: var(--kini-text) !important;
+}
+
+html body [data-dashboard-role="student"] .student-my-batch [class~="lg:grid-cols-3"] .text-slate-500,
+html body [data-dashboard-role="student"] .student-my-batch .text-slate-500 {
+  color: var(--kini-text-muted) !important;
+}
+
+html body [data-dashboard-role="student"] .student-my-batch .bg-gradient-to-br {
+  background: var(--kini-navy) !important;
+  background-image: none !important;
+  color: #ffffff !important;
+}
+
+html body [data-dashboard-role="student"] .student-my-batch [class*="bg-blue-600"] {
+  background: var(--kini-orange) !important;
+  color: var(--kini-navy) !important;
+}
+
+/* Selected-date agenda panel in the learning calendar. */
+html body [data-dashboard-role="student"] .student-learning-calendar > div section[class*="rounded-xl"][class*="from-blue-50/80"],
+html body [data-dashboard-role="student"] .student-learning-calendar section[class*="border-blue-100"][class*="from-blue-50/80"],
+html body [data-dashboard-role="student"] main section[class*="border-blue-100"][class*="bg-gradient-to-r"][class*="from-blue-50/80"] {
+  background: #ffffff !important;
+  background-image: none !important;
+  border: 1px solid var(--kini-border) !important;
+}
+
+/* ── Student learning calendar ─────────────────────────────────── */
+html body [data-dashboard-role="student"] .student-learning-calendar > section {
+  border-color: var(--kini-border) !important;
+  border-radius: 0.875rem !important;
+  background: #ffffff !important;
+  background-image: none !important;
+  box-shadow: 0 1px 2px rgba(19, 59, 93, 0.05) !important;
+}
+
+html body [data-dashboard-role="student"] .student-learning-calendar > section > div:first-child {
+  border-color: var(--kini-border-light) !important;
+  background: #ffffff !important;
+  background-image: none !important;
+}
+
+html body [data-dashboard-role="student"] .student-learning-calendar h1,
+html body [data-dashboard-role="student"] .student-learning-calendar h2,
+html body [data-dashboard-role="student"] .student-learning-calendar h3 {
+  color: var(--kini-navy) !important;
+  -webkit-text-fill-color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] .student-learning-calendar > section > div:first-child > div > span {
+  background: var(--kini-navy-soft) !important;
+  color: var(--kini-navy) !important;
+}
+
+html body [data-dashboard-role="student"] .student-learning-calendar [aria-label="Calendar view"] button[aria-pressed="true"] {
+  background: var(--kini-orange) !important;
+  color: var(--kini-navy) !important;
+  border-color: var(--kini-orange) !important;
+}
+
+/* ── Info banners (gate assessment, notices) keep semantics ──────
+   Amber warnings stay amber — only soften when they contain no
+   semantic state. Nothing to do here. */
+
+/* Light neutral fills (subtle headers, info chips) use one soft surface. */
+html body [data-dashboard-role="student"] main :is(
+  [class~="bg-slate-50"], [class*="bg-slate-50/"],
+  [class~="bg-slate-100"], [class*="bg-slate-100/"]
+) {
+  background-color: var(--kini-surface-alt) !important;
+  background-image: none !important;
+}

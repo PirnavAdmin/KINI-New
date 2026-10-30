@@ -1,0 +1,758 @@
+/* OrgShowcaseHero (v18) — see OrgShowcaseHero.jsx.
+   Selectors start with `html body [data-dashboard-role]` because older
+   organization stylesheets restyle headings/sections with !important. */
+
+html body [data-dashboard-role] .osh {
+  --osh-min-h: 300px;
+  --osh-copy: 48%;
+  --osh-art-w: 60%;
+  --osh-art-h: 100%;
+  --osh-art-right: 0px;
+  --osh-art-bottom: 0px;
+  --osh-script-top: 26px;
+  --osh-script-right: 34px;
+  --osh-hand: "Caveat", "Segoe Script", "Bradley Hand", cursive;
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  min-height: var(--osh-min-h);
+  overflow: hidden;
+  padding: 30px 36px;
+  border: 1px solid #dde8f6;
+  border-radius: 22px;
+  background: #eef4fd;
+  box-shadow: 0 6px 22px rgba(15, 42, 74, 0.06);
+}
+html body [data-dashboard-role] .osh .osh__bg { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; pointer-events: none; }
+
+/* Artwork */
+html body [data-dashboard-role] .osh .osh__art {
+  position: absolute; z-index: -1; right: var(--osh-art-right); bottom: var(--osh-art-bottom);
+  width: var(--osh-art-w); height: var(--osh-art-h);
+  display: flex; align-items: flex-end; justify-content: flex-end; pointer-events: none;
+}
+html body [data-dashboard-role] .osh .osh__art img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; object-position: right bottom; user-select: none; }
+
+/* Handwritten script */
+html body [data-dashboard-role] .osh .osh__script {
+  position: absolute; z-index: 1; top: var(--osh-script-top); right: var(--osh-script-right);
+  display: flex; flex-direction: column; align-items: flex-start; margin: 0;
+  transform: rotate(-9deg); transform-origin: right top; pointer-events: none;
+}
+html body [data-dashboard-role] .osh .osh__script span {
+  display: block; font-family: var(--osh-hand); font-size: 30px; font-weight: 700; line-height: 1.02; white-space: nowrap;
+  color: #102a52 !important; -webkit-text-fill-color: #102a52 !important;
+}
+html body [data-dashboard-role] .osh .osh__script span:nth-child(2) { margin-left: 10px; }
+html body [data-dashboard-role] .osh .osh__script span:nth-child(3) { margin-left: 20px; }
+html body [data-dashboard-role] .osh .osh__script span:nth-child(4) { margin-left: 30px; }
+html body [data-dashboard-role] .osh .osh__script span:nth-child(5) { margin-left: 40px; }
+html body [data-dashboard-role] .osh .osh__script span.is-accent { color: #f28a1e !important; -webkit-text-fill-color: #f28a1e !important; }
+html body [data-dashboard-role] .osh .osh__script span.is-accent::after { content: ""; display: block; width: 90%; height: 3px; margin-top: 3px; border-radius: 3px; background: #f28a1e; transform: rotate(-3deg); }
+
+/* Actions */
+html body [data-dashboard-role] .osh .osh__actions { position: absolute; z-index: 3; top: 22px; right: 26px; display: flex; flex-wrap: wrap; gap: 10px; }
+html body [data-dashboard-role] .osh .osh__corner { position: absolute; z-index: 3; right: 26px; bottom: 24px; }
+
+/* Main copy */
+html body [data-dashboard-role] .osh .osh__main { position: relative; z-index: 2; display: flex; align-items: flex-start; gap: 22px; max-width: var(--osh-copy); }
+html body [data-dashboard-role] .osh .osh__lead { flex-shrink: 0; }
+html body [data-dashboard-role] .osh .osh__icon {
+  display: grid; place-items: center; width: 90px; height: 90px; border-radius: 24px;
+  background: linear-gradient(145deg, #edf4ff 0%, #d9e7fd 100%); color: #2f6fe4;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 12px 26px -10px rgba(47,111,228,.35);
+}
+html body [data-dashboard-role] .osh .osh__icon svg { width: 42px; height: 42px; stroke-width: 1.8; }
+html body [data-dashboard-role] .osh .osh__icon.is-orange { background: linear-gradient(145deg, #fff3e3 0%, #ffe2bd 100%); color: #f28a1e; box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 12px 26px -10px rgba(242,138,30,.4); }
+html body [data-dashboard-role] .osh .osh__copy { min-width: 0; }
+html body [data-dashboard-role] .osh .osh__badge {
+  display: inline-flex; align-items: center; gap: 12px; margin-bottom: 16px; padding: 8px 18px 8px 10px; border-radius: 12px;
+  background: rgba(214, 229, 251, .85); color: #0f2a4a !important; font-size: 15px; font-weight: 700;
+}
+html body [data-dashboard-role] .osh .osh__badge > span { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; background: #ffffff; color: #2f6fe4; }
+html body [data-dashboard-role] .osh .osh__badge svg { width: 19px; height: 19px; }
+html body [data-dashboard-role] .osh .osh__eyebrow { margin: 0 0 10px; color: #d9770a !important; font-size: 14px; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
+html body [data-dashboard-role] .osh .osh__titlerow { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; }
+html body [data-dashboard-role] .osh .osh__title {
+  margin: 0; font-size: clamp(32px, 3.1vw, 50px) !important; font-weight: 800 !important; line-height: 1.06 !important; letter-spacing: -0.025em;
+  color: #0b1f3f !important; -webkit-text-fill-color: #0b1f3f !important;
+}
+html body [data-dashboard-role] .osh .osh__title em { font-style: normal; color: #1673f0 !important; -webkit-text-fill-color: #1673f0 !important; }
+html body [data-dashboard-role] .osh .osh__subtitle { margin: 14px 0 0; max-width: 60ch; color: #3e5577 !important; -webkit-text-fill-color: #3e5577 !important; font-size: 17px !important; line-height: 1.5 !important; }
+html body [data-dashboard-role] .osh .osh__meta { margin-top: 14px; }
+html body [data-dashboard-role] .osh .osh__features { display: flex; flex-wrap: wrap; gap: 14px 24px; margin: 24px 0 0; padding: 0; list-style: none; }
+html body [data-dashboard-role] .osh .osh__features li { display: flex; align-items: center; gap: 10px; color: #1c3553 !important; font-size: 13px; font-weight: 600; line-height: 1.3; }
+html body [data-dashboard-role] .osh .osh__ficon { display: grid; flex-shrink: 0; place-items: center; width: 44px; height: 44px; border-radius: 12px; }
+html body [data-dashboard-role] .osh .osh__ficon svg { width: 22px; height: 22px; }
+.osh__ficon.is-blue { background: #dfeafd; color: #2f6fe4; }
+.osh__ficon.is-green { background: #dcf5e6; color: #16a34a; }
+.osh__ficon.is-orange { background: #ffeeda; color: #ea8a0b; }
+.osh__ficon.is-purple { background: #ece4fd; color: #7c3aed; }
+
+/* Footer (KPI cards inside the banner) */
+html body [data-dashboard-role] .osh .osh__footer { position: relative; z-index: 2; margin-top: auto; padding-top: 22px; }
+
+/* Shared hero buttons */
+html body [data-dashboard-role] .osh .osh-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 12px; font-size: 14.5px; font-weight: 700; white-space: nowrap; transition: transform .15s ease, background-color .15s ease; }
+html body [data-dashboard-role] .osh .osh-btn svg { width: 17px; height: 17px; }
+html body [data-dashboard-role] .osh .osh-btn:hover { transform: translateY(-1px); }
+html body [data-dashboard-role] .osh .osh-btn--orange { background: #f58a0b !important; color: #ffffff !important; box-shadow: 0 10px 22px -10px rgba(245,138,11,.8); }
+html body [data-dashboard-role] .osh .osh-btn--orange:hover { background: #e57d06 !important; }
+html body [data-dashboard-role] .osh .osh-btn--white { background: #ffffff !important; color: #0f2a4a !important; box-shadow: 0 6px 16px -8px rgba(15,42,74,.35); }
+
+/* ── Variants ─────────────────────────────────────────────────────────── */
+html body [data-dashboard-role] .osh--batches { --osh-min-h: 300px; --osh-copy: 50%; --osh-art-w: 55%; --osh-art-h: 108%; --osh-art-bottom: -4px; }
+html body [data-dashboard-role] .osh--assessments { --osh-min-h: 300px; --osh-copy: 50%; --osh-art-w: 44%; --osh-art-h: 92%; --osh-art-right: 15%; --osh-script-top: 34px; --osh-script-right: 26px; }
+html body [data-dashboard-role] .osh--assessments .osh__features { gap: 12px 16px; flex-wrap: nowrap; }
+html body [data-dashboard-role] .osh--assessments .osh__script span { font-size: 27px; }
+html body [data-dashboard-role] .osh--materials { --osh-min-h: 340px; --osh-copy: 64%; --osh-art-w: 42%; --osh-art-h: 104%; --osh-art-bottom: -4px; }
+html body [data-dashboard-role] .osh--attendance { --osh-min-h: 280px; --osh-copy: 52%; --osh-art-w: 40%; --osh-art-h: 94%; --osh-art-right: 16%; --osh-script-top: 30px; --osh-script-right: 20px; }
+html body [data-dashboard-role] .osh--profile { --osh-min-h: 214px; --osh-copy: 52%; --osh-art-w: 38%; --osh-art-h: 108%; --osh-art-right: 19%; --osh-art-bottom: -8px; --osh-script-top: 74px; --osh-script-right: 70px; padding: 28px 30px; }
+html body [data-dashboard-role] .osh--profile .osh__script span { font-size: 27px; }
+html body [data-dashboard-role] .osh--mentors .osh__script span,
+html body [data-dashboard-role] .osh--attendance .osh__script span { font-size: 27px; }
+
+/* ── Responsive ───────────────────────────────────────────────────────── */
+@media (max-width: 1440px) {
+  html body [data-dashboard-role] .osh .osh__script span { font-size: 24px !important; }
+  html body [data-dashboard-role] .osh .osh__subtitle { font-size: 15.5px !important; }
+  html body [data-dashboard-role] .osh .osh__features { gap: 12px 16px; }
+}
+@media (max-width: 1280px) {
+  html body [data-dashboard-role] .osh .osh__script { display: none; }
+  html body [data-dashboard-role] .osh { padding: 24px 26px; }
+  html body [data-dashboard-role] .osh .osh__icon { width: 70px; height: 70px; border-radius: 20px; }
+  html body [data-dashboard-role] .osh .osh__icon svg { width: 34px; height: 34px; }
+  html body [data-dashboard-role] .osh--profile { --osh-art-right: 110px; }
+  html body [data-dashboard-role] .osh--assessments { --osh-art-right: 2%; --osh-art-w: 46%; }
+  html body [data-dashboard-role] .osh--attendance { --osh-art-right: 2%; }
+  html body [data-dashboard-role] .osh--assessments .osh__features { flex-wrap: wrap; }
+}
+@media (max-width: 960px) {
+  html body [data-dashboard-role] .osh { --osh-copy: 100%; min-height: 0; padding: 20px; }
+  html body [data-dashboard-role] .osh .osh__art { opacity: .16; width: 70%; }
+  html body [data-dashboard-role] .osh .osh__actions,
+  html body [data-dashboard-role] .osh .osh__corner { position: static; margin-top: 16px; }
+  html body [data-dashboard-role] .osh .osh__main { flex-direction: column; gap: 14px; }
+  html body [data-dashboard-role] .osh .osh__features li span:last-child br { display: none; }
+}
+
+/* Dark mode */
+html.dark body [data-dashboard-role] .osh { border-color: #22324a; background: #0f1c2e; }
+html.dark body [data-dashboard-role] .osh .osh__bg { opacity: .1; }
+html.dark body [data-dashboard-role] .osh .osh__title { color: #f1f5f9 !important; -webkit-text-fill-color: #f1f5f9 !important; }
+html.dark body [data-dashboard-role] .osh .osh__title em { color: #60a5fa !important; -webkit-text-fill-color: #60a5fa !important; }
+html.dark body [data-dashboard-role] .osh :is(.osh__subtitle, .osh__features li) { color: #a8b8cc !important; -webkit-text-fill-color: #a8b8cc !important; }
+html.dark body [data-dashboard-role] .osh .osh__script span { color: #9cc0ef !important; -webkit-text-fill-color: #9cc0ef !important; }
+html.dark body [data-dashboard-role] .osh .osh__badge { background: #172a42; color: #dbe6f3 !important; }
+
+/* Right-aligned action row between a banner and its KPI cards (Batches) */
+html body [data-dashboard-role] .osh-toolbar { position: relative; z-index: 2; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin: -2px 0 -6px; }
+html body [data-dashboard-role] .osh-tbtn { display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 20px; border-radius: 12px; font-size: 14.5px; font-weight: 700; white-space: nowrap; transition: transform .15s ease, background-color .15s ease; }
+html body [data-dashboard-role] .osh-tbtn:hover:not(:disabled) { transform: translateY(-1px); }
+html body [data-dashboard-role] .osh-tbtn:disabled { opacity: .6; }
+html body [data-dashboard-role] .osh-tbtn svg { width: 17px; height: 17px; }
+html body [data-dashboard-role] .osh-tbtn--white { border: 1px solid #dfe7f1; background: #ffffff !important; color: #0f2a4a !important; box-shadow: 0 4px 12px rgba(15,42,74,.06); }
+html body [data-dashboard-role] .osh-tbtn--orange { background: #f58a0b !important; color: #ffffff !important; box-shadow: 0 10px 22px -10px rgba(245,138,11,.8); }
+html body [data-dashboard-role] .osh-tbtn--orange:hover { background: #e57d06 !important; }
+html body [data-dashboard-role] .osh-tbtn--navy { background: #0f2a4a !important; color: #ffffff !important; }
+
+/* Course Materials: 4 compact KPI tiles under the subtitle */
+html body [data-dashboard-role] .osh .osh-mini-kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; margin-top: 22px; }
+html body [data-dashboard-role] .osh .osh-mini-kpis > * { min-height: 104px; border-left-width: 1px !important; border-radius: 16px !important; background: rgba(255,255,255,.92) !important; box-shadow: 0 8px 20px -12px rgba(15,42,74,.25) !important; }
+@media (max-width: 1280px) { html body [data-dashboard-role] .osh .osh-mini-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+
+html body [data-dashboard-role] .osh .osh-mini-kpis > * { padding: 12px !important; }
+html body [data-dashboard-role] .osh .osh-mini-kpis :is(p, span, small) { white-space: normal !important; overflow: visible !important; text-overflow: clip !important; }
+html body [data-dashboard-role] .osh .osh-mini-kpis .kpi-arrow { display: none !important; }
+
+/* v18 fine-tuning */
+html body [data-dashboard-role] .osh--materials { --osh-copy: 66%; --osh-art-w: 40%; }
+html body [data-dashboard-role] .osh--assessments { --osh-copy: 47%; --osh-art-right: 14%; --osh-art-w: 42%; }
+html body [data-dashboard-role] .osh--assessments .osh__features { gap: 10px 14px; }
+html body [data-dashboard-role] .osh--assessments .osh__features li { font-size: 12.5px; }
+html body [data-dashboard-role] .osh--assessments .osh__ficon { width: 38px; height: 38px; border-radius: 10px; }
+html body [data-dashboard-role] .osh--attendance { --osh-copy: 48%; }
+html body [data-dashboard-role] .osh .osh-mini-kpis > * { min-height: 96px; }
+
+html body [data-dashboard-role] .osh .osh-mini { display: flex; align-items: flex-start; gap: 10px; min-height: 104px; padding: 14px 12px; border: 1px solid #e3ebf6; border-radius: 16px; background: rgba(255,255,255,.94); text-align: left; box-shadow: 0 10px 22px -14px rgba(15,42,74,.3); transition: transform .15s ease; }
+html body [data-dashboard-role] .osh .osh-mini:hover { transform: translateY(-2px); }
+html body [data-dashboard-role] .osh .osh-mini__icon { display: grid; flex-shrink: 0; place-items: center; width: 40px; height: 40px; border-radius: 999px; background: var(--mk-soft); color: var(--mk-ink); }
+html body [data-dashboard-role] .osh .osh-mini__icon svg { width: 20px; height: 20px; }
+html body [data-dashboard-role] .osh .osh-mini__body { min-width: 0; }
+html body [data-dashboard-role] .osh .osh-mini__body b { display: block; color: #0b1f3f !important; font-size: 26px; font-weight: 800; line-height: 1; }
+html body [data-dashboard-role] .osh .osh-mini__body strong { display: block; margin-top: 6px; color: #0f2a4a !important; font-size: 13px; font-weight: 800; line-height: 1.2; }
+html body [data-dashboard-role] .osh .osh-mini__body small { display: block; margin-top: 3px; color: #5b6f88 !important; font-size: 11.5px; line-height: 1.3; }
+.osh-mini--blue { --mk-soft: #e4eefd; --mk-ink: #2f6fe4; }
+.osh-mini--red { --mk-soft: #fde8ea; --mk-ink: #e5484d; }
+.osh-mini--green { --mk-soft: #dff5e9; --mk-ink: #16a34a; }
+.osh-mini--purple { --mk-soft: #efe7fd; --mk-ink: #7c3aed; }
+
+/* Status chips (Batches) */
+html body [data-dashboard-role] .osh-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+html body [data-dashboard-role] .osh-chip { display: inline-flex; align-items: center; gap: 10px; height: 38px; padding: 0 16px 0 20px; border-radius: 10px; background: var(--oc-soft); color: var(--oc-ink) !important; font-size: 14px; font-weight: 600; transition: box-shadow .15s ease; }
+html body [data-dashboard-role] .osh-chip span { display: grid; place-items: center; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 7px; background: var(--oc-badge); color: var(--oc-ink) !important; font-size: 12px; font-weight: 800; }
+html body [data-dashboard-role] .osh-chip[aria-pressed="true"] { background: var(--oc-ink) !important; color: #ffffff !important; box-shadow: 0 8px 18px -10px var(--oc-ink); }
+html body [data-dashboard-role] .osh-chip[aria-pressed="true"] span { background: rgba(255,255,255,.25); color: #ffffff !important; }
+.osh-chip--blue { --oc-soft: #e7f0fe; --oc-ink: #1673f0; --oc-badge: #d2e2fc; }
+.osh-chip--green { --oc-soft: #e4f7ec; --oc-ink: #16a34a; --oc-badge: #c9eed8; }
+.osh-chip--orange { --oc-soft: #fff1de; --oc-ink: #ea8a0b; --oc-badge: #f58a0b33; }
+.osh-chip--purple { --oc-soft: #f1eafe; --oc-ink: #7c3aed; --oc-badge: #e1d3fb; }
+.osh-chip--red { --oc-soft: #ffe8ea; --oc-ink: #e5484d; --oc-badge: #fbd0d3; }
+html body [data-dashboard-role] .osh-chip--orange span { background: #f58a0b; color: #fff !important; }
+
+/* Batches table: plain pale header like the design */
+html body [data-dashboard-role] .osh-batches-table table:not(#kth):not(#o18) > thead > tr > th {
+  background: #f3f7fd !important; color: #1d4f91 !important; -webkit-text-fill-color: #1d4f91 !important;
+  font-size: 12.5px !important; letter-spacing: .03em !important;
+}
+html body [data-dashboard-role] .osh-batches-table table:not(#kth):not(#o18) > thead > tr > th::before { display: none !important; }
+
+/* Course / batch pills (Students) */
+html body [data-dashboard-role] .osh-pill { display: inline-block; max-width: 100%; overflow: hidden; padding: 4px 10px; border-radius: 8px; font-size: 12.5px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
+.osh-pill--blue { background: #e7f0fe; color: #1d5fd6 !important; }
+.osh-pill--orange { background: #fff1de; color: #c46a00 !important; }
+.osh-pill--purple { background: #efe6ff; color: #6d28d9 !important; }
+
+/* The Students table header (per-column pastel blocks) is styled entirely in
+   src/pages/students/students-page.css. */
+html body [data-dashboard-role] .osh--mentors .osh__title { white-space: nowrap; }
+@media (max-width: 1280px) { html body [data-dashboard-role] .osh--mentors .osh__title { white-space: normal; } }
+
+/* ── Students: compact banner ─────────────────────────────────────────────
+   `.osh.osh--students` out-ranks the shared + breakpoint rules above.
+   The artwork's height is the space left above the KPI row (not a % of a
+   hero that grows with its content), so the head is never clipped; it sits
+   left of the action buttons and its lower body tucks behind the KPI cards. */
+html body [data-dashboard-role] .osh.osh--students {
+  --osh-min-h: 212px; --osh-copy: 52%;
+  --osh-art-bottom: 78px; --osh-art-h: calc(100% - var(--osh-art-bottom) - 8px);
+  --osh-art-w: 18%; --osh-art-right: 300px;
+  padding: 20px 26px 22px;
+}
+html body [data-dashboard-role] .osh.osh--students .osh__art img { object-position: center bottom; }
+html body [data-dashboard-role] .osh.osh--students .osh__main { align-items: center; gap: 18px; }
+html body [data-dashboard-role] .osh.osh--students .osh__icon { width: 68px; height: 68px; border-radius: 20px; }
+html body [data-dashboard-role] .osh.osh--students .osh__icon svg { width: 32px; height: 32px; }
+html body [data-dashboard-role] .osh.osh--students .osh__title { font-size: clamp(28px, 2.3vw, 38px) !important; }
+html body [data-dashboard-role] .osh.osh--students .osh__subtitle { margin-top: 8px; font-size: 14.5px !important; }
+html body [data-dashboard-role] .osh.osh--students .osh__actions { top: 20px; right: 24px; }
+html body [data-dashboard-role] .osh.osh--students .osh-btn { height: 40px; padding: 0 18px; border-radius: 12px; font-size: 14px; }
+html body [data-dashboard-role] .osh.osh--students .osh-btn svg { width: 16px; height: 16px; }
+html body [data-dashboard-role] .osh.osh--students .osh__footer { padding-top: 16px; }
+/* KPI cards: ~82px tall (compact KPI default is 92px) */
+html body [data-dashboard-role] .osh.osh--students .osh__footer > section > * { min-height: 82px; }
+html body [data-dashboard-role] .osh.osh--students .osh__footer .kpi-content { gap: 10px; padding: 10px 14px; }
+html body [data-dashboard-role] .osh.osh--students .osh__footer .kpi-icon { width: 38px; height: 38px; }
+html body [data-dashboard-role] .osh.osh--students .osh__footer .kpi-icon svg { width: 18px; height: 18px; }
+html body [data-dashboard-role] .osh.osh--students .osh__footer .kpi-value { font-size: 22px; }
+
+@media (max-width: 1280px) {
+  html body [data-dashboard-role] .osh.osh--students { --osh-art-w: 16%; --osh-art-right: 280px; padding: 18px 22px 20px; }
+  html body [data-dashboard-role] .osh.osh--students .osh__icon { width: 60px; height: 60px; border-radius: 18px; }
+  html body [data-dashboard-role] .osh.osh--students .osh__icon svg { width: 28px; height: 28px; }
+  html body [data-dashboard-role] .osh.osh--students .osh__footer .kpi-value { font-size: 20px; }
+}
+@media (max-width: 1100px) {
+  html body [data-dashboard-role] .osh.osh--students { --osh-art-w: 13%; --osh-art-right: 270px; }
+}
+@media (max-width: 960px) {
+  /* Stacked layout: artwork becomes a faint backdrop behind the title block */
+  html body [data-dashboard-role] .osh.osh--students { --osh-copy: 100%; padding: 18px; }
+  html body [data-dashboard-role] .osh.osh--students .osh__art { top: 0; right: 0; bottom: auto; width: 45%; height: 180px; }
+  html body [data-dashboard-role] .osh.osh--students .osh__main { align-items: flex-start; }
+}
+
+/* ── Employees: compact banner ────────────────────────────────────────────
+   Same approach as Students. The artwork (1500×727, head spans ~37–62% of
+   its width) is height-bound to the space above the KPI row and offset
+   from the right so the head clears the ~300px Refresh / Add Employee
+   group; the screen graphic on its right may sit under the buttons. */
+html body [data-dashboard-role] .osh.osh--employees {
+  --osh-min-h: 256px; --osh-copy: 44%;
+  --osh-art-bottom: 64px; --osh-art-h: calc(100% - var(--osh-art-bottom) - 6px);
+  --osh-art-w: 38%; --osh-art-right: 180px;
+  padding: 22px 26px 20px;
+}
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__art img { object-position: right bottom; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__main { align-items: center; gap: 18px; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__icon { width: 68px; height: 68px; border-radius: 20px; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__icon svg { width: 32px; height: 32px; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__title { font-size: clamp(30px, 2.5vw, 40px) !important; line-height: 1.02 !important; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__subtitle { margin-top: 8px; max-width: 520px; font-size: 14.5px !important; line-height: 1.45 !important; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__actions { top: 20px; right: 24px; z-index: 20; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh-btn { height: 40px; padding: 0 18px; border-radius: 12px; font-size: 14px; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh-btn svg { width: 16px; height: 16px; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer { padding-top: 14px; }
+/* KPI cards: ~72px tall (compact KPI default is 92px) */
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer > .grid > * { min-height: 72px; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer .kpi-content { gap: 10px; padding: 9px 40px 9px 14px; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer .kpi-icon { width: 36px; height: 36px; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer .kpi-icon svg { width: 18px; height: 18px; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer .kpi-value { font-size: 20px; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer .kpi-content p { margin-top: 3px; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer .kpi-content p.kpi-description { margin-top: 1px; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer .kpi-arrow { top: 10px; right: 10px; width: 26px; height: 26px; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer .kpi-arrow svg { width: 14px; height: 14px; }
+
+@media (max-width: 1280px) {
+  html body [data-dashboard-role] .osh.osh--employees { --osh-copy: 46%; --osh-art-w: 34%; --osh-art-right: 190px; padding: 18px 22px 18px; }
+  html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__icon { width: 60px; height: 60px; border-radius: 18px; }
+  html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__icon svg { width: 28px; height: 28px; }
+}
+@media (max-width: 1100px) {
+  html body [data-dashboard-role] .osh.osh--employees { --osh-copy: 50%; --osh-art-w: 28%; --osh-art-right: 200px; }
+}
+@media (max-width: 960px) {
+  /* Stacked layout: artwork becomes a faint backdrop behind the title block */
+  html body [data-dashboard-role] .osh.osh--employees { --osh-copy: 100%; padding: 18px; }
+  html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__art { top: 0; right: 0; bottom: auto; width: 60%; height: 200px; }
+  html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__main { align-items: flex-start; }
+}
+
+/* ── Employees + Mentors: v20 layout (overrides the blocks above for these two pages) ──
+   Three zones that never overlap, all sized in px/clamp (no zoom/scale):
+     copy (left) │ artwork (between copy and buttons) │ actions (top-right)
+     ────────────────── KPI row (full width, bottom) ──────────────────
+   The artwork box is bounded on every side — its top by the banner padding,
+   its bottom by the KPI row, its left by the copy column, its right by the
+   button group — and the image is contained inside it, so it can't touch the
+   cards or the buttons and is never cropped. */
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) {
+  --emp-pad-x: 24px;
+  --emp-pad-t: 18px;
+  --emp-pad-b: 18px;
+  --emp-band-h: 118px;          /* title band above the KPI row → ~250px banner */
+  --emp-kpi-h: 82px;
+  --emp-kpi-gap: 14px;          /* band → KPI row */
+  --emp-copy-w: min(44%, 620px);
+  --emp-actions-w: 330px;       /* Refresh + Add Employee + inset + breathing room */
+  min-height: 0;
+  padding: var(--emp-pad-t) var(--emp-pad-x) var(--emp-pad-b);
+  border-radius: 24px;
+}
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__main {
+  max-width: var(--emp-copy-w); min-height: var(--emp-band-h);
+  align-items: center; gap: 16px;
+}
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__icon { width: 56px; height: 56px; border-radius: 16px; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__icon svg { width: 26px; height: 26px; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__title {
+  font-size: clamp(30px, 2.25vw, 42px) !important; font-weight: 800 !important; line-height: 1.1 !important;
+}
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__subtitle {
+  margin-top: 8px; max-width: 560px; font-size: clamp(14px, .85vw, 16px) !important; line-height: 1.5 !important;
+}
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__actions { top: var(--emp-pad-t); right: var(--emp-pad-x); flex-wrap: nowrap; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh-btn { height: 44px; padding: 0 18px; font-size: 14.5px; }
+
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__art {
+  top: 10px;
+  bottom: calc(var(--emp-pad-b) + var(--emp-kpi-h) + var(--emp-kpi-gap) + 2px);
+  left: calc(var(--emp-pad-x) + var(--emp-copy-w) + 24px);
+  right: var(--emp-actions-w);
+  width: auto; height: auto;
+  justify-content: center; align-items: flex-end;
+}
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__art img {
+  width: 100%; height: 100%; max-width: 480px; object-fit: contain; object-position: center bottom;
+}
+
+/* KPI row: five equal cards on one line, ~82px tall, content centred */
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer { padding-top: var(--emp-kpi-gap); }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer > .grid { gap: 14px; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer > .grid > * { height: var(--emp-kpi-h); min-height: 0; border-radius: 16px; }
+/* The arrow (top-right, 26px) only shares a row with the short value, so the
+   label lines can run under it instead of reserving 40px on every line. */
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer .kpi-content { gap: 12px; padding: 0 12px 0 16px; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer .kpi-value { padding-right: 30px; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer .kpi-icon { width: 42px; height: 42px; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer .kpi-icon svg { width: 20px; height: 20px; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer .kpi-value { font-size: 21px; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer .kpi-content p:not(.kpi-value) { margin-top: 4px; font-size: 13.5px; line-height: 1.2; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer .kpi-content p.kpi-description { margin-top: 2px; font-size: 11.5px; }
+
+@media (max-width: 1440px) {
+  html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) { --emp-copy-w: min(46%, 560px); --emp-actions-w: 318px; }
+  html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer .kpi-content { gap: 10px; padding-left: 14px; }
+  html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer .kpi-icon { width: 38px; height: 38px; }
+  html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer .kpi-icon svg { width: 18px; height: 18px; }
+  html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer .kpi-content p.kpi-description { font-size: 11px; }
+}
+@media (max-width: 1280px) {
+  html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) { --emp-pad-x: 20px; --emp-band-h: 112px; --emp-copy-w: 46%; --emp-actions-w: 328px; }
+  html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__icon { width: 50px; height: 50px; border-radius: 14px; }
+  html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__icon svg { width: 24px; height: 24px; }
+  html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__footer > .grid > * { height: auto; min-height: 76px; }
+}
+@media (max-width: 1180px) {
+  /* Too narrow for three zones: the artwork becomes a faint backdrop under the buttons. */
+  /* KPI cards wrap to two rows here, so the box is sized to the title band only. */
+  html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__art {
+    left: auto; right: 0; top: 0; bottom: auto; width: 42%; opacity: .2;
+    height: calc(var(--emp-pad-t) + var(--emp-band-h));
+  }
+  html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__art img { object-position: right bottom; }
+  html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) { --emp-copy-w: 56%; }
+}
+@media (max-width: 960px) {
+  html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) { --emp-copy-w: 100%; padding: 18px; }
+  html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__main { min-height: 0; align-items: flex-start; }
+  html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__art { display: none; }
+  /* Buttons stack above the title here; keep them clear of the icon tile. */
+  html body [data-dashboard-role] .osh:is(.osh--employees, .osh--mentors) .osh__actions { flex-wrap: wrap; margin: 0 0 16px; }
+}
+
+/* Mentors: same v20 layout. Only one button (Export), so the right strip is
+   narrower and the artwork (1500×778) gets more of the band. The handwritten
+   tagline needs ~110px of height, which a ~250px banner with a full-width KPI
+   row doesn't have above the cards, so it is hidden rather than overlapping them. */
+html body [data-dashboard-role] .osh.osh--mentors { --emp-actions-w: 190px; }
+html body [data-dashboard-role] .osh.osh--mentors .osh__script { display: none !important; }
+@media (max-width: 1440px) { html body [data-dashboard-role] .osh.osh--mentors { --emp-actions-w: 180px; } }
+@media (max-width: 1280px) { html body [data-dashboard-role] .osh.osh--mentors { --emp-actions-w: 172px; } }
+
+/* ── Batches: compact banner ─────────────────────────────────────────────
+   Structure stays hero → Refresh / Add Batch row → KPI cards (outside the
+   hero). Large screens already match the design; at ≤1440px and especially
+   ≤1280px (100% zoom on 1280-CSS-px screens) the copy, feature row and
+   artwork are resized so the artwork (1500×778) sits in the right ~38% of
+   the hero, height-bound to it, and never reaches the feature row. */
+@media (max-width: 1440px) {
+  html body [data-dashboard-role] .osh.osh--batches { --osh-min-h: 270px; --osh-art-w: 46%; --osh-art-h: 104%; }
+  html body [data-dashboard-role] .osh.osh--batches .osh__ficon { width: 38px; height: 38px; border-radius: 11px; }
+  html body [data-dashboard-role] .osh.osh--batches .osh__ficon svg { width: 19px; height: 19px; }
+}
+@media (max-width: 1280px) {
+  html body [data-dashboard-role] .osh.osh--batches {
+    --osh-min-h: 210px; --osh-copy: 52%;
+    --osh-art-w: 40%; --osh-art-h: 100%; --osh-art-right: 0px; --osh-art-bottom: 0px;
+    padding: 20px 22px;
+  }
+  html body [data-dashboard-role] .osh.osh--batches .osh__badge { gap: 8px; margin-bottom: 10px; padding: 5px 14px 5px 6px; border-radius: 10px; font-size: 13px; }
+  html body [data-dashboard-role] .osh.osh--batches .osh__badge > span { width: 24px; height: 24px; border-radius: 7px; }
+  html body [data-dashboard-role] .osh.osh--batches .osh__badge svg { width: 14px; height: 14px; }
+  html body [data-dashboard-role] .osh.osh--batches .osh__title { font-size: clamp(26px, 2.6vw, 34px) !important; white-space: nowrap; }
+  html body [data-dashboard-role] .osh.osh--batches .osh__subtitle { max-width: 420px; margin-top: 8px; font-size: 13.5px !important; line-height: 1.45 !important; }
+  html body [data-dashboard-role] .osh.osh--batches .osh__features { gap: 10px 16px; margin-top: 14px; }
+  html body [data-dashboard-role] .osh.osh--batches .osh__features li { gap: 8px; font-size: 12px; }
+  html body [data-dashboard-role] .osh.osh--batches .osh__ficon { width: 30px; height: 30px; border-radius: 9px; }
+  html body [data-dashboard-role] .osh.osh--batches .osh__ficon svg { width: 16px; height: 16px; }
+  /* Refresh / Add Batch row */
+  html body [data-dashboard-role] .batch-management-page .osh-tbtn { height: 36px; padding: 0 16px; border-radius: 11px; font-size: 13.5px; }
+  html body [data-dashboard-role] .batch-management-page .osh-tbtn svg { width: 15px; height: 15px; }
+}
+@media (max-width: 1100px) {
+  html body [data-dashboard-role] .osh.osh--batches { --osh-copy: 58%; --osh-art-w: 34%; }
+}
+@media (max-width: 960px) {
+  html body [data-dashboard-role] .osh.osh--batches { --osh-copy: 100%; padding: 18px; }
+  html body [data-dashboard-role] .osh.osh--batches .osh__title { white-space: normal; }
+}
+/* KPI cards below the hero: ~72px tall (compact KPI default is 92px) */
+html body [data-dashboard-role] .batch-management-page > [aria-label="Batch statistics"] { gap: 12px; }
+html body [data-dashboard-role] .batch-management-page > [aria-label="Batch statistics"] > * { min-height: 72px; }
+html body [data-dashboard-role] .batch-management-page > [aria-label="Batch statistics"] .kpi-content { gap: 10px; padding: 9px 14px; }
+html body [data-dashboard-role] .batch-management-page > [aria-label="Batch statistics"] .kpi-icon { width: 36px; height: 36px; }
+html body [data-dashboard-role] .batch-management-page > [aria-label="Batch statistics"] .kpi-icon svg { width: 18px; height: 18px; }
+html body [data-dashboard-role] .batch-management-page > [aria-label="Batch statistics"] .kpi-value { font-size: 20px; }
+
+/* ── Course Materials: compact banner ────────────────────────────────────
+   The four summary tiles render in the hero footer (full width) and stay
+   ONE row on desktop, in the left ~62% of the hero; the artwork (1500×778)
+   is height-bound in the right ~40%, anchored to the hero bottom. Above
+   1440px the tiles are indented under the title (icon 90 + gap 22). */
+html body [data-dashboard-role] .osh.osh--materials .osh__footer { max-width: 64%; margin-top: 22px; padding-top: 0; padding-left: 112px; }
+html body [data-dashboard-role] .osh.osh--materials .osh-mini-kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 0; }
+
+@media (max-width: 1440px) {
+  html body [data-dashboard-role] .osh.osh--materials .osh__footer { max-width: 62%; padding-left: 0; }
+}
+@media (max-width: 1280px) {
+  /* 100% zoom on 1280-CSS-px screens. Hero ~200px; artwork is height-bound
+     (~386px wide) and ends left of where the tile row stops (60%). */
+  html body [data-dashboard-role] .osh.osh--materials {
+    --osh-min-h: 200px; --osh-copy: 60%;
+    --osh-art-w: 40%; --osh-art-h: 100%; --osh-art-right: 40px; --osh-art-bottom: 0px;
+    padding: 18px 22px;
+  }
+  html body [data-dashboard-role] .osh.osh--materials .osh__main { align-items: center; gap: 16px; }
+  html body [data-dashboard-role] .osh.osh--materials .osh__icon { width: 52px; height: 52px; border-radius: 16px; }
+  html body [data-dashboard-role] .osh.osh--materials .osh__icon svg { width: 24px; height: 24px; }
+  html body [data-dashboard-role] .osh.osh--materials .osh__title { font-size: clamp(26px, 2.35vw, 32px) !important; }
+  html body [data-dashboard-role] .osh.osh--materials .osh__subtitle { margin-top: 6px; font-size: 12.5px !important; line-height: 1.35 !important; }
+  html body [data-dashboard-role] .osh.osh--materials .osh__actions { top: 16px; right: 20px; }
+  html body [data-dashboard-role] .osh.osh--materials .osh-btn { height: 36px; padding: 0 15px; border-radius: 11px; font-size: 13px; }
+  html body [data-dashboard-role] .osh.osh--materials .osh-btn svg { width: 15px; height: 15px; }
+  /* tile row sits at the hero bottom, 58% wide — the artwork starts after it */
+  html body [data-dashboard-role] .osh.osh--materials .osh__footer { max-width: 58%; margin-top: auto; padding-top: 14px; }
+  html body [data-dashboard-role] .osh.osh--materials .osh-mini-kpis { gap: 8px; }
+  /* Tile: [icon] number on one row, label + description full width below
+     (the body span is flattened into the tile grid). */
+  html body [data-dashboard-role] .osh.osh--materials .osh-mini-kpis > * {
+    display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; align-content: start;
+    gap: 0 8px; min-height: 0; padding: 9px 10px !important; border-radius: 13px !important;
+  }
+  html body [data-dashboard-role] .osh.osh--materials .osh-mini__body { display: contents; }
+  html body [data-dashboard-role] .osh.osh--materials .osh-mini__icon { width: 24px; height: 24px; }
+  html body [data-dashboard-role] .osh.osh--materials .osh-mini__icon svg { width: 13px; height: 13px; }
+  html body [data-dashboard-role] .osh.osh--materials .osh-mini__body b { font-size: 17px; }
+  html body [data-dashboard-role] .osh.osh--materials .osh-mini__body :is(strong, small) { grid-column: 1 / -1; }
+  html body [data-dashboard-role] .osh.osh--materials .osh-mini__body strong { margin-top: 5px; font-size: 12px; line-height: 1.15; }
+  html body [data-dashboard-role] .osh.osh--materials .osh-mini__body small { margin-top: 1px; font-size: 10.5px; line-height: 1.25; }
+}
+@media (max-width: 1100px) {
+  /* too narrow for four tiles beside the artwork */
+  html body [data-dashboard-role] .osh.osh--materials { --osh-copy: 60%; --osh-art-w: 36%; --osh-art-right: 20px; }
+  html body [data-dashboard-role] .osh.osh--materials .osh__footer { max-width: 58%; }
+  html body [data-dashboard-role] .osh.osh--materials .osh-mini-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 960px) {
+  html body [data-dashboard-role] .osh.osh--materials { --osh-copy: 100%; padding: 18px; }
+  html body [data-dashboard-role] .osh.osh--materials .osh__footer { max-width: none; }
+}
+
+/* ── Assessments: compact banner at ≤1280px ──────────────────────────────
+   Above 1280px the desktop layout already matches the design. Here (100%
+   zoom on 1280-CSS-px screens) the same composition is kept instead of the
+   generic fallback: four features on one row, artwork (1500×524, width-
+   bound) centre-right and anchored to the hero bottom, quote in the right
+   strip above Create Assessment. */
+@media (max-width: 1280px) {
+  html body [data-dashboard-role] .osh.osh--assessments {
+    --osh-min-h: 205px; --osh-copy: 50%;
+    --osh-art-w: 38%; --osh-art-h: 92%; --osh-art-right: 16%; --osh-art-bottom: 0px;
+    --osh-script-top: 24px; --osh-script-right: 20px;
+    padding: 20px 24px;
+  }
+  html body [data-dashboard-role] .osh.osh--assessments .osh__badge { gap: 8px; margin-bottom: 12px; padding: 5px 14px 5px 5px; border-radius: 10px; font-size: 13px; }
+  html body [data-dashboard-role] .osh.osh--assessments .osh__badge > span { width: 22px; height: 22px; border-radius: 7px; }
+  html body [data-dashboard-role] .osh.osh--assessments .osh__badge svg { width: 13px; height: 13px; }
+  html body [data-dashboard-role] .osh.osh--assessments .osh__title { font-size: clamp(26px, 2.6vw, 34px) !important; white-space: nowrap; }
+  html body [data-dashboard-role] .osh.osh--assessments .osh__subtitle { margin-top: 8px; font-size: 13px !important; line-height: 1.35 !important; }
+  html body [data-dashboard-role] .osh.osh--assessments .osh__features { flex-wrap: nowrap; gap: 10px; margin-top: 14px; }
+  html body [data-dashboard-role] .osh.osh--assessments .osh__features li { gap: 7px; font-size: 11px; white-space: nowrap; }
+  html body [data-dashboard-role] .osh.osh--assessments .osh__ficon { width: 26px; height: 26px; border-radius: 8px; }
+  html body [data-dashboard-role] .osh.osh--assessments .osh__ficon svg { width: 14px; height: 14px; }
+  html body [data-dashboard-role] .osh.osh--assessments .osh__script { display: flex; }
+  html body [data-dashboard-role] .osh.osh--assessments .osh__script span { font-size: 16px !important; }
+  html body [data-dashboard-role] .osh.osh--assessments .osh__script span.is-accent::after { height: 2px; }
+  html body [data-dashboard-role] .osh.osh--assessments .osh__corner { right: 20px; bottom: 16px; z-index: 30; }
+  html body [data-dashboard-role] .osh.osh--assessments .osh-btn { height: 34px; padding: 0 14px; border-radius: 10px; font-size: 13px; }
+  html body [data-dashboard-role] .osh.osh--assessments .osh-btn svg { width: 15px; height: 15px; }
+}
+@media (max-width: 1100px) {
+  /* too narrow for the quote strip: drop it, let features wrap */
+  html body [data-dashboard-role] .osh.osh--assessments { --osh-copy: 56%; --osh-art-w: 40%; --osh-art-right: 2%; }
+  html body [data-dashboard-role] .osh.osh--assessments .osh__script { display: none; }
+  html body [data-dashboard-role] .osh.osh--assessments .osh__features { flex-wrap: wrap; }
+}
+@media (max-width: 960px) {
+  html body [data-dashboard-role] .osh.osh--assessments { --osh-copy: 100%; padding: 18px; }
+  html body [data-dashboard-role] .osh.osh--assessments .osh__title { white-space: normal; }
+}
+
+/* ── Attendance: compact banner at ≤1280px ───────────────────────────────
+   Same idea as Assessments (same 1500×524 artwork): keep the desktop
+   composition — copy left, artwork centre-right on the hero bottom, quote
+   in the far-right strip — instead of the generic fallback. */
+@media (max-width: 1280px) {
+  html body [data-dashboard-role] .osh.osh--attendance {
+    --osh-min-h: 180px; --osh-copy: 48%;
+    --osh-art-w: 38%; --osh-art-h: 94%; --osh-art-right: 16%; --osh-art-bottom: 0px;
+    --osh-script-top: 22px; --osh-script-right: 18px;
+    padding: 18px 24px;
+  }
+  html body [data-dashboard-role] .osh.osh--attendance .osh__eyebrow { margin-bottom: 8px; font-size: 11px; }
+  html body [data-dashboard-role] .osh.osh--attendance .osh__title { font-size: clamp(26px, 2.6vw, 34px) !important; white-space: nowrap; }
+  html body [data-dashboard-role] .osh.osh--attendance .osh__subtitle { max-width: 450px; margin-top: 8px; font-size: 13px !important; line-height: 1.4 !important; }
+  html body [data-dashboard-role] .osh.osh--attendance .osh__script { display: flex; }
+  html body [data-dashboard-role] .osh.osh--attendance .osh__script span { font-size: 16px !important; }
+  html body [data-dashboard-role] .osh.osh--attendance .osh__script span.is-accent::after { height: 2px; }
+}
+@media (max-width: 1100px) {
+  html body [data-dashboard-role] .osh.osh--attendance { --osh-copy: 55%; --osh-art-w: 40%; --osh-art-right: 2%; }
+  html body [data-dashboard-role] .osh.osh--attendance .osh__script { display: none; }
+}
+@media (max-width: 960px) {
+  html body [data-dashboard-role] .osh.osh--attendance { --osh-copy: 100%; padding: 18px; }
+  html body [data-dashboard-role] .osh.osh--attendance .osh__title { white-space: normal; }
+}
+
+/* Attendance: FIXED banner height on desktop — children (copy, artwork,
+   quote) must fit inside it; the artwork is sized from the hero, never the
+   other way round. Heights checked against the copy at each range:
+   >1440px ≈ 202px of copy, 1281–1440px ≈ 200px, ≤1280px ≈ 133px. */
+html body [data-dashboard-role] .osh.osh--attendance { height: 265px; min-height: 0; }
+@media (max-width: 1440px) {
+  html body [data-dashboard-role] .osh.osh--attendance { height: 232px; padding-top: 24px; padding-bottom: 24px; }
+}
+@media (max-width: 1280px) {
+  html body [data-dashboard-role] .osh.osh--attendance { height: 176px; padding-top: 18px; padding-bottom: 18px; --osh-script-top: 28px; }
+}
+@media (max-width: 960px) {
+  html body [data-dashboard-role] .osh.osh--attendance { height: auto; }
+}
+
+/* v20 — eyebrow line (shared) */
+html body [data-dashboard-role] .osh .osh__eyebrow { display: flex; align-items: center; gap: 12px; color: #1c3553 !important; font-size: 13px; letter-spacing: .16em; }
+html body [data-dashboard-role] .osh .osh__eyebrow::before { content: ""; width: 38px; height: 3px; border-radius: 3px; background: #f39924; }
+html body [data-dashboard-role] .osh--attendance .osh__eyebrow { color: #d9770a !important; }
+html body [data-dashboard-role] .osh--attendance .osh__eyebrow::before { display: none; }
+
+
+/* v22 — Students (EMPOWER LEARNERS) hero, KPI cards below the banner */
+html body [data-dashboard-role] .osh--studenthub { --osh-min-h: 270px; --osh-copy: 55%; --osh-art-w: 28%; --osh-art-h: 100%; --osh-art-right: 15%; --osh-script-top: 80px; --osh-script-right: 30px; }
+html body [data-dashboard-role] .osh--studenthub .osh__title { font-size: clamp(34px, 3vw, 50px) !important; }
+html body [data-dashboard-role] .osh--studenthub .osh__features { flex-wrap: nowrap; gap: 10px; }
+html body [data-dashboard-role] .osh--studenthub .osh__features li { padding: 8px 12px 8px 8px; border-radius: 12px; background: rgba(255,255,255,.8); font-size: 12px; white-space: nowrap; }
+html body [data-dashboard-role] .osh--studenthub .osh__features li span:last-child { line-height: 1.25; }
+html body [data-dashboard-role] .osh--studenthub .osh__ficon { width: 36px; height: 36px; }
+html body [data-dashboard-role] .osh--studenthub .osh__script span { font-size: 26px !important; }
+html body [data-dashboard-role] .osh--studenthub .osh__actions { top: 22px; right: 24px; }
+@media (max-width: 1440px) { html body [data-dashboard-role] .osh--studenthub .osh__features { flex-wrap: wrap; } html body [data-dashboard-role] .osh--studenthub { --osh-art-right: 8%; } }
+html body [data-dashboard-role] .osh--studenthub .osh__features { flex-wrap: wrap !important; max-width: 560px; }
+html body [data-dashboard-role] .osh--studenthub { --osh-art-right: 14%; --osh-art-w: 25%; }
+
+html body [data-dashboard-role] .osh__art img[src*="kini-designs"] { object-fit: contain; object-position: center bottom; }
+
+/* v23 — Students: four feature chips on one row */
+@media (min-width: 1281px) {
+  html body [data-dashboard-role] .osh--studenthub .osh__features { flex-wrap: nowrap !important; max-width: none !important; gap: 8px; }
+  html body [data-dashboard-role] .osh--studenthub .osh__features li { padding: 6px 10px 6px 6px; font-size: 12px; white-space: nowrap; }
+  html body [data-dashboard-role] .osh--studenthub .osh__ficon { width: 32px; height: 32px; }
+  html body [data-dashboard-role] .osh--studenthub .osh__copy { position: relative; z-index: 3; }
+}
+
+/* ── Mentor Management (v24): compact hero, KPI row, filters, table ──────
+   All mentor-page rules live here. Desktop hero is a fixed ~252px band with
+   two zones that never overlap:
+     copy (left ~58%: icon + eyebrow/title/subtitle, feature row below)
+     artwork (right ~38%: below the Export button, contained, bottom-aligned)
+   The artwork is web/org-mentor-management.webp — the supplied PNG with its
+   painted checkerboard converted to real transparency. */
+html body [data-dashboard-role] .osh.osh--mentorhub {
+  height: 252px; min-height: 0; padding: 18px 24px; border-radius: 18px;
+}
+html body [data-dashboard-role] .osh.osh--mentorhub .osh__main {
+  flex: 1; display: grid; grid-template-columns: auto minmax(0, 1fr); align-content: center; align-items: center;
+  gap: 0 18px; max-width: 58%;
+}
+/* the shared background's sun circle sits beside Export here and reads as a stray blob */
+html body [data-dashboard-role] .osh.osh--mentorhub .osh__bg circle[r="46"] { display: none; }
+html body [data-dashboard-role] .osh.osh--mentorhub .osh__lead { grid-row: 1 / span 3; }
+html body [data-dashboard-role] .osh.osh--mentorhub .osh__copy { display: contents; }
+html body [data-dashboard-role] .osh.osh--mentorhub :is(.osh__eyebrow, .osh__titlerow, .osh__subtitle) { grid-column: 2; }
+html body [data-dashboard-role] .osh.osh--mentorhub .osh__icon { width: 60px; height: 60px; border-radius: 18px; }
+html body [data-dashboard-role] .osh.osh--mentorhub .osh__icon svg { width: 28px; height: 28px; }
+html body [data-dashboard-role] .osh.osh--mentorhub .osh__eyebrow { margin: 0 0 6px; gap: 10px; font-size: 11.5px; }
+html body [data-dashboard-role] .osh.osh--mentorhub .osh__eyebrow::before { width: 28px; }
+html body [data-dashboard-role] .osh.osh--mentorhub .osh__title { font-size: clamp(28px, 2.4vw, 36px) !important; line-height: 1.1 !important; white-space: nowrap; }
+html body [data-dashboard-role] .osh.osh--mentorhub .osh__subtitle { margin-top: 6px; max-width: 500px; font-size: 14px !important; line-height: 1.45 !important; }
+
+/* Feature row: four equal chips spanning the copy zone (under the icon too) */
+html body [data-dashboard-role] .osh.osh--mentorhub .osh__features {
+  grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, minmax(0, auto)); justify-content: start; gap: 8px; margin: 16px 0 0;
+}
+html body [data-dashboard-role] .osh.osh--mentorhub .osh__features li {
+  min-width: 0; gap: 7px; padding: 5px 10px 5px 5px; border-radius: 12px; background: rgba(255, 255, 255, .8);
+  font-size: 11.5px; line-height: 1.25; white-space: nowrap;
+}
+html body [data-dashboard-role] .osh.osh--mentorhub .osh__features li > span:last-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+html body [data-dashboard-role] .osh.osh--mentorhub .osh__ficon { width: 30px; height: 30px; border-radius: 9px; }
+html body [data-dashboard-role] .osh.osh--mentorhub .osh__ficon svg { width: 16px; height: 16px; }
+
+html body [data-dashboard-role] .osh.osh--mentorhub .osh__actions { top: 18px; right: 20px; }
+html body [data-dashboard-role] .osh.osh--mentorhub .osh-btn { height: 36px; padding: 0 16px; border-radius: 11px; font-size: 13.5px; }
+html body [data-dashboard-role] .osh.osh--mentorhub .osh-btn svg { width: 16px; height: 16px; }
+
+html body [data-dashboard-role] .osh.osh--mentorhub .osh__art {
+  top: 62px; bottom: 10px; left: 62%; right: 20px; width: auto; height: auto;
+  align-items: flex-end; justify-content: center;
+}
+html body [data-dashboard-role] .osh.osh--mentorhub .osh__art img { width: 100%; height: 100%; max-width: none; max-height: none; object-fit: contain; object-position: center bottom; }
+
+/* Feature labels keep their two lines at every width (a shared ≤960px rule hides the <br>). */
+html body [data-dashboard-role] .osh.osh--mentorhub .osh__features li span:last-child br { display: inline; }
+
+@media (max-width: 1366px) {
+  html body [data-dashboard-role] .osh.osh--mentorhub .osh__features li { gap: 6px; padding: 4px 8px 4px 4px; font-size: 11px; }
+  html body [data-dashboard-role] .osh.osh--mentorhub .osh__ficon { width: 28px; height: 28px; }
+}
+@media (max-width: 1280px) {
+  html body [data-dashboard-role] .osh.osh--mentorhub { padding: 18px 20px; }
+  html body [data-dashboard-role] .osh.osh--mentorhub .osh__main { max-width: 61%; column-gap: 14px; }
+  html body [data-dashboard-role] .osh.osh--mentorhub .osh__art { left: 64%; }
+  html body [data-dashboard-role] .osh.osh--mentorhub .osh__icon { width: 52px; height: 52px; border-radius: 16px; }
+  html body [data-dashboard-role] .osh.osh--mentorhub .osh__icon svg { width: 24px; height: 24px; }
+  html body [data-dashboard-role] .osh.osh--mentorhub .osh__subtitle { font-size: 13.5px !important; }
+  html body [data-dashboard-role] .osh.osh--mentorhub .osh__features { gap: 6px; }
+  html body [data-dashboard-role] .osh.osh--mentorhub .osh__features li { font-size: 10.5px; }
+}
+@media (max-width: 1180px) {
+  /* Too narrow for copy + artwork side by side: drop the artwork, let the copy use the width left of Export. */
+  html body [data-dashboard-role] .osh.osh--mentorhub { height: auto; }
+  html body [data-dashboard-role] .osh.osh--mentorhub .osh__art { display: none; }
+  html body [data-dashboard-role] .osh.osh--mentorhub .osh__main { max-width: calc(100% - 120px); }
+}
+@media (max-width: 960px) {
+  html body [data-dashboard-role] .osh.osh--mentorhub { padding: 16px; }
+  /* keep Export top-right on tablets instead of the shared stacked fallback */
+  html body [data-dashboard-role] .osh.osh--mentorhub .osh__actions { position: absolute; top: 16px; right: 16px; margin: 0; }
+  html body [data-dashboard-role] .osh.osh--mentorhub .osh__title { white-space: normal; }
+}
+@media (max-width: 640px) {
+  html body [data-dashboard-role] .osh.osh--mentorhub .osh__actions { position: static; align-self: flex-end; margin: 0 0 8px; }
+  html body [data-dashboard-role] .osh.osh--mentorhub .osh__main { grid-template-columns: minmax(0, 1fr); }
+  html body [data-dashboard-role] .osh.osh--mentorhub .osh__main { max-width: 100%; }
+  html body [data-dashboard-role] .osh.osh--mentorhub .osh__lead { grid-row: auto; margin-bottom: 10px; }
+  html body [data-dashboard-role] .osh.osh--mentorhub :is(.osh__eyebrow, .osh__titlerow, .osh__subtitle) { grid-column: 1; }
+  html body [data-dashboard-role] .osh.osh--mentorhub .osh__icon { width: 48px; height: 48px; border-radius: 14px; }
+  html body [data-dashboard-role] .osh.osh--mentorhub .osh__features { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* KPI cards: four equal cards, ~104px tall */
+html body [data-dashboard-role] .osh-kpis { display: grid; gap: 12px; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 900px) { html body [data-dashboard-role] .osh-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 480px) { html body [data-dashboard-role] .osh-kpis { grid-template-columns: minmax(0, 1fr); } }
+html body [data-dashboard-role] .osh-kpi { position: relative; display: flex; align-items: center; gap: 14px; min-width: 0; height: 104px; overflow: hidden; padding: 14px 44px 14px 16px; border: 1px solid #e6edf6; border-left: 4px solid var(--ok-ink); border-radius: 14px; background: linear-gradient(115deg, #ffffff 50%, var(--ok-soft)); text-align: left; box-shadow: 0 4px 14px rgba(15,42,74,.05); transition: transform .15s ease, box-shadow .15s ease; }
+html body [data-dashboard-role] .osh-kpi:hover { transform: translateY(-2px); box-shadow: 0 14px 26px -16px rgba(15,42,74,.4); }
+html body [data-dashboard-role] .osh-kpi[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--ok-ink) inset, 0 4px 14px rgba(15,42,74,.05); }
+html body [data-dashboard-role] .osh-kpi__icon { display: grid; flex-shrink: 0; place-items: center; width: 48px; height: 48px; border-radius: 14px; background: var(--ok-soft); color: var(--ok-ink); }
+html body [data-dashboard-role] .osh-kpi__icon svg { width: 22px; height: 22px; }
+html body [data-dashboard-role] .osh-kpi :is(small, b, em) { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+html body [data-dashboard-role] .osh-kpi small { color: #0f2a4a !important; font-size: 11.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+html body [data-dashboard-role] .osh-kpi b { margin-top: 2px; color: #0b1f3f !important; font-size: 24px; font-weight: 800; line-height: 1.15; }
+html body [data-dashboard-role] .osh-kpi em { margin-top: 1px; color: #3b5270 !important; font-size: 12.5px; font-style: normal; }
+html body [data-dashboard-role] .osh-kpi__arrow { position: absolute; top: 12px; right: 12px; display: grid; place-items: center; width: 26px; height: 26px; border-radius: 999px; background: var(--ok-soft); color: var(--ok-ink); }
+html body [data-dashboard-role] .osh-kpi__arrow svg { width: 14px; height: 14px; }
+@media (max-width: 1280px) {
+  html body [data-dashboard-role] .osh-kpi { height: 96px; gap: 10px; padding: 12px 34px 12px 12px; }
+  html body [data-dashboard-role] .osh-kpi__icon { width: 40px; height: 40px; border-radius: 12px; }
+  html body [data-dashboard-role] .osh-kpi__icon svg { width: 20px; height: 20px; }
+  html body [data-dashboard-role] .osh-kpi small { font-size: 11px; letter-spacing: .03em; }
+  html body [data-dashboard-role] .osh-kpi em { font-size: 12px; }
+  html body [data-dashboard-role] .osh-kpi__arrow { top: 10px; right: 8px; width: 24px; height: 24px; }
+}
+@media (max-width: 900px) {
+  html body [data-dashboard-role] .osh-kpi { padding-right: 40px; }
+}
+.osh-kpi.is-blue { --ok-soft: #e3edfd; --ok-ink: #2f6fe4; }
+.osh-kpi.is-green { --ok-soft: #dcf5e7; --ok-ink: #16a34a; }
+.osh-kpi.is-orange { --ok-soft: #ffeedd; --ok-ink: #f39924; }
+.osh-kpi.is-red { --ok-soft: #ffe4e6; --ok-ink: #e5484d; }
+html.dark body [data-dashboard-role] .osh-kpi { background: #0f1c2e; border-color: #22324a; }
+
+/* Mentor list toolbar: 36px controls on one row */
+html body [data-dashboard-role] .mtl-select { width: 168px; height: 36px; padding: 0 10px; border: 1px solid #dfe6ef; border-radius: 10px; background-color: #fff; color: #0f2a4a; font-size: 13px; text-overflow: ellipsis; }
+html body [data-dashboard-role] .mtl-reset { display: inline-flex; flex-shrink: 0; align-items: center; gap: 6px; height: 36px; padding: 0 14px; border: 1px solid #dfe6ef; border-radius: 10px; background: #fff; color: #0f2a4a; font-size: 13px; font-weight: 600; }
+@media (max-width: 1280px) { html body [data-dashboard-role] .mtl-select { width: 150px; } }
+@media (max-width: 640px) { html body [data-dashboard-role] .mtl-select { flex: 1 1 140px; width: auto; } }
+
+/* Mentor table: ~36px header, ~46px rows (the header theme reads these vars) */
+html body [data-dashboard-role] .mtl-table {
+  --hr-standard-head-padding: 10px 12px;
+  --hr-standard-head-inset: 5px;
+}
+html body [data-dashboard-role] .mtl-table table > tbody > tr > td { height: 46px; padding-top: 4px; padding-bottom: 4px; }

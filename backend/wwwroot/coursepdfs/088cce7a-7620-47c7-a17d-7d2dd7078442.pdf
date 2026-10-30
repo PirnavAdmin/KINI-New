@@ -1,0 +1,471 @@
+%PDF-1.3
+%ºß¬à
+3 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 4076
+>>
+stream
+0.5670000000000001 w
+0 G
+BT
+/F2 20 Tf
+23. TL
+0 g
+51.0236220472441033 779.5277952755905062 Td
+(DevOps Course Study Guide) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+51.0236220472441033 751.1813385826771992 Td
+(Mentor: Lahari Gandikota) Tj
+ET
+BT
+/F2 11 Tf
+12.6499999999999986 TL
+0 g
+51.0236220472441033 714.3309448818897636 Td
+(Section 1: DevOps Foundations) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 694.4884251968503577 Td
+(- DevOps Lifecycle & Culture) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 677.480551181102328 Td
+(- Agile, Scrum & SDLC) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 660.4726771653542983 Td
+(- Delivery Metrics & SRE Basics) Tj
+ET
+BT
+/F2 11 Tf
+12.6499999999999986 TL
+0 g
+51.0236220472441033 632.1262204724408775 Td
+(Section 2: Linux & Networking) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 612.2837007874015853 Td
+(- Linux Administration) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 595.2758267716535556 Td
+(- Shell Scripting) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 578.2679527559055259 Td
+(- DNS, HTTP, SSH & Troubleshooting) Tj
+ET
+BT
+/F2 11 Tf
+12.6499999999999986 TL
+0 g
+51.0236220472441033 549.9214960629921052 Td
+(Section 3: Git & Collaboration) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 530.0789763779526993 Td
+(- Git Fundamentals) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 513.0711023622046696 Td
+(- Branching & Pull Requests) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 496.0632283464566399 Td
+(- GitHub Workflow & Releases) Tj
+ET
+BT
+/F2 11 Tf
+12.6499999999999986 TL
+0 g
+51.0236220472441033 467.716771653543276 Td
+(Section 4: Docker & Containers) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 447.8742519685038701 Td
+(- Images & Containers) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 430.8663779527558404 Td
+(- Dockerfile & Registries) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 413.8585039370078107 Td
+(- Docker Compose & Networking) Tj
+ET
+BT
+/F2 11 Tf
+12.6499999999999986 TL
+0 g
+51.0236220472441033 385.5120472440944468 Td
+(Section 5: CI/CD Automation) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 365.6695275590550409 Td
+(- Pipeline Design) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 348.6616535433070112 Td
+(- GitHub Actions & Jenkins) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 331.6537795275589815 Td
+(- Testing, Artifacts & Deployment) Tj
+ET
+BT
+/F2 11 Tf
+12.6499999999999986 TL
+0 g
+51.0236220472441033 303.3073228346455608 Td
+(Section 6: Cloud & Infrastructure) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 283.4648031496062686 Td
+(- AWS Core Services) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 266.4569291338582389 Td
+(- Terraform Infrastructure as Code) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 249.4490551181102092 Td
+(- Ansible Configuration Management) Tj
+ET
+BT
+/F2 11 Tf
+12.6499999999999986 TL
+0 g
+51.0236220472441033 221.1025984251967884 Td
+(Section 7: Kubernetes) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 201.2600787401573825 Td
+(- Pods, Deployments & Services) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 184.2522047244093528 Td
+(- ConfigMaps, Secrets & Storage) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 167.2443307086613231 Td
+(- Helm, Scaling & Operations) Tj
+ET
+BT
+/F2 11 Tf
+12.6499999999999986 TL
+0 g
+51.0236220472441033 138.8978740157479024 Td
+(Section 8: Observability & DevSecOps) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 119.0553543307086102 Td
+(- Prometheus & Grafana) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 102.0474803149605805 Td
+(- Logging, Alerting & Incident Response) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0 g
+68.031496062992133 85.0396062992125508 Td
+(- Security Scanning & Final Project) Tj
+ET
+endstream
+endobj
+1 0 obj
+<</Type /Pages
+/Kids [3 0 R ]
+/Count 1
+>>
+endobj
+5 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+6 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+7 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+8 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+9 0 obj
+<<
+/Type /Font
+/BaseFont /Courier
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+10 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+11 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+12 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+13 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Roman
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+14 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+15 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Italic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+16 0 obj
+<<
+/Type /Font
+/BaseFont /Times-BoldItalic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+17 0 obj
+<<
+/Type /Font
+/BaseFont /ZapfDingbats
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+18 0 obj
+<<
+/Type /Font
+/BaseFont /Symbol
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+2 0 obj
+<<
+/ProcSet [/PDF /Text /ImageB /ImageC /ImageI]
+/Font <<
+/F1 5 0 R
+/F2 6 0 R
+/F3 7 0 R
+/F4 8 0 R
+/F5 9 0 R
+/F6 10 0 R
+/F7 11 0 R
+/F8 12 0 R
+/F9 13 0 R
+/F10 14 0 R
+/F11 15 0 R
+/F12 16 0 R
+/F13 17 0 R
+/F14 18 0 R
+>>
+/XObject <<
+>>
+>>
+endobj
+19 0 obj
+<<
+/Producer (jsPDF 4.2.1)
+/CreationDate (D:20260916142333+05'30')
+>>
+endobj
+20 0 obj
+<<
+/Type /Catalog
+/Pages 1 0 R
+/OpenAction [3 0 R /FitH null]
+/PageLayout /OneColumn
+>>
+endobj
+xref
+0 21
+0000000000 65535 f 
+0000004280 00000 n 
+0000006097 00000 n 
+0000000015 00000 n 
+0000000152 00000 n 
+0000004337 00000 n 
+0000004462 00000 n 
+0000004592 00000 n 
+0000004725 00000 n 
+0000004862 00000 n 
+0000004985 00000 n 
+0000005114 00000 n 
+0000005246 00000 n 
+0000005382 00000 n 
+0000005510 00000 n 
+0000005637 00000 n 
+0000005766 00000 n 
+0000005899 00000 n 
+0000006001 00000 n 
+0000006345 00000 n 
+0000006431 00000 n 
+trailer
+<<
+/Size 21
+/Root 20 0 R
+/Info 19 0 R
+/ID [ <81E8D0F8AE97F9663A1A463C1A248885> <81E8D0F8AE97F9663A1A463C1A248885> ]
+>>
+startxref
+6535
+%%EOF

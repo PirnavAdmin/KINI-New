@@ -1,0 +1,76 @@
+/* Content-only desktop dimensions. No global typography or shell tokens.
+   Source rules use their existing values as fallbacks below 1024px. */
+@media (min-width: 1024px) {
+  :where(.hrp-page, .hr-page, .hae-dialog, .hal-dialog, .hra-dialog, .hr-drawer) {
+    --hr-hero-height: 128px;
+    --hr-hero-script-height: 176px;
+    --hr-hero-padding: 12px 22px;
+    --hr-title-size: 34px;
+    --hr-subtitle-gap: 6px;
+    --hr-subtitle-margin: 6px 0 0;
+    --hr-feature-gap: 6px;
+    --hr-feature-margin: 8px;
+    --hr-action-top: 10px;
+    --hr-art-action-top: 50px;
+    --hr-control-height: 36px;
+    --hr-batch-filter-min-width: min(170px, 100%);
+    --hr-gap: 8px;
+    --hr-kpi-height: 72px;
+    --hr-kpi-padding: 8px 12px;
+    --hr-kpi-icon: 40px;
+    --hr-kpi-icon-svg: 22px;
+    --hr-kpi-wave: 24px;
+    --hr-panel-padding: 10px 14px;
+    --hr-panel-head-padding: 10px 14px 6px;
+    --hr-panel-body-padding: 4px 14px 12px;
+    --hr-table-head-padding: 3px 6px;
+    --hr-table-cell-padding: 4px 10px;
+    --hr-table-row-height: 36px;
+    --hr-table-label-height: 26px;
+    --hr-standard-head-padding: 8px 12px;
+    --hr-standard-header-height: 36px;
+    --hr-standard-head-inset: 4px;
+    --hr-detail-tab-padding: 8px 12px;
+    --hr-badge-padding: 2px 8px;
+    --hr-table-action-gap: 6px;
+    --hr-pager-padding: 4px 14px;
+    --hr-detail-padding: 16px;
+    --hr-detail-gap: 16px;
+    --hr-detail-cell-padding: 8px 12px;
+    --hr-detail-back-margin: 12px 0;
+    --hr-list-icon: 38px;
+    --hr-dialog-padding: 16px 20px;
+    --hr-dialog-gap: 16px;
+    --hr-dialog-body-min: 0px;
+    --hr-dialog-icon: 44px;
+    --hr-dialog-field-icon: 38px;
+    --hr-dialog-button-padding: 6px 18px;
+    --hr-announcement-head-height: 100px;
+    --hr-calendar-cell-height: clamp(112px, calc((100dvh - 420px) / 6), 138px);
+    --hr-calendar-overflow: auto;
+  }
+  :where(.hrp-page, .hr-page) { min-width: 0; }
+}
+
+/* HRDataTable opts in without altering shared tables in other portals. */
+@media (min-width: 1024px) {
+  .hr-compact-table tbody tr { height: var(--hr-table-row-height, 40px); }
+  .hr-compact-table tbody td { padding: var(--hr-table-cell-padding, 5px 10px); }
+  .hr-compact-table .hr-avatar { width: 28px; height: 28px; }
+}
+
+/* KPI text stacks tighter at desktop (type sizes unchanged). */
+@media (min-width: 1024px) {
+  html body [data-dashboard-role] .hrp-kpi .hrp-kpi__label { margin-top: 1px; }
+  html body [data-dashboard-role] .hrp-kpi .hrp-kpi__sub { margin-top: 0; line-height: 1.25; }
+}
+
+/* Heroes with feature chips: keep the chips on one row at desktop so the
+   banner doesn't grow an extra line (copy gets a little more width, the art
+   starts just after it). */
+@media (min-width: 1100px) {
+  html body [data-dashboard-role] .hrp-hero.hrp-hero--v24 .hrp-hero__copy:has(.hrp-hero__features) { max-width: 56%; }
+  html body [data-dashboard-role] .hrp-hero.hrp-hero--v24:has(.hrp-hero__features) .hrp-hero__art--v24 { left: 58%; }
+  html body [data-dashboard-role] .hrp-hero .hrp-hero__features { flex-wrap: nowrap; gap: var(--hr-feature-gap, 6px); }
+  html body [data-dashboard-role] .hrp-hero .hrp-hero__features li { padding: 4px 9px 4px 4px; gap: 6px; }
+}

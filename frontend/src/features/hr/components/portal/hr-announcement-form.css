@@ -1,0 +1,132 @@
+/* HR › Add Announcement dialog (v22) */
+.hra-overlay { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 16px; background: rgba(15, 23, 42, .5); backdrop-filter: blur(2px); }
+.hra-dialog { display: flex; width: min(860px, 100%); max-height: 94vh; flex-direction: column; overflow: hidden; border-radius: 22px; background: #fff; box-shadow: 0 30px 70px -20px rgba(15,42,74,.5); }
+.hra-head { position: relative; display: flex; align-items: center; gap: 18px; min-height: var(--hr-announcement-head-height, 150px); padding: var(--hr-dialog-padding, 20px 26px); overflow: hidden; background: linear-gradient(105deg, #f5f9ff 0%, #e6f0fd 60%, #d8e7fb 100%); }
+.hra-head__icon { display: grid; flex-shrink: 0; place-items: center; width: var(--hr-dialog-icon, 84px); height: var(--hr-dialog-icon, 84px); border: 4px solid #fff; border-radius: 999px; background: #eaf2fe; color: #1d63d8; box-shadow: 0 8px 18px -10px rgba(29,99,216,.5); }
+.hra-head__icon svg { width: 38px; height: 38px; }
+.hra-head h2 { margin: 0; color: #0b1f3f; font-size: 30px; font-weight: 800; letter-spacing: -0.01em; }
+.hra-head h2 em { font-style: normal; color: #1673f0; }
+.hra-head p { margin: 6px 0 0; color: #3b5270; font-size: 14.5px; }
+.hra-head__art { position: absolute; right: 30px; bottom: 0; height: 92%; max-width: 38%; object-fit: contain; object-position: bottom right; pointer-events: none; }
+.hra-close { position: absolute; top: 14px; right: 14px; z-index: 2; display: grid; place-items: center; width: 36px; height: 36px; border-radius: 999px; background: #fff; color: #0f2a4a; box-shadow: 0 4px 12px rgba(15,42,74,.18); }
+.hra-close svg { width: 18px; height: 18px; }
+.hra-body { display: grid; min-height: 0; gap: 14px; overflow-y: auto; padding: var(--hr-dialog-padding, 22px 26px 10px); }
+.hra-field { display: grid; gap: 6px; }
+.hra-label { color: #0b1f3f; font-size: 14.5px; font-weight: 700; }
+.hra-label i { color: #e11d48; font-style: normal; }
+.hra-control { display: flex; align-items: stretch; overflow: hidden; border: 1px solid #d5dfeb; border-radius: 10px; background: #fff; transition: border-color .15s ease, box-shadow .15s ease; }
+.hra-control:focus-within { border-color: #2f6fe4; box-shadow: 0 0 0 3px rgba(47,111,228,.15); }
+.hra-icon { display: grid; flex-shrink: 0; place-items: center; width: 52px; border-right: 1px solid #e3ebf6; background: #f6f9fd; color: #1d63d8; }
+.hra-control.is-area .hra-icon { place-items: start center; padding-top: 12px; }
+.hra-icon svg { width: 20px; height: 20px; }
+.hra-control :is(input, select, textarea) { flex: 1; min-width: 0; height: var(--hr-control-height, 46px); padding: 0 14px; border: 0; background: transparent; color: #0f2a4a; font-size: 15px; outline: none; }
+.hra-control textarea { height: auto; min-height: 100px; padding: 12px 14px; resize: vertical; }
+.hra-error { margin: 0; color: #dc2626; font-size: 14px; }
+.hra-foot { display: flex; justify-content: flex-end; gap: 12px; padding: var(--hr-dialog-padding, 14px 26px 18px); border-top: 1px solid #e6edf6; background: #f8fbff; }
+.hra-btn { display: inline-flex; align-items: center; gap: 10px; height: var(--hr-control-height, 46px); padding: 0 24px; border-radius: 12px; font-size: 16px; font-weight: 700; }
+.hra-btn svg { width: 19px; height: 19px; }
+.hra-btn--ghost { border: 1px solid #d5dfeb; background: #fff; color: #3b5270; }
+.hra-btn--primary { background: #f58a0b; color: #fff; box-shadow: 0 12px 22px -12px rgba(245,138,11,.9); }
+.hra-btn:disabled { opacity: .6; }
+@media (max-width: 720px) { .hra-head__art { display: none; } .hra-head h2 { font-size: 24px; } }
+html.dark .hra-dialog { background: #0f1c2e; } html.dark .hra-head { background: linear-gradient(105deg, #0f1c2e, #13243a); }
+html.dark :is(.hra-head h2, .hra-label) { color: #f1f5f9; } html.dark .hra-control { background: #13243a; border-color: #22324a; } html.dark .hra-control :is(input, select, textarea) { color: #e2e8f0; }
+.hra-head > div { position: relative; z-index: 1; max-width: 58%; } .hra-head__art { max-width: 34%; }
+
+/* v23 — two-panel variant (design image 2) at ≥1100px; the banner variant stays below */
+.hra-side { display: none; }
+.hra-main { display: flex; min-height: 0; flex: 1; flex-direction: column; }
+/* The frame must never scroll. app-density.css gives every aria-modal dialog
+   overflow-y:auto, so the wheel scrolled hero and form together and the
+   partial repaint over the blurred overlay left a shifted ghost copy.
+   Only .hra-body scrolls. */
+html body .hra-overlay > .hra-dialog[role="dialog"][aria-modal="true"] { overflow: clip; }
+.hra-trail { display: grid; flex-shrink: 0; place-items: center; width: 50px; border-left: 1px solid #e3ebf6; color: #1d4f91; pointer-events: none; }
+.hra-trail svg { width: 20px; height: 20px; }
+.hra-control input[type="datetime-local"]::-webkit-calendar-picker-indicator { display: none; }
+.hra-trail { border: 0; border-left: 1px solid #e3ebf6; background: transparent; cursor: pointer; pointer-events: auto; }
+.hra-head__art { right: 52px; height: 100%; max-width: 40%; }
+@media (min-width: 1100px) {
+  .hra-dialog { display: grid; grid-template-columns: minmax(0, 43%) minmax(0, 57%); grid-template-rows: minmax(0, 1fr); width: min(1180px, 100%); }
+  .hra-side { position: relative; display: flex; min-height: 0; flex-direction: column; overflow: hidden; padding: 38px 40px 0; background: radial-gradient(circle at 60% 30%, #f5f9ff 0, #e2edfc 55%, #d4e4fa 100%); }
+  .hra-side__logo { width: 110px; height: auto; margin-bottom: 44px; }
+  .hra-side__title { display: flex; flex-direction: column; margin: 0; color: #0b1f3f; font-size: 50px; font-weight: 800; letter-spacing: -0.02em; line-height: 1.05; }
+  .hra-side__title em { color: #1673f0; font-style: normal; }
+  .hra-side__sub { max-width: 30ch; margin: 14px 0 0; color: #2f4868; font-size: 17px; line-height: 1.4; }
+  .hra-side__art { width: calc(100% + 80px); max-width: none; min-height: 0; margin: auto -40px 0; object-fit: cover; object-position: top; }
+  .hra-head { min-height: var(--hr-announcement-head-height, 0); padding: var(--hr-dialog-padding, 26px 30px 18px); border-bottom: 1px solid #e6edf6; background: #fff; }
+  .hra-head__icon, .hra-head__art { display: none; }
+  .hra-head > div { max-width: none; }
+  .hra-head h2 { font-size: 27px; } .hra-head h2 em { color: #0b1f3f; }
+  .hra-close { top: 22px; right: 22px; border: 1px solid #dfe6ef; border-radius: 10px; box-shadow: none; }
+  .hra-body { padding: var(--hr-dialog-padding, 20px 30px 6px); } .hra-foot { border-top: 0; background: #fff; padding: var(--hr-dialog-padding, 12px 30px 26px); }
+}
+/* v24 — fluid two-panel sizing. Card, type, controls and art follow the
+   viewport so a 1280×690 window (1920×1080 at 150% display scale) shows the
+   same compact card as a 1920×1030 one, with every field and the actions in
+   view. .hra-body scrolling stays as the fallback for very short windows. */
+@media (min-width: 1100px) {
+  .hra-dialog {
+    --hr-dialog-padding: clamp(12px, 2.2vh, 20px) clamp(20px, 2.2vw, 30px);
+    --hr-control-height: clamp(34px, 5.2vh, 42px);
+    grid-template-columns: minmax(0, 40%) minmax(0, 60%);
+    width: min(1180px, 100%, max(1000px, 72vw));
+    max-height: calc(100dvh - 2rem);
+  }
+  .hra-side { padding: clamp(20px, 4.4vh, 38px) clamp(24px, 3vw, 40px) 0; }
+  .hra-side__logo { width: clamp(76px, 11vh, 110px); margin-bottom: clamp(14px, 4.2vh, 44px); }
+  .hra-side__title { font-size: clamp(32px, 5.2vh, 50px); }
+  .hra-side__sub { margin-top: clamp(8px, 1.4vh, 14px); font-size: clamp(14px, 1.9vh, 17px); }
+  .hra-side__art { flex: 1 1 0; min-height: 0; width: calc(100% + 2 * clamp(24px, 3vw, 40px)); margin: clamp(10px, 2vh, 20px) calc(-1 * clamp(24px, 3vw, 40px)) 0; object-position: center top; }
+  .hra-head h2 { font-size: clamp(21px, 3.2vh, 27px); }
+  .hra-head p { margin-top: 4px; font-size: clamp(13px, 1.8vh, 14.5px); }
+  .hra-close { top: clamp(12px, 2.4vh, 22px); right: clamp(12px, 2.4vh, 22px); }
+  .hra-body { gap: clamp(8px, 1.5vh, 14px); }
+  .hra-field { gap: clamp(4px, 0.7vh, 6px); }
+  .hra-label { font-size: clamp(13px, 1.8vh, 14.5px); }
+  .hra-control textarea { min-height: clamp(64px, 11vh, 100px); }
+  .hra-btn { padding: 0 clamp(18px, 2vw, 24px); font-size: clamp(14px, 1.9vh, 16px); }
+}
+
+/* v24 — brand palette: navy ink, orange action, #F3F7FB surfaces. The
+   footer sits outside .hra-body, so Save/Cancel stay reachable whenever the
+   body has to scroll. */
+.hra-dialog { --hra-navy: #123B5A; --hra-orange: #FF9000; --hra-surface: #F3F7FB; max-height: calc(100dvh - 32px); }
+.hra-head h2, .hra-label, .hra-side__title, .hra-head h2 em { color: var(--hra-navy); }
+.hra-head p, .hra-side__sub { color: #4a6278; }
+.hra-close, .hra-trail, .hra-icon, .hra-head__icon { color: var(--hra-navy); }
+.hra-icon { background: var(--hra-surface); }
+.hra-control:focus-within { border-color: var(--hra-navy); box-shadow: 0 0 0 3px rgba(18, 59, 90, .14); }
+.hra-control :is(input, select, textarea) { color: var(--hra-navy); }
+.hra-foot { border-top: 1px solid #e3ebf3; background: var(--hra-surface); }
+.hra-btn--ghost { color: var(--hra-navy); }
+.hra-btn--ghost:hover:not(:disabled) { background: var(--hra-surface); }
+.hra-btn--primary { background: var(--hra-orange); box-shadow: 0 10px 20px -12px rgba(255, 144, 0, .9); }
+.hra-btn--primary:hover:not(:disabled) { background: #f08500; }
+.hra-btn:focus-visible, .hra-close:focus-visible { outline: 2px solid var(--hra-navy); outline-offset: 2px; }
+@media (min-width: 1100px) {
+  .hra-side__title em { color: #1673f0; }
+  .hra-head { border-bottom-color: #e3ebf3; }
+  /* Paired short fields share a row (Publish/Expiry, and Audience/Status
+     on edit) so the edit form also fits without scrolling. */
+  .hra-body { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); column-gap: 14px; align-content: start; }
+  .hra-body > * { grid-column: 1 / -1; }
+  .hra-body > .hra-field:has(input[type="datetime-local"]),
+  .hra-body > .hra-field:has(select):has(+ .hra-field select),
+  .hra-body > .hra-field:has(select) + .hra-field:has(select) { grid-column: auto; }
+  /* Half-width date fields keep only the trailing picker button (same
+     calendar icon), so the full date and time stay readable. */
+  .hra-control:has(input[type="datetime-local"]) > .hra-icon { display: none; }
+  .hra-control input[type="datetime-local"] { padding: 0 10px 0 12px; }
+  .hra-control:has(input[type="datetime-local"]) > .hra-trail { width: 44px; }
+}
+@media (max-width: 720px) {
+  .hra-head { min-height: 0; padding-right: 60px; }
+  .hra-head__icon { display: none; }
+  .hra-head > div { max-width: none; }
+  .hra-head h2 { font-size: 22px; line-height: 1.2; }
+  .hra-head p { font-size: 13.5px; }
+}
+
+html.dark .hra-side { background: linear-gradient(160deg, #0f1c2e, #13243a); } html.dark .hra-side__title { color: #f1f5f9; }
+@media (min-width: 1100px) { html.dark .hra-head { background: #0f1c2e; } html.dark .hra-head h2 em { color: #f1f5f9; } }

@@ -1,0 +1,129 @@
+/* Organization Batch Details — desktop density for the shared profile-kit
+   pieces this page reuses (entity hero, stat tiles, tabs). Targets at 100%
+   zoom: hero ~135px, KPI cards ~90px, tab bar ~52px.
+   Scoped to .org-batch-detail and to desktop widths, so profile pages that
+   use the same kit are unaffected. One extra class out-ranks the kit's
+   `html body [data-dashboard-role] .pk-*` rules without !important; only the
+   title needs it, because the kit sets that size with !important. */
+
+@media (min-width: 1024px) {
+  /* Hero (~127px): Edit Batch sits in the hero's top-right corner (its own
+     action column); the illustration ends just left of that column so the
+     two never overlap. */
+  html body [data-dashboard-role] .org-batch-detail .pk-hero--entity {
+    min-height: 0;
+    gap: 20px;
+    padding: 18px 26px;
+    border-radius: 18px;
+  }
+  html body [data-dashboard-role] .org-batch-detail .pk-hero--entity {
+    --bd-action-col: 172px; /* button (~150px) + 22px right inset */
+  }
+  html body [data-dashboard-role] .org-batch-detail .pk-hero--entity .pk-hero__art {
+    right: var(--bd-action-col);
+    width: 28%;
+    /* Soft right edge where the art stops before the action column. */
+    -webkit-mask-image: linear-gradient(to right, #000 82%, transparent);
+    mask-image: linear-gradient(to right, #000 82%, transparent);
+  }
+  html body [data-dashboard-role] .org-batch-detail .pk-hero--entity .pk-hero__action {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+  }
+  /* Keep the copy clear of the action column and the illustration. */
+  html body [data-dashboard-role] .org-batch-detail .pk-hero--entity .pk-hero__copy {
+    padding-right: calc(28% + var(--bd-action-col) - 26px);
+  }
+  html body [data-dashboard-role] .org-batch-detail .pk-entity-icon {
+    width: 76px;
+    height: 76px;
+    border-radius: 20px;
+  }
+  html body [data-dashboard-role] .org-batch-detail .pk-entity-icon svg {
+    width: 36px;
+    height: 36px;
+  }
+  html body [data-dashboard-role] .org-batch-detail .pk-hero__titlerow h1 {
+    font-size: 28px !important;
+  }
+  html body [data-dashboard-role] .org-batch-detail .pk-hero__lines {
+    margin-top: 6px;
+    font-size: 14px;
+  }
+  html body [data-dashboard-role] .org-batch-detail .pk-hero__meta {
+    gap: 6px 22px;
+    margin-top: 10px;
+  }
+  html body [data-dashboard-role] .org-batch-detail .pk-hero__meta li {
+    font-size: 13px;
+  }
+  html body [data-dashboard-role] .org-batch-detail .pk-hero__meta svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* KPI cards (~90px): five equal cards, 8px gaps. */
+  html body [data-dashboard-role] .org-batch-detail .pk-stat {
+    min-height: 0;
+    gap: 10px;
+    padding: 10px 44px 10px 14px;
+    border-radius: 14px;
+  }
+  html body [data-dashboard-role] .org-batch-detail .pk-stat--sm .pk-stat__icon {
+    width: 40px;
+    height: 40px;
+  }
+  html body [data-dashboard-role] .org-batch-detail .pk-stat--sm .pk-stat__icon svg {
+    width: 21px;
+    height: 21px;
+  }
+  html body [data-dashboard-role] .org-batch-detail .pk-stat--sm .pk-stat__value {
+    font-size: 22px;
+  }
+  html body [data-dashboard-role] .org-batch-detail .pk-stat__label {
+    margin-top: 2px;
+    font-size: 13px;
+    line-height: 1.2;
+  }
+  html body [data-dashboard-role] .org-batch-detail .pk-stat__sub {
+    margin-top: 1px;
+    font-size: 11.5px;
+  }
+  html body [data-dashboard-role] .org-batch-detail .pk-stat__bars {
+    right: 14px;
+    gap: 3px;
+  }
+  html body [data-dashboard-role] .org-batch-detail .pk-stat__bars i {
+    width: 6px;
+  }
+
+  /* Tabs (~52px bar). */
+  html body [data-dashboard-role] .org-batch-detail .pk-tabs {
+    gap: 4px;
+    padding: 6px;
+    border-radius: 14px;
+  }
+  html body [data-dashboard-role] .org-batch-detail .pk-tabs button {
+    gap: 8px;
+    height: 40px;
+    padding: 0 18px;
+    border-radius: 10px;
+    font-size: 13.5px;
+  }
+  html body [data-dashboard-role] .org-batch-detail .pk-tabs button svg {
+    width: 17px;
+    height: 17px;
+  }
+}
+
+/* 1024–1279px: too narrow for copy, illustration and the action column, so
+   the illustration is dropped and the copy only clears the button. */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  html body [data-dashboard-role] .org-batch-detail .pk-hero--entity .pk-hero__art {
+    display: none;
+  }
+  html body [data-dashboard-role] .org-batch-detail .pk-hero--entity .pk-hero__copy {
+    padding-right: calc(var(--bd-action-col) - 26px);
+  }
+}

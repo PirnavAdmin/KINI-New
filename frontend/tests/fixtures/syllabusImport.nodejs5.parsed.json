@@ -1,0 +1,252 @@
+{
+  "courseId": 5,
+  "fileName": "nodejs_5_modules_syllabus.pdf",
+  "description": "This syllabus introduces Node.js from fundamentals through modules, asynchronous programming, Express.js, database integration, authentication, and deployment.",
+  "summary": {
+    "moduleCount": 5,
+    "topicCount": 11,
+    "lessonCount": 36
+  },
+  "modules": [
+    {
+      "name": "Node.js Fundamentals",
+      "description": "Introduction to Node.js, its runtime architecture, setup, and core JavaScript concepts used in server-side development.",
+      "topics": [
+        {
+          "name": "Introduction to Node.js",
+          "description": "",
+          "lessons": [
+            {
+              "name": "What is Node.js?",
+              "description": "Understand Node.js and where it is used."
+            },
+            {
+              "name": "Node.js Features",
+              "description": "Learn the major features and benefits of Node.js."
+            },
+            {
+              "name": "Node.js Architecture",
+              "description": "Understand the event-driven and non-blocking architecture."
+            }
+          ]
+        },
+        {
+          "name": "Environment Setup",
+          "description": "",
+          "lessons": [
+            {
+              "name": "Installing Node.js and npm",
+              "description": "Install Node.js and the Node Package Manager."
+            },
+            {
+              "name": "Running a Node.js Program",
+              "description": "Create and execute a basic Node.js application."
+            },
+            {
+              "name": "Using the Node.js REPL",
+              "description": "Work with the interactive Node.js REPL environment."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Node.js Modules and npm",
+      "description": "Learn how Node.js organizes reusable code with modules and how npm manages project dependencies.",
+      "topics": [
+        {
+          "name": "Node.js Module System",
+          "description": "",
+          "lessons": [
+            {
+              "name": "Core Modules",
+              "description": "Use built-in modules provided by Node.js."
+            },
+            {
+              "name": "Local Modules",
+              "description": "Create and reuse custom modules."
+            },
+            {
+              "name": "CommonJS",
+              "description": "Understand require, module.exports, and CommonJS."
+            },
+            {
+              "name": "ES Modules",
+              "description": "Use import and export syntax in Node.js."
+            }
+          ]
+        },
+        {
+          "name": "npm and Packages",
+          "description": "",
+          "lessons": [
+            {
+              "name": "package.json",
+              "description": "Understand project metadata, scripts, and dependencies."
+            },
+            {
+              "name": "Installing Packages",
+              "description": "Install production and development dependencies."
+            },
+            {
+              "name": "npm Scripts",
+              "description": "Create and run reusable project commands."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "File System, Events and Asynchronous Programming",
+      "description": "Work with files, events, callbacks, promises, and asynchronous operations in Node.js.",
+      "topics": [
+        {
+          "name": "File System",
+          "description": "",
+          "lessons": [
+            {
+              "name": "Reading Files",
+              "description": "Read file content using the fs module."
+            },
+            {
+              "name": "Writing Files",
+              "description": "Create and update files using Node.js."
+            },
+            {
+              "name": "Directories and Paths",
+              "description": "Work with directories and file paths."
+            }
+          ]
+        },
+        {
+          "name": "Events and Async Programming",
+          "description": "",
+          "lessons": [
+            {
+              "name": "EventEmitter",
+              "description": "Create and handle custom events."
+            },
+            {
+              "name": "Callbacks",
+              "description": "Understand callback-based asynchronous programming."
+            },
+            {
+              "name": "Promises",
+              "description": "Handle asynchronous results with promises."
+            },
+            {
+              "name": "Async and Await",
+              "description": "Write cleaner asynchronous code with async/await."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Building Web Applications with Express.js",
+      "description": "Build RESTful web applications and APIs using Node.js and Express.js.",
+      "topics": [
+        {
+          "name": "Express.js Basics",
+          "description": "",
+          "lessons": [
+            {
+              "name": "Installing Express",
+              "description": "Set up Express in a Node.js project."
+            },
+            {
+              "name": "Creating an Express Server",
+              "description": "Build a basic HTTP server with Express."
+            },
+            {
+              "name": "Routing",
+              "description": "Create GET, POST, PUT, and DELETE routes."
+            }
+          ]
+        },
+        {
+          "name": "Middleware and REST APIs",
+          "description": "",
+          "lessons": [
+            {
+              "name": "Express Middleware",
+              "description": "Understand and create middleware functions."
+            },
+            {
+              "name": "Request and Response",
+              "description": "Work with request parameters, body, headers, and responses."
+            },
+            {
+              "name": "REST API Design",
+              "description": "Structure RESTful endpoints for application resources."
+            },
+            {
+              "name": "Error Handling",
+              "description": "Handle application and API errors consistently."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Database Integration, Authentication and Deployment",
+      "description": "Connect Node.js applications to a database, implement authentication, and prepare applications for deployment.",
+      "topics": [
+        {
+          "name": "Database Integration",
+          "description": "",
+          "lessons": [
+            {
+              "name": "Connecting to MongoDB",
+              "description": "Connect a Node.js application to MongoDB."
+            },
+            {
+              "name": "Mongoose Models",
+              "description": "Define schemas and models using Mongoose."
+            },
+            {
+              "name": "CRUD Operations",
+              "description": "Create, read, update, and delete database records."
+            }
+          ]
+        },
+        {
+          "name": "Authentication and Security",
+          "description": "",
+          "lessons": [
+            {
+              "name": "Password Hashing",
+              "description": "Secure passwords using hashing techniques."
+            },
+            {
+              "name": "JWT Authentication",
+              "description": "Implement token-based authentication."
+            },
+            {
+              "name": "Environment Variables",
+              "description": "Protect configuration and secrets with environment variables."
+            }
+          ]
+        },
+        {
+          "name": "Deployment",
+          "description": "",
+          "lessons": [
+            {
+              "name": "Production Configuration",
+              "description": "Prepare a Node.js application for production."
+            },
+            {
+              "name": "Logging and Error Monitoring",
+              "description": "Add useful application logging and monitoring."
+            },
+            {
+              "name": "Deployment Basics",
+              "description": "Understand the basic process for deploying a Node.js API."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="40 0 280 150" role="img" aria-labelledby="title desc">
+  <title id="title">Kini</title>
+  <desc id="desc">Learn. Innovate. Lead.</desc>
+  <defs>
+    <linearGradient id="orange" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffb51b"/>
+      <stop offset="1" stop-color="#f45b22"/>
+    </linearGradient>
+  </defs>
+  <g fill="#133b5d" font-family="Arial Black, Arial, sans-serif" font-size="91" font-weight="900" letter-spacing="-8">
+    <text x="180" y="113" text-anchor="middle" font-size="120" letter-spacing="-10">kini</text>
+  </g>
+  <g fill="url(#orange)">
+    <path d="M123 17 140 10h46l17 7-17 7h-46z"/>
+    <path d="M130 27h65v9h-65z"/>
+    <path d="M140 36h45v13l-23 10-22-10z"/>
+    <path d="M186 26h3v38h-3z"/>
+    <circle cx="193" cy="72" r="8"/>
+  </g>
+  <text x="180" y="146" text-anchor="middle" fill="#133b5d" font-family="Arial, sans-serif" font-size="14" font-weight="700" letter-spacing="1">Learn. Innovate. Lead.</text>
+</svg>

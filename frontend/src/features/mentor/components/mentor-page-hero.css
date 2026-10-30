@@ -1,0 +1,166 @@
+/* MentorPageHero (v17) — see MentorPageHero.jsx */
+html body [data-dashboard-role] .mph,
+.mph {
+  --mph-art-w: 300px;
+  --mph-hand: "Caveat", "Segoe Script", "Bradley Hand", cursive;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  min-height: 150px;
+  padding: 18px 26px;
+  border: 1px solid #dfe9f5;
+  border-radius: 20px;
+  background: linear-gradient(100deg, #f5f9fe 0%, #eef4fc 45%, #e3edfb 100%);
+  box-shadow: 0 4px 16px rgba(15, 42, 74, 0.05);
+}
+html body [data-dashboard-role] .mph .mph__bg { position: absolute; inset: 0; z-index: -1; width: 100%; height: 100%; pointer-events: none; }
+
+html body [data-dashboard-role] .mph .mph__icon {
+  display: grid; place-items: center; flex: 0 0 auto;
+  width: 76px; height: 76px; border-radius: 22px;
+  background: linear-gradient(145deg, #e3eeff 0%, #cfe0fb 100%);
+  color: #2f6fe4;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.85), 0 8px 18px rgba(47,111,228,.14);
+}
+html body [data-dashboard-role] .mph .mph__icon svg { width: 36px; height: 36px; stroke-width: 1.8; color: #2f6fe4 !important; }
+
+html body [data-dashboard-role] .mph .mph__copy { flex: 1 1 300px; min-width: 0; }
+html body [data-dashboard-role] .mph .mph__titlerow { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+html body [data-dashboard-role] .mph .mph__title {
+  margin: 0; font-size: clamp(26px, 2.2vw, 34px) !important; font-weight: 800 !important; line-height: 1.12 !important;
+  letter-spacing: -0.02em; color: #0f2a4a !important; -webkit-text-fill-color: #0f2a4a !important;
+}
+html body [data-dashboard-role] .mph .mph__subtitle {
+  margin: 8px 0 0; max-width: 62ch; font-size: 15px !important; line-height: 1.5 !important;
+  color: #4f6583 !important; -webkit-text-fill-color: #4f6583 !important;
+}
+html body [data-dashboard-role] .mph .mph__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 26px; margin-top: 14px; }
+
+html body [data-dashboard-role] .mph .mph__art {
+  flex: 0 0 auto; align-self: flex-end; width: var(--mph-art-w); max-width: 32%;
+  margin: -8px 0 -18px; display: flex; align-items: flex-end; justify-content: center;
+}
+html body [data-dashboard-role] .mph .mph__art img { display: block; width: 100%; height: auto; max-height: 150px; object-fit: contain; object-position: bottom; }
+html body [data-dashboard-role] .mph .mph__art svg { display: block; width: 100%; height: auto; max-height: 150px; }
+
+html body [data-dashboard-role] .mph .mph__script {
+  flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-start;
+  transform: rotate(-9deg); padding: 0 6px;
+}
+html body [data-dashboard-role] .mph .mph__script em {
+  display: block; font-family: var(--mph-hand); font-style: normal; font-weight: 700;
+  font-size: 30px; line-height: 1.02; white-space: nowrap;
+  color: #1f3f78 !important; -webkit-text-fill-color: #1f3f78 !important;
+}
+html body [data-dashboard-role] .mph .mph__script em:nth-child(2) { margin-left: 16px; }
+html body [data-dashboard-role] .mph .mph__script em:nth-child(3) { margin-left: 30px; }
+html body [data-dashboard-role] .mph .mph__script em.is-accent,
+html body [data-dashboard-role] .mph .mph__script--orange em { color: #f28a1e !important; -webkit-text-fill-color: #f28a1e !important; }
+
+html body [data-dashboard-role] .mph .mph__side { flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 12px; align-self: stretch; justify-content: center; }
+html body [data-dashboard-role] .mph .mph__side .mph__script { transform: rotate(-4deg); }
+html body [data-dashboard-role] .mph .mph__actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: 10px; }
+
+/* Buttons used in the hero */
+html body [data-dashboard-role] .mph .mph-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 44px; padding: 0 20px; border-radius: 12px; font-size: 14px; font-weight: 700; white-space: nowrap;
+  transition: background-color .15s ease, box-shadow .15s ease;
+}
+html body [data-dashboard-role] .mph .mph-btn svg { width: 17px; height: 17px; }
+html body [data-dashboard-role] .mph .mph-btn--navy { background: #0f2a4a !important; color: #fff !important; box-shadow: 0 8px 18px -8px rgba(15,42,74,.6); }
+html body [data-dashboard-role] .mph .mph-btn--navy:hover { background: #133b5d !important; }
+html body [data-dashboard-role] .mph .mph-btn--round { width: 44px; padding: 0; border-radius: 999px; background: #ffffff !important; color: #0f2a4a !important; box-shadow: 0 4px 12px rgba(15,42,74,.08); }
+html body [data-dashboard-role] .mph .mph-btn--round:hover { background: #f5f8fc !important; }
+
+/* Pill tabs (Class Schedule) */
+html body [data-dashboard-role] .mph .mph-tabs { display: flex; gap: 6px; max-width: 100%; overflow-x: auto; padding: 4px; border-radius: 14px; background: rgba(255,255,255,.7); }
+html body [data-dashboard-role] .mph .mph-tabs button {
+  display: inline-flex; align-items: center; gap: 7px; height: 38px; padding: 0 16px; border: 1px solid #e3eaf3;
+  border-radius: 10px; background: #ffffff; color: #0f2a4a !important; font-size: 13px; font-weight: 700; white-space: nowrap;
+}
+html body [data-dashboard-role] .mph .mph-tabs button svg { width: 15px; height: 15px; }
+html body [data-dashboard-role] .mph .mph-tabs button:hover { background: #f5f8fc; }
+html body [data-dashboard-role] .mph .mph-tabs button[aria-current="page"] { background: #0f2a4a !important; border-color: #0f2a4a; color: #ffffff !important; }
+
+@media (max-width: 1280px) {
+  html body [data-dashboard-role] .mph .mph__script { display: none; }
+  html body [data-dashboard-role] .mph { --mph-art-w: 220px; }
+}
+@media (max-width: 960px) {
+  html body [data-dashboard-role] .mph { flex-wrap: wrap; padding: 16px; }
+  html body [data-dashboard-role] .mph .mph__art { display: none; }
+  html body [data-dashboard-role] .mph .mph__icon { width: 56px; height: 56px; border-radius: 16px; }
+  html body [data-dashboard-role] .mph .mph__icon svg { width: 28px; height: 28px; }
+  html body [data-dashboard-role] .mph .mph__side { width: 100%; align-items: flex-start; }
+  html body [data-dashboard-role] .mph .mph__actions { justify-content: flex-start; }
+}
+
+/* Dark mode */
+html.dark body [data-dashboard-role] .mph { background: linear-gradient(100deg, #0f1c2e, #13243a) ; border-color: #22324a; }
+html.dark body [data-dashboard-role] .mph .mph__bg { opacity: .08; }
+html.dark body [data-dashboard-role] .mph .mph__title { color: #f1f5f9 !important; -webkit-text-fill-color: #f1f5f9 !important; }
+html.dark body [data-dashboard-role] .mph .mph__subtitle { color: #a8b8cc !important; -webkit-text-fill-color: #a8b8cc !important; }
+html.dark body [data-dashboard-role] .mph .mph__script em { color: #9cc0ef !important; -webkit-text-fill-color: #9cc0ef !important; }
+html.dark body [data-dashboard-role] .mph .mph-tabs button { background: #172a42; border-color: #22324a; color: #dbe6f3 !important; }
+
+/* Legacy page rules (e.g. `.mentor-courses-page > div > section > div`)
+   paint every nested div white — keep the hero's own slots transparent. */
+html body [data-dashboard-role] section.mph > div {
+  background: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
+html body [data-dashboard-role] section.mph {
+  background: linear-gradient(100deg, #f5f9fe 0%, #eef4fc 45%, #e3edfb 100%) !important;
+  border-color: #dfe9f5 !important;
+}
+html.dark body [data-dashboard-role] section.mph { background: linear-gradient(100deg, #0f1c2e, #13243a) !important; border-color: #22324a !important; }
+
+/* Status chip beside the title + meta items (Batch workspace) */
+html body [data-dashboard-role] .mph .mph-status { display: inline-flex; align-items: center; gap: 7px; height: 28px; padding: 0 12px; border-radius: 999px; font-size: 12.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+html body [data-dashboard-role] .mph .mph-status i { width: 7px; height: 7px; border-radius: 999px; background: currentColor; }
+html body [data-dashboard-role] .mph .mph-status--green { background: #def5e8; color: #15803d !important; }
+html body [data-dashboard-role] .mph .mph-status--blue { background: #e4eeff; color: #1d5fd6 !important; }
+html body [data-dashboard-role] .mph .mph-status--gray { background: #eef1f5; color: #5b6b80 !important; }
+html body [data-dashboard-role] .mph .mph-meta-item { display: flex; align-items: center; gap: 10px; padding-right: 22px; border-right: 1px solid #d8e3f2; }
+html body [data-dashboard-role] .mph .mph-meta-item:last-child { border-right: 0; padding-right: 0; }
+html body [data-dashboard-role] .mph .mph-meta-item__icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: #e3edfc; color: #2f6fe4; }
+html body [data-dashboard-role] .mph .mph-meta-item__icon svg { width: 17px; height: 17px; }
+html body [data-dashboard-role] .mph .mph-meta-item small { display: block; color: #5b6f88 !important; font-size: 12px; }
+html body [data-dashboard-role] .mph .mph-meta-item b { display: block; color: #0f2a4a !important; font-size: 14px; font-weight: 700; }
+html body [data-dashboard-role] .mph--workspace .mph__side { align-self: flex-start; }
+html body [data-dashboard-role] .mph--workspace .mph__icon { order: 0; align-self: flex-start; }
+html body [data-dashboard-role] .mph--workspace .mph__copy { order: 1; }
+html body [data-dashboard-role] .mph--workspace .mph__script { order: 2; }
+html body [data-dashboard-role] .mph--workspace .mph__art { order: 3; }
+html body [data-dashboard-role] .mph--workspace .mph__side { order: 4; }
+
+@media (min-width: 1200px) {
+  html body [data-dashboard-role] .mph--workspace .mph__meta { flex-wrap: nowrap; }
+  html body [data-dashboard-role] .mph--workspace .mph__copy { flex: 1 1 520px; }
+  html body [data-dashboard-role] .mph .mph-meta-item b { white-space: nowrap; }
+}
+
+/* Class Schedule: keep the title on one line and let the tabs sit right */
+html body [data-dashboard-role] .mph--schedule .mph__copy { flex: 1 1 340px; min-width: 300px; }
+html body [data-dashboard-role] .mph--schedule .mph__title { white-space: nowrap; }
+html body [data-dashboard-role] .mph--schedule .mph__script em { font-size: 26px; }
+html body [data-dashboard-role] .mph--schedule .mph__side { align-self: flex-start; padding-top: 4px; }
+html body [data-dashboard-role] .mph--schedule .mph-tabs button { height: 36px; padding: 0 13px; }
+html body [data-dashboard-role] .mph--schedule .mph__side { flex: 0 1 auto; min-width: 0; }
+html body [data-dashboard-role] .mph--schedule .mph__art { flex-shrink: 1; min-width: 150px; }
+@media (max-width: 1640px) {
+  html body [data-dashboard-role] .mph--schedule .mph__script { display: none; }
+}
+@media (max-width: 1640px) {
+  html body [data-dashboard-role] .mph--workspace .mph__script { display: none; }
+}
+@media (max-width: 1380px) {
+  html body [data-dashboard-role] .mph--schedule .mph__art { display: none; }
+}
+html body [data-dashboard-role] .mph--schedule .mph-tabs { flex-wrap: wrap; justify-content: flex-end; }

@@ -1,0 +1,266 @@
+/* Employee Management — desktop density for the shared pieces this page
+   reuses (showcase hero, global KPI card, .v14-btn). The page's own toolbar
+   and table sizes live as responsive classes in EmployeeManagement.jsx.
+   Sized from the reference screenshot so that at 100% zoom on a ~1280px-wide
+   view (1.5x display scaling) blocks keep the reference proportions.
+   Scoped to this page and to desktop widths; tablet and mobile are unchanged.
+   The KPI internals are Tailwind utilities, so these plain rules win without
+   !important; only the hero subtitle needs it, because the shared hero rule
+   sets its size with !important. */
+
+.employee-management-page .employees-toolbar-actions { flex-shrink: 0; }
+.employee-management-page .employees-toolbar input { width: 100%; min-width: 0; }
+/* Toolbar buttons match the 40px+ controls at every width. */
+html body [data-dashboard-role] .employee-management-page .employees-toolbar .v14-btn { height: 42px; }
+
+@media (min-width: 1024px) {
+  /* Section rhythm: ~11px under the navbar, 8px between blocks. */
+  html body [data-dashboard-role] .employee-management-page {
+    padding-top: 11px;
+  }
+  html body [data-dashboard-role] .employee-management-page > .osh,
+  html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] {
+    margin-bottom: 8px;
+  }
+
+  /* Hero (~243px at 1280): tighter padding, subtitle and two-line chips. */
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 {
+    padding-top: 14px;
+    padding-bottom: 12px;
+  }
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__subtitle {
+    margin-top: 6px;
+    font-size: 13.5px !important;
+  }
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__features {
+    margin-top: 10px;
+    gap: 6px;
+  }
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__features li {
+    gap: 7px;
+    padding: 3px 10px 3px 3px;
+    font-size: 11.5px;
+    line-height: 1.25;
+  }
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__ficon {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+  }
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__ficon svg {
+    width: 14px;
+    height: 14px;
+  }
+  /* Compact header (~160px), matching Students: a 30px title with the orange
+     accent and four single-line feature chips in one row. */
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__title {
+    font-size: clamp(28px, 2.1vw, 32px) !important;
+    line-height: 1.12 !important;
+  }
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__title em {
+    color: #e8690c !important;
+    -webkit-text-fill-color: #e8690c !important;
+    font-style: normal;
+  }
+  /* Chips wrap inside the text column so they never run under the artwork. */
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__features {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__features li {
+    flex: 0 1 auto;
+    min-width: 0;
+    padding: 4px 12px 4px 4px;
+    font-size: 12.5px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14.osh-v14--compact-chips .osh__features li br,
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14.osh-v14--compact-chips .osh__fsub {
+    display: none;
+  }
+
+  /* KPI cards (~72px): five in one row with 10px gaps; readable 12px captions. */
+  html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] {
+    gap: 10px;
+  }
+  html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] > * {
+    min-height: 0;
+    border-radius: 12px;
+  }
+  html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] .kpi-content {
+    gap: 10px;
+    padding: 10px 38px 10px 12px;
+  }
+  html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] .kpi-icon {
+    width: 38px;
+    height: 38px;
+  }
+  html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] .kpi-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+  html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] .kpi-value {
+    font-size: 20px;
+  }
+  html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] .kpi-content p.mt-2 {
+    margin-top: 3px;
+    font-size: 12.5px;
+    line-height: 16px;
+    -webkit-line-clamp: 1;
+  }
+  html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] .kpi-description {
+    margin-top: 0;
+    font-size: 12px;
+  }
+  html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] .kpi-arrow {
+    top: 8px;
+    right: 10px;
+    width: 22px;
+    height: 22px;
+  }
+  html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] .kpi-arrow svg {
+    width: 13px;
+    height: 13px;
+  }
+  html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] .kpi-bars {
+    right: 10px;
+    bottom: 7px;
+    width: 28px;
+    height: 20px;
+  }
+
+  /* Refresh / Add Employee (shared .v14-btn) match the 40px+ controls. */
+  html body [data-dashboard-role] .employee-management-page .employees-toolbar .v14-btn {
+    height: 42px;
+    padding: 0 16px;
+    font-size: 13px;
+  }
+  html body [data-dashboard-role] .employee-management-page .employees-toolbar .v14-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+  /* Count chips line up with the 42px controls. */
+  html body [data-dashboard-role] .employee-management-page .employees-toolbar-actions > span:not(.v14-actions) {
+    padding-block: 11px;
+  }
+}
+
+/* ── Premium pass: navy controls, one orange primary, one control height ──
+   White on #F39924 is 2.3:1, so the primary's label is navy (about 5.5:1). */
+html body [data-dashboard-role] .employee-management-page .employees-toolbar .v14-btn {
+  height: 40px; padding: 0 16px; border-color: #cbd5e1; color: #133b5d; font-weight: 600;
+}
+html body [data-dashboard-role] .employee-management-page .employees-toolbar .v14-btn:hover { border-color: #133b5d; background: #f8fafc; }
+html body [data-dashboard-role] .employee-management-page .employees-toolbar .v14-btn--primary {
+  border-color: #f39924; background: #f39924; color: #133b5d; box-shadow: none;
+}
+html body [data-dashboard-role] .employee-management-page .employees-toolbar .v14-btn--primary:hover { border-color: #e68a12; background: #e68a12; color: #133b5d; }
+html body [data-dashboard-role] .employee-management-page .employees-toolbar .v14-btn--primary svg { color: #133b5d; }
+html body [data-dashboard-role] .employee-management-page .employees-toolbar :is(input, button):focus-visible { outline: 2px solid #133b5d; outline-offset: 2px; }
+html body [data-dashboard-role] .employee-management-page .employees-toolbar-actions > span:not(.v14-actions) {
+  padding-block: 10px; color: #334155; font-weight: 600;
+}
+
+/* Hero: copy 56% / artwork 46% so the four feature chips sit in one row
+   beside the illustration; navy heading with the orange accent word. */
+@media (min-width: 1024px) {
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 { --osh-copy: 55%; --osh-art-w: 44%; }
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__title { color: #133b5d !important; -webkit-text-fill-color: #133b5d !important; }
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__subtitle { max-width: 60ch; color: #475569 !important; }
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__features { gap: 6px; }
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__features li { padding-right: 10px; font-size: 12px; }
+}
+
+/* KPI numbers in navy ink. */
+html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] .kini-kpi__value { color: #133b5d; }
+
+/* ── Refinement pass ──────────────────────────────────────────────────── */
+/* The orange accent word at every width (it was blue below 1024px). */
+html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__title { color: #133b5d !important; -webkit-text-fill-color: #133b5d !important; }
+html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__title em { color: #e8690c !important; -webkit-text-fill-color: #e8690c !important; font-style: normal; }
+/* Phones: single-line chips, two per row. */
+@media (max-width: 1023px) {
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__features li br,
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__fsub { display: none; }
+}
+
+/* One control height (40px) at every width. */
+html body [data-dashboard-role] .employee-management-page .employees-toolbar :is(input, button[aria-haspopup="listbox"]) {
+  height: 40px; min-height: 40px; padding-top: 0 !important; padding-bottom: 0 !important;
+}
+
+/* KPIs: uniform height, a prominent navy figure, readable labels. Five cards
+   on a two-column tablet grid would orphan the fifth, so it spans the row. */
+html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] > * { height: 100%; }
+html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] .kini-kpi__value { font-size: 24px; font-weight: 700; line-height: 1.1; color: #133b5d; }
+html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] .kini-kpi__label { color: #0f172a; font-size: 13px; font-weight: 600; }
+html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] .kini-kpi__desc { color: #64748b; font-size: 12px; }
+@media (min-width: 640px) and (max-width: 1023px) {
+  html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+}
+/* Small laptops (1024-1279px): three cards, then two wider ones, no hole. */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] > * { grid-column: span 2; }
+  html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] > :nth-child(n + 4) { grid-column: span 3; }
+}
+
+/* ── Premium buttons and KPIs (requested spec) ─────────────────────────── */
+html body [data-dashboard-role] .employee-management-page .employees-toolbar .v14-btn {
+  border: 1px solid #c7d7e8; background: #fff; color: #133b5d; transition: background-color .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+html body [data-dashboard-role] .employee-management-page .employees-toolbar .v14-btn svg { color: #133b5d; }
+html body [data-dashboard-role] .employee-management-page .employees-toolbar .v14-btn:hover { border-color: #a9c5e0; background: #eff6ff; }
+html body [data-dashboard-role] .employee-management-page .employees-toolbar .v14-btn--primary {
+  border-color: #f39924; background: #f39924; color: #133b5d; box-shadow: 0 4px 12px rgba(243, 153, 36, .28);
+}
+html body [data-dashboard-role] .employee-management-page .employees-toolbar .v14-btn--primary:hover {
+  border-color: #e88912; background: #e88912; color: #133b5d; box-shadow: 0 6px 16px rgba(232, 137, 18, .32);
+}
+html body [data-dashboard-role] .employee-management-page .employees-toolbar .v14-btn:focus-visible { outline: 2px solid #133b5d; outline-offset: 2px; }
+
+/* KPI cards: the same visible border and restrained shadow as the employee cards. */
+html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] > .kini-kpi {
+  border: 1px solid #d7e2ee;
+  box-shadow: 0 4px 14px rgba(19, 59, 93, .06);
+  transition: box-shadow .2s ease, border-color .2s ease;
+}
+html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] > .kini-kpi:hover {
+  border-color: #a9c5e0;
+  box-shadow: 0 10px 28px rgba(19, 59, 93, .12);
+}
+
+/* ── Compact density, 1024-1439px (laptops, incl. 125% display scaling) ──
+   Real sizes only. The hero keeps all four chips in one row beside the
+   illustration; toolbar and KPI padding tighten so everything fits. */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 { padding-top: 12px; padding-bottom: 12px; }
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__title { font-size: 28px !important; }
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__subtitle { font-size: 13px !important; }
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__features { flex-wrap: nowrap; gap: 5px; }
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__features li { padding: 3px 9px 3px 3px; font-size: 11.5px; }
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__ficon { width: 22px; height: 22px; }
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__ficon svg { width: 13px; height: 13px; }
+  html body [data-dashboard-role] .employee-management-page .employees-toolbar { padding: 8px 10px !important; }
+  html body [data-dashboard-role] .employee-management-page .employees-toolbar .v14-btn { padding: 0 12px; }
+  html body [data-dashboard-role] .employee-management-page .employees-toolbar-actions { gap: 6px; }
+}
+/* Pagination footer: compact and aligned. */
+html body [data-dashboard-role] .employee-management-page .employees-footer { padding: 8px 14px !important; }
+
+/* ── Laptop density, 1024-1699px (matches the 75% zoom reference) ─────────
+   A shorter hero with its illustration scaled in proportion, slimmer KPI
+   cards and a 36px toolbar. Real sizes only, no zoom or scale. */
+@media (min-width: 1024px) and (max-width: 1699px) {
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 { --osh-min-h: 196px; --osh-art-h: 100%; padding-top: 10px; padding-bottom: 10px; }
+  html body [data-dashboard-role] .employee-management-page .osh.osh--v14 .osh__title { font-size: 26px !important; }
+  html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] { gap: 12px; }
+  html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] > .kini-kpi { padding: 6px 11px 6px 12px; }
+  html body [data-dashboard-role] .employee-management-page section[aria-label="Employee statistics"] .kini-kpi__value { font-size: 22px; }
+  html body [data-dashboard-role] .employee-management-page .employees-toolbar { padding: 8px 10px !important; }
+  html body [data-dashboard-role] .employee-management-page .employees-toolbar-controls { gap: 8px; }
+  html body [data-dashboard-role] .employee-management-page .employees-toolbar :is(input, button[aria-haspopup="listbox"]),
+  html body [data-dashboard-role] .employee-management-page .employees-toolbar .v14-btn { height: 36px; min-height: 36px; }
+}

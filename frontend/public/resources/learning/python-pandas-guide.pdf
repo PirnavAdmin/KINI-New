@@ -1,0 +1,417 @@
+%PDF-1.3
+%ºß¬à
+3 0 obj
+<</Type /Page
+/Parent 1 0 R
+/Resources 2 0 R
+/MediaBox [0 0 595.2799999999999727 841.8899999999999864]
+/Annots [
+<</Type /Annot /Subtype /Link /Rect [51.0236220472441033 294.2364566929132934 538.5826771653544256 280.0632283464566399] /Border [0 0 0] /A <</S /URI /URI (https://pandas.pydata.org/docs/getting_started/intro_tutorials/index.html) >> >>
+]
+/Contents 4 0 R
+>>
+endobj
+4 0 obj
+<<
+/Length 3864
+>>
+stream
+0.5670000000000001 w
+0 G
+0.07 0.23 0.36 rg
+0. 841.8899999999999864 595.2755905511811534 -34.0157480314960665 re
+f
+BT
+/F1 23 Tf
+26.4499999999999993 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 759.6852755905511003 Td
+(Python Pandas Guide) Tj
+ET
+BT
+/F1 10 Tf
+11.5 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 734.1734645669291695 Td
+(Python Data Science | Built-in learning library) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 694.4884251968503577 Td
+(Work with tables) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 671.8112598425196893 Td
+(A DataFrame holds rows and named columns. Start by checking column names, data types and) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 655.9372440944881646 Td
+(missing values. Select the columns you need before summarizing your data. Keep the original input) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 640.0632283464567536 Td
+(so you can repeat your analysis.) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 601.5120472440944468 Td
+(Try this example) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 578.8348818897637784 Td
+(import pandas as pd) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 551.6222834645669764 Td
+(scores = pd.DataFrame\({) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 538.0159842519685753 Td
+(    'student': ['Asha', 'Ravi', 'Mina'],) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 524.4096850393700606 Td
+(    'score': [82, 67, 91],) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 510.8033858267717164 Td
+(    'batch': ['A', 'A', 'B']) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 497.1970866141732586 Td
+(}\)) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 483.5907874015748575 Td
+(print\(scores.head\(\)\)) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 469.9844881889764565 Td
+(print\(scores.dtypes\)) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 456.3781889763779986 Td
+(print\(scores.loc[scores['score'] >= 80, ['student', 'score']]\)) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 442.7718897637795408 Td
+(print\(scores.groupby\('batch'\)['score'].mean\(\)\)) Tj
+ET
+BT
+/F5 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 429.1655905511810829 Td
+(scores.to_csv\('scores.csv', index=False\)) Tj
+ET
+BT
+/F2 12 Tf
+13.7999999999999989 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 392.8821259842518998 Td
+(Practice) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 370.2049606299211746 Td
+(Add a row with a missing score. Inspect missing values with isna\(\).sum\(\). Decide whether to exclude) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 354.3309448818897067 Td
+(or replace missing scores and explain the choice. Read your exported CSV with read_csv and) Tj
+ET
+BT
+/F1 11 Tf
+12.6499999999999986 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 338.4569291338582389 Td
+(compare the row count.) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.075 0.231 0.365 rg
+51.0236220472441033 299.9057480314960458 Td
+(Further reading \(official documentation\):) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.09 0.361 0.729 rg
+51.0236220472441033 282.8978740157480161 Td
+(https://pandas.pydata.org/docs/getting_started/intro_tutorials/index.html) Tj
+ET
+BT
+/F1 9 Tf
+10.3499999999999996 TL
+0.392 0.455 0.545 rg
+51.0236220472441033 34.0159842519684616 Td
+(Kini | Starter study guide | 1 / 1) Tj
+ET
+endstream
+endobj
+1 0 obj
+<</Type /Pages
+/Kids [3 0 R ]
+/Count 1
+>>
+endobj
+5 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+6 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+7 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+8 0 obj
+<<
+/Type /Font
+/BaseFont /Helvetica-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+9 0 obj
+<<
+/Type /Font
+/BaseFont /Courier
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+10 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+11 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-Oblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+12 0 obj
+<<
+/Type /Font
+/BaseFont /Courier-BoldOblique
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+13 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Roman
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+14 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Bold
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+15 0 obj
+<<
+/Type /Font
+/BaseFont /Times-Italic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+16 0 obj
+<<
+/Type /Font
+/BaseFont /Times-BoldItalic
+/Subtype /Type1
+/Encoding /WinAnsiEncoding
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+17 0 obj
+<<
+/Type /Font
+/BaseFont /ZapfDingbats
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+18 0 obj
+<<
+/Type /Font
+/BaseFont /Symbol
+/Subtype /Type1
+/FirstChar 32
+/LastChar 255
+>>
+endobj
+2 0 obj
+<<
+/ProcSet [/PDF /Text /ImageB /ImageC /ImageI]
+/Font <<
+/F1 5 0 R
+/F2 6 0 R
+/F3 7 0 R
+/F4 8 0 R
+/F5 9 0 R
+/F6 10 0 R
+/F7 11 0 R
+/F8 12 0 R
+/F9 13 0 R
+/F10 14 0 R
+/F11 15 0 R
+/F12 16 0 R
+/F13 17 0 R
+/F14 18 0 R
+>>
+/XObject <<
+>>
+>>
+endobj
+19 0 obj
+<<
+/Producer (jsPDF 4.2.1)
+/Title (Python Pandas Guide)
+/Subject (Original starter study guide)
+/Author (Kini learning library)
+/CreationDate (D:20260917184913+05'30')
+>>
+endobj
+20 0 obj
+<<
+/Type /Catalog
+/Pages 1 0 R
+/OpenAction [3 0 R /FitH null]
+/PageLayout /OneColumn
+>>
+endobj
+xref
+0 21
+0000000000 65535 f 
+0000004317 00000 n 
+0000006134 00000 n 
+0000000015 00000 n 
+0000000401 00000 n 
+0000004374 00000 n 
+0000004499 00000 n 
+0000004629 00000 n 
+0000004762 00000 n 
+0000004899 00000 n 
+0000005022 00000 n 
+0000005151 00000 n 
+0000005283 00000 n 
+0000005419 00000 n 
+0000005547 00000 n 
+0000005674 00000 n 
+0000005803 00000 n 
+0000005936 00000 n 
+0000006038 00000 n 
+0000006382 00000 n 
+0000006569 00000 n 
+trailer
+<<
+/Size 21
+/Root 20 0 R
+/Info 19 0 R
+/ID [ <6D847B724D76D9B8E4E61A084B650639> <6D847B724D76D9B8E4E61A084B650639> ]
+>>
+startxref
+6673
+%%EOF

@@ -1,0 +1,15 @@
+/* HR › Syllabus Management (v21) */
+html body [data-dashboard-role] .hrs-page { padding-left: 10px; padding-right: 10px; }
+html body [data-dashboard-role] .hrs-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; padding-left: 0; }
+html body [data-dashboard-role] .hrs-tabs { display: inline-flex; gap: 8px; }
+html body [data-dashboard-role] .hrs-tabs button:first-child { margin-left: 0; }
+html body [data-dashboard-role] .hrs-tabs button { height: var(--hr-control-height, 44px); padding: 0 26px; border: 1px solid #dfe6ef; border-radius: 12px; background: #fff; color: #3b5270; font-size: 15px; font-weight: 600; }
+html body [data-dashboard-role] .hrs-tabs button[aria-pressed="true"] { border-color: #f58a0b; background: #f58a0b; color: #fff; box-shadow: 0 10px 20px -12px rgba(245,138,11,.9); }
+html body [data-dashboard-role] .hrs-select { max-width: 520px; padding: 16px 18px; border: 1px solid #e6edf6; border-radius: 16px; background: #fff; box-shadow: 0 4px 14px rgba(15,42,74,.04); }
+html body [data-dashboard-role] .hrs-select label { color: #0b1f3f !important; font-size: 14px; font-weight: 700; }
+html body [data-dashboard-role] .hrs-select select { height: var(--hr-control-height, 46px); border-color: #dfe6ef !important; border-radius: 12px !important; font-size: 15px !important; font-weight: 600; }
+html body [data-dashboard-role] .hrs-builder { padding: 18px; border: 1px solid #e6edf6; border-radius: 16px; background: #fff; }
+html body [data-dashboard-role] .hrs-builder__title { display: flex; align-items: center; gap: 12px; margin: 0 0 6px; color: #0b1f3f !important; font-size: 20px; font-weight: 800; }
+html body [data-dashboard-role] .hrs-builder__title > span { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: #e3edfd; color: #1d63d8; }
+html body [data-dashboard-role] .hrs-empty { padding: 34px; border: 1.5px dashed #cfdbea; border-radius: 16px; background: #fff; text-align: center; }
+@media (max-width: 760px) { html body [data-dashboard-role] .hrs-page { padding-left: 0; padding-right: 0; } }

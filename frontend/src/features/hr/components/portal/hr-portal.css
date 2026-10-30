@@ -1,0 +1,219 @@
+/* HR portal kit (v21) — see HrPortalKit.jsx */
+html body [data-dashboard-role] .hrp-crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0 0 8px; color: #3b5270; font-size: 13px; }
+html body [data-dashboard-role] .hrp-crumbs a { display: inline-flex; color: #3b5270 !important; }
+html body [data-dashboard-role] .hrp-crumbs a:hover { color: #1d63d8 !important; }
+html body [data-dashboard-role] .hrp-crumbs svg { width: 15px; height: 15px; }
+html body [data-dashboard-role] .hrp-crumbs b { color: #0b1f3f !important; font-weight: 600; }
+
+html body [data-dashboard-role] .hrp-hero {
+  position: relative; isolation: isolate; display: flex; align-items: center; min-height: var(--hr-hero-height, 168px); overflow: hidden;
+  padding: var(--hr-hero-padding, 20px 30px); border: 1px solid #dde8f6; border-radius: 20px;
+  background: linear-gradient(105deg, #f6f9ff 0%, #ebf3fe 55%, #dfeafb 100%);
+}
+html body [data-dashboard-role] .hrp-hero__bg { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; }
+html body [data-dashboard-role] .hrp-hero__copy { position: relative; z-index: 2; max-width: 52%; }
+html body [data-dashboard-role] .hrp-hero__eyebrow { margin: 0 0 4px; color: #f28a1e !important; font-size: 15px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; }
+html body [data-dashboard-role] .hrp-hero h1 { margin: 0; color: #0b1f3f !important; -webkit-text-fill-color: #0b1f3f !important; font-size: var(--hr-title-size, clamp(30px, 2.8vw, 44px)) !important; font-weight: 800 !important; letter-spacing: -0.02em; line-height: 1.08 !important; }
+html body [data-dashboard-role] .hrp-hero h1 em { font-style: normal; }
+html body [data-dashboard-role] .hrp-hero h1 em.is-orange { color: #f58a0b !important; -webkit-text-fill-color: #f58a0b !important; }
+html body [data-dashboard-role] .hrp-hero h1 em.is-blue { color: #1673f0 !important; -webkit-text-fill-color: #1673f0 !important; }
+html body [data-dashboard-role] .hrp-hero__sub { margin: var(--hr-subtitle-margin, 10px 0 0); max-width: 62ch; color: #2f4868 !important; font-size: 16px; line-height: 1.45; }
+html body [data-dashboard-role] .hrp-hero__art { position: absolute; z-index: -1; right: 21%; bottom: 0; top: 4px; width: 32%; display: flex; align-items: flex-end; justify-content: center; }
+html body [data-dashboard-role] .hrp-hero__art img { max-width: 100%; max-height: 100%; object-fit: contain; object-position: bottom; }
+html body [data-dashboard-role] .hrp-drawn { width: 100%; max-height: 100%; }
+html body [data-dashboard-role] .hrp-accent { position: absolute; width: 70px; height: auto; }
+html body [data-dashboard-role] .hrp-accent--clock { left: 4%; top: 18%; }
+html body [data-dashboard-role] .hrp-accent--chart { right: -4%; top: 6%; width: 80px; }
+html body [data-dashboard-role] .hrp-accent--target { right: -2%; top: 10%; }
+html body [data-dashboard-role] .hrp-hero__script { position: absolute; z-index: 1; right: 40px; bottom: 18px; display: flex; flex-direction: column; align-items: flex-start; margin: 0; transform: rotate(-10deg); pointer-events: none; }
+html body [data-dashboard-role] .hrp-hero__script span { display: block; color: #102a52 !important; font-family: "Caveat", "Segoe Script", "Bradley Hand", cursive; font-size: 23px; font-weight: 700; line-height: 1.02; white-space: nowrap; }
+html body [data-dashboard-role] .hrp-hero__script span:nth-child(2) { margin-left: 10px; }
+html body [data-dashboard-role] .hrp-hero__script span:nth-child(3) { margin-left: 20px; }
+html body [data-dashboard-role] .hrp-hero__script span:nth-child(4) { margin-left: 30px; }
+html body [data-dashboard-role] .hrp-hero__script svg { width: 90px; height: 30px; margin: -6px 0 0 60px; }
+html body [data-dashboard-role] .hrp-hero__actions { position: absolute; z-index: 3; top: var(--hr-action-top, 16px); right: 20px; display: flex; flex-wrap: wrap; justify-content: flex-end; gap: var(--hr-gap, 10px); }
+html body [data-dashboard-role] .hrp-hero:has(.hrp-hero__actions) .hrp-hero__script { bottom: 12px; }
+html body [data-dashboard-role] .hrp-date { display: inline-flex; align-items: center; gap: 8px; height: var(--hr-control-height, 40px); padding: 0 14px; border: 1px solid #e0e8f2; border-radius: 10px; background: #ffffff; color: #0f2a4a !important; font-size: 13.5px; font-weight: 600; }
+html body [data-dashboard-role] .hrp-date svg { width: 17px; height: 17px; }
+
+/* Shared buttons */
+html body [data-dashboard-role] .hrp-btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: var(--hr-control-height, 40px); padding: 0 16px; border-radius: 10px; font-size: 14px; font-weight: 700; white-space: nowrap; transition: transform .15s ease, background-color .15s ease; }
+html body [data-dashboard-role] .hrp-btn svg { width: 17px; height: 17px; }
+html body [data-dashboard-role] .hrp-btn:hover:not(:disabled) { transform: translateY(-1px); }
+html body [data-dashboard-role] .hrp-btn:disabled { opacity: .55; cursor: not-allowed; }
+html body [data-dashboard-role] .hrp-btn--orange { background: #f58a0b !important; color: #ffffff !important; box-shadow: 0 10px 20px -10px rgba(245,138,11,.8); }
+html body [data-dashboard-role] .hrp-btn--white { border: 1px solid #e0e8f2; background: #ffffff !important; color: #0f2a4a !important; }
+html body [data-dashboard-role] .hrp-btn--navy { background: #0f2a4a !important; color: #ffffff !important; }
+html body [data-dashboard-role] .hrp-btn--blue { background: #1d63d8 !important; color: #ffffff !important; }
+
+/* KPI tiles */
+html body [data-dashboard-role] .hrp-kpis { display: grid; gap: var(--hr-gap, 12px); margin-top: var(--hr-gap, 12px); grid-template-columns: repeat(var(--hrp-cols, 5), minmax(0, 1fr)); }
+@media (max-width: 1280px) { html body [data-dashboard-role] .hrp-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@media (max-width: 760px) { html body [data-dashboard-role] .hrp-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+html body [data-dashboard-role] .hrp-kpi { position: relative; display: flex; align-items: center; gap: var(--hr-gap, 12px); min-height: var(--hr-kpi-height, 92px); overflow: hidden; padding: var(--hr-kpi-padding, 14px 14px 18px); border: 1px solid #e6edf6; border-radius: 16px; background: #ffffff; text-align: left; box-shadow: 0 4px 14px rgba(15,42,74,.05); transition: transform .15s ease, box-shadow .15s ease; }
+html body [data-dashboard-role] button.hrp-kpi { position: relative; z-index: 1; cursor: pointer; user-select: none; pointer-events: auto; }
+html body [data-dashboard-role] button.hrp-kpi:hover { transform: translateY(-2px); box-shadow: 0 12px 22px -14px rgba(15,42,74,.35); }
+html body [data-dashboard-role] .hrp-kpi__icon { position: relative; z-index: 1; display: grid; flex-shrink: 0; place-items: center; width: var(--hr-kpi-icon, 52px); height: var(--hr-kpi-icon, 52px); border-radius: 999px; background: var(--hk-soft); color: var(--hk-ink); }
+html body [data-dashboard-role] .hrp-kpi__icon svg { width: var(--hr-kpi-icon-svg, 25px); height: var(--hr-kpi-icon-svg, 25px); fill: currentColor; fill-opacity: .18; }
+html body [data-dashboard-role] .hrp-kpi__body { position: relative; z-index: 1; display: flex; min-width: 0; flex: 1; flex-direction: column; }
+html body [data-dashboard-role] .hrp-kpi__value { color: #0b1f3f !important; font-size: 25px; font-weight: 800; line-height: 1.05; }
+html body [data-dashboard-role] .hrp-kpi__label { margin-top: 2px; overflow: hidden; color: #0f2a4a !important; font-size: 13.5px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+html body [data-dashboard-role] .hrp-kpi__label:first-child { margin: 0 0 2px; font-size: 12.5px; }
+html body [data-dashboard-role] .hrp-kpi__sub { margin-top: 1px; overflow: hidden; color: #5b6f88 !important; font-size: 11.5px; font-style: normal; text-overflow: ellipsis; white-space: nowrap; }
+html body [data-dashboard-role] .hrp-kpi__trend { position: absolute; top: 12px; right: 12px; z-index: 1; display: inline-flex; align-items: center; gap: 2px; color: #16a34a !important; font-size: 12px; font-weight: 700; }
+html body [data-dashboard-role] .hrp-kpi__trend.is-down { color: #e11d48 !important; }
+html body [data-dashboard-role] .hrp-kpi__trend.is-flat { color: #5b6f88 !important; }
+html body [data-dashboard-role] .hrp-kpi__trend svg { width: 13px; height: 13px; }
+html body [data-dashboard-role] .hrp-kpi__wave { position: absolute; right: 0; bottom: 0; width: 62%; height: var(--hr-kpi-wave, 34px); }
+html body [data-dashboard-role] .hrp-kpi__wave { pointer-events: none; }
+html body [data-dashboard-role] .hrp-kpi__wave path { fill: var(--hk-ink); fill-opacity: .14; stroke: var(--hk-ink); stroke-opacity: .5; stroke-width: 1.5; }
+.hrp-kpi.is-blue { --hk-soft: #e3edfd; --hk-ink: #2f6fe4; }
+.hrp-kpi.is-green { --hk-soft: #dcf5e7; --hk-ink: #16a34a; }
+.hrp-kpi.is-purple { --hk-soft: #efe6fe; --hk-ink: #7c3aed; }
+.hrp-kpi.is-orange { --hk-soft: #ffeedd; --hk-ink: #f58a0b; }
+.hrp-kpi.is-red { --hk-soft: #ffe4e6; --hk-ink: #e11d48; }
+.hrp-kpi.is-pink { --hk-soft: #fde4ec; --hk-ink: #db2777; }
+.hrp-kpi.is-teal { --hk-soft: #d9f5ef; --hk-ink: #0d9488; }
+
+/* Panels */
+html body [data-dashboard-role] .hrp-panel { border: 1px solid #e6edf6; border-radius: 16px; background: #ffffff; box-shadow: 0 4px 14px rgba(15,42,74,.04); }
+html body [data-dashboard-role] .hrp-panel__head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: var(--hr-panel-head-padding, 14px 16px 8px); }
+html body [data-dashboard-role] .hrp-panel__head h2 { margin: 0; flex: 1; color: #0b1f3f !important; font-size: 16px; font-weight: 800; }
+html body [data-dashboard-role] .hrp-panel__icon { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 9px; background: var(--hp-soft, #e3edfd); color: var(--hp-ink, #2f6fe4); }
+html body [data-dashboard-role] .hrp-panel__icon svg { width: 18px; height: 18px; }
+html body [data-dashboard-role] .hrp-panel__body { padding: var(--hr-panel-body-padding, 4px 16px 16px); }
+html body [data-dashboard-role] .hrp-link { display: inline-flex; align-items: center; gap: 4px; color: #1d63d8 !important; font-size: 13px; font-weight: 600; }
+html body [data-dashboard-role] .hrp-link svg { width: 14px; height: 14px; }
+
+@media (max-width: 1280px) {
+  html body [data-dashboard-role] .hrp-hero__script { display: none; }
+  html body [data-dashboard-role] .hrp-hero__art { right: 2%; width: 40%; opacity: .9; }
+}
+@media (max-width: 860px) {
+  html body [data-dashboard-role] .hrp-hero { flex-direction: column; align-items: flex-start; padding: var(--hr-hero-padding, 18px); }
+  html body [data-dashboard-role] .hrp-hero__copy { max-width: 100%; }
+  html body [data-dashboard-role] .hrp-hero__art { display: none; }
+  html body [data-dashboard-role] .hrp-hero__actions { position: static; margin-top: 12px; justify-content: flex-start; }
+}
+html.dark body [data-dashboard-role] :is(.hrp-hero) { background: linear-gradient(105deg, #0f1c2e, #13243a); border-color: #22324a; }
+html.dark body [data-dashboard-role] :is(.hrp-kpi, .hrp-panel) { background: #0f1c2e; border-color: #22324a; }
+html.dark body [data-dashboard-role] :is(.hrp-hero h1, .hrp-kpi__value, .hrp-kpi__label, .hrp-panel__head h2) { color: #f1f5f9 !important; -webkit-text-fill-color: #f1f5f9 !important; }
+/* Script/note artwork needs room below the corner actions. Content-rich
+   heroes may grow beyond the standard minimum rather than losing content. */
+html body [data-dashboard-role] .hrp-hero:has(.hrp-hero__actions):has(.hrp-hero__script) { min-height: var(--hr-hero-script-height, 196px); }
+html body [data-dashboard-role] .hrp-hero:has(.hrp-hero__actions) .hrp-hero__script { bottom: 8px; right: 34px; }
+html body [data-dashboard-role] .hrp-hero:has(.hrp-hero__actions) .hrp-hero__script span { font-size: 21px; }
+
+/* Employees list head */
+html body [data-dashboard-role] .hre-list-head { display: flex; align-items: center; gap: var(--hr-gap, 14px); margin-bottom: var(--hr-gap, 14px); }
+html body [data-dashboard-role] .hre-list-head__icon { display: grid; flex-shrink: 0; place-items: center; width: var(--hr-list-icon, 46px); height: var(--hr-list-icon, 46px); border-radius: 12px; background: #1d63d8; color: #fff; }
+html body [data-dashboard-role] .hre-list-head__icon svg { width: 22px; height: 22px; }
+html body [data-dashboard-role] .hre-list-head h2 { margin: 0; color: #0b1f3f !important; font-size: 19px; font-weight: 800; }
+html body [data-dashboard-role] .hre-list-head p { margin: 2px 0 0; color: #3b5270 !important; font-size: 13.5px; }
+html body [data-dashboard-role] .hrp-page .hrp-kpis,
+html body [data-dashboard-role] .hrp-kpis { margin-bottom: 0; }
+/* Positive stacking so pages that reset `isolation` still show the art */
+html body [data-dashboard-role] .hrp-hero { isolation: isolate !important; }
+html body [data-dashboard-role] .hrp-hero__bg { z-index: 0 !important; }
+html body [data-dashboard-role] .hrp-hero__art { z-index: 1 !important; }
+html body [data-dashboard-role] .hrp-hero__copy { z-index: 2 !important; }
+html body [data-dashboard-role] .hrp-hero__script { z-index: 2 !important; }
+html body [data-dashboard-role] .hrp-hero__actions button { min-height: var(--hr-control-height, 40px) !important; padding: 0 16px !important; border-radius: 10px !important; font-size: 14px !important; font-weight: 700 !important; }
+html body [data-dashboard-role] .hrp-hero__actions button svg { width: 16px !important; height: 16px !important; }
+html body [data-dashboard-role] .hrp-hero__copy { max-width: 48%; }
+html body [data-dashboard-role] .hrp-hero h1 { font-size: var(--hr-title-size, clamp(30px, 2.6vw, 42px)) !important; }
+
+/* Live HR module filter rows (HrApiModule) */
+html body [data-dashboard-role] .hrm-filters { align-items: flex-end; padding: 12px 14px; border: 1px solid #e6edf6; border-radius: 14px; background: #fff; box-shadow: 0 4px 14px rgba(15,42,74,.04); }
+html body [data-dashboard-role] .hrm-filters label { color: #3b5270 !important; font-size: 12px !important; font-weight: 600; }
+html body [data-dashboard-role] .hrm-filters :is(input, select) { height: var(--hr-control-height, 40px); min-width: 150px; margin-top: 4px; padding: 0 12px !important; border: 1px solid #dfe6ef !important; border-radius: 10px !important; background-color: #fff !important; color: #0f2a4a !important; font-size: 13.5px !important; }
+html body [data-dashboard-role] .hrm-filters--history { margin-top: -6px; }
+
+/* v22 — eyebrow pill + feature chips under the subtitle */
+html body [data-dashboard-role] .hrp-hero__eyebrow { display: inline-flex; align-items: center; gap: 7px; margin-bottom: 8px !important; padding: 4px 12px; border-radius: 8px; background: #fff0dc; color: #f28a1e !important; font-size: 13px !important; letter-spacing: .1em; }
+html body [data-dashboard-role] .hrp-hero__eyebrow svg { width: 15px; height: 15px; }
+html body [data-dashboard-role] .hrp-hero { min-height: var(--hr-hero-height, 220px); }
+html body [data-dashboard-role] .hrp-hero__features { display: flex; flex-wrap: wrap; gap: var(--hr-feature-gap, 10px); margin: 16px 0 0; padding: 0; list-style: none; }
+html body [data-dashboard-role] .hrp-hero__features li { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px 6px 6px; border: 1px solid #e3ebf6; border-radius: 10px; background: rgba(255,255,255,.85); color: #0f2a4a; font-size: 12.5px; font-weight: 600; white-space: nowrap; }
+html body [data-dashboard-role] .hrp-hero__features span { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 7px; color: #fff; }
+html body [data-dashboard-role] .hrp-hero__features span svg { width: 15px; height: 15px; }
+.hrp-hero__features .is-blue { background: #2f6fe4; } .hrp-hero__features .is-purple { background: #7c3aed; } .hrp-hero__features .is-green { background: #16a34a; } .hrp-hero__features .is-orange { background: #f58a0b; } .hrp-hero__features .is-sky { background: #0ea5e9; }
+@media (max-width: 1280px) { html body [data-dashboard-role] .hrp-hero__features li:nth-child(n+4) { display: none; } }
+
+/* v23 — design-matched hero: artwork from the Kini design screens, one-row chips */
+html body [data-dashboard-role] .hrp-hero { min-height: var(--hr-hero-height, 232px); padding: var(--hr-hero-padding, 22px 30px); }
+html body [data-dashboard-role] .hrp-hero__copy { max-width: 50%; }
+html body [data-dashboard-role] .hrp-hero__features { flex-wrap: nowrap; gap: var(--hr-feature-gap, 8px); margin-top: var(--hr-feature-margin, 18px); }
+html body [data-dashboard-role] .hrp-hero__features li { padding: 5px 10px 5px 5px; font-size: 12px; gap: 7px; }
+html body [data-dashboard-role] .hrp-hero__features span { width: 24px; height: 24px; }
+html body [data-dashboard-role] .hrp-hero__art--design { top: 10px; bottom: 0; right: 15%; width: 29%; align-items: flex-end; }
+html body [data-dashboard-role] .hrp-hero__art--design.hrp-hero__art--wide { right: 13%; width: 33%; }
+html body [data-dashboard-role] .hrp-hero--noscript .hrp-hero__art--design { right: 4%; width: 42%; top: 56px; }
+html body [data-dashboard-role] .hrp-hero__art--design img { width: 100%; height: 100%; object-fit: contain; object-position: center bottom; }
+@media (max-width: 1440px) { html body [data-dashboard-role] .hrp-hero__features li:nth-child(n+4) { display: inline-flex; } html body [data-dashboard-role] .hrp-hero__features { flex-wrap: wrap; max-width: 100%; } }
+@media (max-width: 1180px) { html body [data-dashboard-role] .hrp-hero__art--design { right: 2%; width: 40%; opacity: .95; } html body [data-dashboard-role] .hrp-hero__script { display: none; } }
+
+/* ──────────────────────────────────────────────────────────────────────
+   v24 — supplied HR banner artwork (public/assets/Hr/web).
+   Art is anchored right and fills the hero height, as in the Kini HR
+   design screens. Pages without a script line run the art to the edge.
+   ────────────────────────────────────────────────────────────────────── */
+html body [data-dashboard-role] .hrp-hero--v24 { min-height: var(--hr-hero-height, 236px); padding: var(--hr-hero-padding, 24px 32px); }
+html body [data-dashboard-role] .hrp-hero--v24 .hrp-hero__copy { max-width: 46%; }
+html body [data-dashboard-role] .hrp-hero--v24 .hrp-hero__art--v24 { top: 8px; bottom: 0; right: 14%; width: 46%; display: flex; align-items: flex-end; justify-content: center; opacity: 1; }
+html body [data-dashboard-role] .hrp-hero--v24.hrp-hero--noscript .hrp-hero__art--v24 { right: 1%; width: 54%; }
+html body [data-dashboard-role] .hrp-hero--v24 .hrp-hero__art--v24 img { width: 100%; height: 100%; object-fit: contain; object-position: center bottom; filter: drop-shadow(0 10px 18px rgba(30, 64, 140, .10)); }
+html body [data-dashboard-role] .hrp-hero--v24 .hrp-hero__script { right: 28px; bottom: 26px; }
+/* Buttons sit over the top-right of the art, as in the Students / Attendance screens */
+html body [data-dashboard-role] .hrp-hero--v24 .hrp-hero__actions { top: var(--hr-action-top, 18px); right: 22px; }
+html body [data-dashboard-role="employee"] .hr-dashboard .hrp-hero--v24 { min-height: 236px; overflow: hidden; }
+html body [data-dashboard-role="employee"] .hr-dashboard .hrp-hero--v24 .hrp-hero__copy { max-width: 42%; }
+html body [data-dashboard-role="employee"] .hr-dashboard .hrp-hero--v24 .hrp-hero__art--v24 { right: 12%; width: 44%; }
+
+/* Employees (image 11): no eyebrow, single-colour title, shorter banner */
+html body [data-dashboard-role] .hrp-hero--plain { min-height: var(--hr-hero-height, 172px); }
+html body [data-dashboard-role] .hrp-hero--plain h1 { font-size: var(--hr-title-size, clamp(32px, 2.8vw, 44px)) !important; }
+html body [data-dashboard-role] .hrp-hero--plain .hrp-hero__sub { margin-top: var(--hr-subtitle-gap, 12px); }
+html body [data-dashboard-role] .hrp-hero--plain.hrp-hero--v24 .hrp-hero__art--v24 { top: 4px; right: 0; width: 60%; }
+html body [data-dashboard-role] .hrp-hero--plain .hrp-hero__art--v24 img { object-position: right bottom; }
+
+/* Resources: the script line becomes a pinned sticky note */
+html body [data-dashboard-role] .hrp-hero__script--note { right: 26px; bottom: 22px; padding: 16px 20px 12px 18px; border-radius: 3px; background: linear-gradient(160deg, #fff8d9, #fdeeb4); box-shadow: 0 12px 22px -12px rgba(120, 90, 20, .45); transform: rotate(-6deg); }
+html body [data-dashboard-role] .hrp-hero__script--note::before { content: ""; position: absolute; top: -7px; left: 50%; width: 14px; height: 14px; margin-left: -7px; border-radius: 999px; background: #2f6fe4; box-shadow: 0 2px 3px rgba(0,0,0,.25); }
+html body [data-dashboard-role] .hrp-hero__script--note span { font-size: 22px; }
+html body [data-dashboard-role] .hrp-hero__script--note span:nth-child(n) { margin-left: 0; }
+html body [data-dashboard-role] .hrp-hero__script--note svg { margin: -4px 0 0 40px; }
+
+@media (max-width: 1280px) {
+  html body [data-dashboard-role] .hrp-hero--v24 .hrp-hero__art--v24,
+  html body [data-dashboard-role] .hrp-hero--v24.hrp-hero--noscript .hrp-hero__art--v24 { right: 0; width: 50%; }
+  html body [data-dashboard-role] .hrp-hero--v24 .hrp-hero__copy { max-width: 50%; }
+}
+@media (max-width: 860px) {
+  html body [data-dashboard-role] .hrp-hero--v24 .hrp-hero__copy { max-width: 100%; }
+  html body [data-dashboard-role] .hrp-hero--v24 .hrp-hero__art--v24 { display: none; }
+}
+
+/* Table toolbar above the list (Employees: Export + Add Employee) */
+html body [data-dashboard-role] .hrl-toolbar { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; }
+html body [data-dashboard-role] .hrl-toolbar .hrp-btn { height: var(--hr-control-height, var(--hr-control-height, 42px)); padding: 0 18px; }
+html body [data-dashboard-role] .hrl-index { color: #3b5270; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* v24.1 — anchor art by its left edge so it never runs under the title/chips */
+html body [data-dashboard-role] .hrp-hero--v24 .hrp-hero__art--v24 { left: 47%; right: 15%; width: auto; }
+html body [data-dashboard-role] .hrp-hero--v24.hrp-hero--noscript .hrp-hero__art--v24 { left: 47%; right: 1%; width: auto; }
+/* art drops below the corner buttons when there is no script column (Batches, Students) */
+html body [data-dashboard-role] .hrp-hero--v24.hrp-hero--noscript:has(.hrp-hero__actions) { min-height: var(--hr-hero-height, 262px); }
+html body [data-dashboard-role] .hrp-hero--v24.hrp-hero--noscript:has(.hrp-hero__actions) .hrp-hero__art--v24 { top: var(--hr-art-action-top, 62px); }
+/* Employees: taller plain banner, art fills the right side */
+html body [data-dashboard-role] .hrp-hero--plain.hrp-hero--v24 { min-height: var(--hr-hero-height, var(--hr-hero-height, 196px)); }
+html body [data-dashboard-role] .hrp-hero--plain.hrp-hero--v24 .hrp-hero__art--v24 { left: 38%; right: 0; top: 2px; width: auto; }
+/* smaller sticky note */
+html body [data-dashboard-role] .hrp-hero__script--note { padding: 12px 16px 8px 14px; }
+html body [data-dashboard-role] .hrp-hero__script--note span { font-size: 19px; }
+html body [data-dashboard-role] .hrp-hero__script--note svg { width: 70px; height: 24px; }
+@media (max-width: 1280px) {
+  html body [data-dashboard-role] .hrp-hero--v24 .hrp-hero__art--v24,
+  html body [data-dashboard-role] .hrp-hero--v24.hrp-hero--noscript .hrp-hero__art--v24 { left: 52%; right: 0; }
+}
+@media (max-width: 860px) { html body [data-dashboard-role] .hrp-hero--v24 .hrp-hero__art--v24 { display: none !important; } }

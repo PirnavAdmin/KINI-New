@@ -1,0 +1,111 @@
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import {
+  ArrowLeft,
+  Building2,
+  Calendar,
+  CreditCard,
+  Users,
+} from "lucide-react";
+import {
+  subscriptionApi,
+  getApiErrorMessage,
+} from "@shared/services/apiServices";
+
+export default function SubscriptionDetails() {
+  const { subscriptionId } = useParams();
+  const navigate = useNavigate();
+  const [item, setItem] = useState(null);
+  const [error, setError] = useState("");
+  useEffect(() => {
+    subscriptionApi
+      .getById(subscriptionId)
+      .then(setItem)
+      .catch((e) =>
+        setError(getApiErrorMessage(e, "Subscription could not be loaded")),
+      );
+  }, [subscriptionId]);
+  if (error || !item)
+    return (
+      <div className="grid min-h-[70vh] place-items-center">
+        <div className="text-center">
+          <CreditCard className="mx-auto h-12 w-12 text-slate-300" />
+          <p className="mt-3 font-bold text-slate-600">
+            {error || "Loading subscription…"}
+          </p>
+          <button
+            onClick={() => navigate(-1)}
+            className="mt-4 rounded-xl bg-blue-600 px-4 py-2 text-sm font-bold text-white"
+          >
+            Go back
+          </button>
+        </div>
+      </div>
+    );
+  const active = Boolean(
+    item.isActive ?? String(item.status).toLowerCase() === "active",
+  );
+  return (
+    <div className="space-y-3 p-2 sm:p-3 lg:p-4">
+      <button
+        onClick={() => navigate(-1)}
+        className="inline-flex items-center gap-2 text-sm font-bold text-slate-600"
+      >
+        <ArrowLeft className="h-4 w-4" /> Back to subscriptions
+      </button>
+      <section className="flex flex-wrap items-center justify-between gap-4 rounded-3xl bg-gradient-to-r from-violet-600 to-blue-600 p-6 text-white shadow-xl">
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[.2em] text-violet-100">
+            Subscription details
+          </p>
+          <h1 className="mt-2 text-3xl font-black">
+            {item.planName ?? item.plan ?? "Subscription Plan"}
+          </h1>
+          <p className="mt-2 text-violet-50">
+            #{item.subscriptionId ?? item.id ?? subscriptionId}
+          </p>
+        </div>
+        <span
+          className={`rounded-full px-4 py-2 text-xs font-black ${active ? "bg-emerald-400 text-emerald-950" : "bg-white/20 text-white"}`}
+        >
+          {active ? "ACTIVE" : "INACTIVE"}
+        </span>
+      </section>
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <Metric
+          icon={Building2}
+          label="Organization"
+          value={item.organizationName ?? item.organization?.name ?? "Platform"}
+        />
+        <Metric
+          icon={CreditCard}
+          label="Price"
+          value={`₹${Number(item.price ?? item.amount ?? 0).toLocaleString("en-IN")}`}
+        />
+        <Metric
+          icon={Users}
+          label="Maximum users"
+          value={item.maxUsers ?? item.seats ?? "—"}
+        />
+        <Metric
+          icon={Calendar}
+          label="Duration"
+          value={`${item.durationInMonths ?? item.duration ?? "—"} months`}
+        />
+      </div>
+    </div>
+  );
+}
+function Metric({ icon: Icon, label, value }) {
+  return (
+    <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+      <span className="inline-flex rounded-xl bg-violet-50 p-2 text-violet-600">
+        <Icon className="h-5 w-5" />
+      </span>
+      <p className="mt-4 text-xs font-bold uppercase tracking-wider text-slate-400">
+        {label}
+      </p>
+      <p className="mt-1 text-xl font-black text-slate-900">{value}</p>
+    </section>
+  );
+}

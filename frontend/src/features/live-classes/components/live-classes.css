@@ -1,0 +1,107 @@
+/* ==========================================================================
+   Live Classes (organization) — compact desktop density.
+   Real sizes (heights, padding, font sizes), no zoom/scale. Scoped to
+   .lc-workspace (ScheduleWorkspace root) so other pages keep their styling.
+   Fixed px here on purpose: the page should look the same on a 1280×600
+   laptop viewport (1920×1080 at 150%) as on a 1920 monitor, not shrink
+   further with the global short-screen density tiers.
+   ========================================================================== */
+
+/* ── Hero banner ─────────────────────────────────────────────────────── */
+@media (min-width: 1024px) {
+  .lc-workspace .mentor-banner.mentor-banner--live {
+    --mb-h: 224px;
+    --mb-padding: 16px 22px 16px 28px;
+    --mb-bottom-gap: 0px;
+    --mb-badge-gap: 8px;
+    --mb-badge-padding: 6px 12px;
+    --mb-subtitle-gap: 6px;
+    --mb-subtitle-leading: 1.45;
+    --mb-features-gap: 12px;
+    --mb-script-size: 26px;
+    --mb-script-step: 6px;
+    --mb-swoosh-w: 84px;
+  }
+  html body .lc-workspace .mentor-banner--live .mentor-banner__title { font-size: clamp(32px, 2.5vw, 40px) !important; }
+  html body .lc-workspace .mentor-banner--live .mentor-banner__eyebrow { font-size: 11px !important; gap: 6px; }
+  html body .lc-workspace .mentor-banner--live .mentor-banner__eyebrow svg { width: 15px; height: 15px; }
+  html body .lc-workspace .mentor-banner--live .mentor-banner__subtitle { max-width: 40ch; font-size: 13.5px !important; }
+  html body .lc-workspace .mentor-banner--live .mentor-banner__features--stack { gap: 16px; }
+  html body .lc-workspace .mentor-banner--live .mentor-banner__features--stack .mentor-banner__feature { gap: 5px; }
+  html body .lc-workspace .mentor-banner--live .mentor-banner__features--stack .mentor-banner__feature-icon { width: 30px; height: 30px; border-radius: 9px; }
+  html body .lc-workspace .mentor-banner--live .mentor-banner__features--stack .mentor-banner__feature-icon svg { width: 16px; height: 16px; }
+  html body .lc-workspace .mentor-banner--live .mentor-banner__features--stack .mentor-banner__feature-text { line-height: 1.25; }
+  html body .lc-workspace .mentor-banner--live .mentor-banner__features--stack :is(.mentor-banner__feature-text b, .mentor-banner__feature-text span) { font-size: 11.5px; }
+  html body .lc-workspace .mentor-banner--live .mentor-banner__actions { gap: 8px; }
+  html body .lc-workspace .mentor-banner--live .mentor-banner__actions .mentor-hero-btn { gap: 6px; height: 34px; padding: 0 12px; font-size: 12px; border-radius: 9px; }
+  html body .lc-workspace .mentor-banner--live .mentor-banner__actions .mentor-hero-btn svg { width: 14px; height: 14px; }
+  html body .lc-workspace .mentor-banner--live .mentor-banner__actions .mentor-hero-btn.\!px-3 { padding: 0 10px !important; }
+}
+
+/* One-row hero (copy · art · script, actions bottom-right) from 1180px, so
+   1280px laptops keep the wide layout instead of wrapping the buttons onto a
+   second row under the copy. */
+@media (min-width: 1180px) {
+  .lc-workspace .mentor-banner.mentor-banner--live {
+    --mb-copy: 40%;
+    --mb-art-left: 36%;
+    --mb-art-right: auto;
+    --mb-art-w: 40%;
+    --mb-art-h: 100%;
+    --mb-script-top: 18px;
+    --mb-script-right: 3%;
+  }
+  html body .lc-workspace .mentor-banner--live { flex-wrap: nowrap !important; }
+  html body .lc-workspace .mentor-banner--live .mentor-banner__script { display: flex; }
+  html body .lc-workspace .mentor-banner--live .mentor-banner__art { top: auto; bottom: 0; }
+  html body .lc-workspace .mentor-banner--live .mentor-banner__actions {
+    position: absolute;
+    top: auto;
+    right: 20px;
+    bottom: 16px;
+    flex-basis: auto;
+    justify-content: flex-end;
+    margin: 0;
+  }
+}
+
+/* 1180–1535px: the bottom-right buttons (~290px) start at ~72% of a 1280px
+   hero, so the artwork (36%–76%) is narrowed to end before them. */
+@media (min-width: 1180px) and (max-width: 1535px) {
+  .lc-workspace .mentor-banner.mentor-banner--live { --mb-art-left: 37%; --mb-art-w: 32%; }
+}
+
+/* 1024–1179px: buttons wrap under the copy (existing layout), just tighter. */
+@media (min-width: 1024px) and (max-width: 1179px) {
+  html body .lc-workspace .mentor-banner--live .mentor-banner__actions { margin-top: 12px; }
+  .lc-workspace .mentor-banner.mentor-banner--live { --mb-art-h: 64%; }
+}
+
+/* ── KPI cards ───────────────────────────────────────────────────────── */
+@media (min-width: 1024px) {
+  html body .lc-workspace [data-ui="kpi"] { min-height: 60px; border-radius: 14px; }
+  html body .lc-workspace [data-ui="kpi"] .kpi-content { gap: 10px; padding: 8px 14px; }
+  html body .lc-workspace [data-ui="kpi"] .kpi-icon { width: 34px; height: 34px; border-radius: 10px; }
+  html body .lc-workspace [data-ui="kpi"] .kpi-icon svg { width: 17px; height: 17px; }
+  html body .lc-workspace [data-ui="kpi"] .kpi-value { font-size: 19px; }
+  html body .lc-workspace [data-ui="kpi"] .kpi-content p:not(.kpi-value):not(.kpi-description) { margin-top: 3px; font-size: 11.5px; line-height: 1.2; }
+  html body .lc-workspace [data-ui="kpi"] .kpi-description { margin-top: 1px; font-size: 10px; line-height: 1.25; }
+}
+
+/* ── Filter selects (shared FilterSelect) ────────────────────────────── */
+html body .lc-workspace .lc-schedule select:not(#lc) {
+  height: 34px !important;
+  min-height: 0 !important;
+  padding: 0 30px 0 12px !important;
+  font-size: 12px !important;
+}
+html body .lc-workspace .lc-schedule select:not(#lc) + svg { right: 10px; width: 14px; height: 14px; }
+html body .lc-workspace .lc-schedule .rounded-\[10px\]:has(> select) { border-radius: 9px; }
+/* The search control owns its single outline; cancel the app-wide input border
+   and focus ring on the nested input to avoid a second rectangle inside it. */
+html body .lc-workspace .lc-schedule .lc-class-search input,
+html body .lc-workspace .lc-schedule .lc-class-search input:focus {
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}

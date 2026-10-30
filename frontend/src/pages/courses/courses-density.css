@@ -1,0 +1,55 @@
+/* Organization Courses — desktop density for the shared pieces this page
+   reuses (global KPI card, list-table header/rows), matching the Employees,
+   Mentors and Batches pages at 100% zoom on a ~1280px view (1.5x display
+   scaling). The table's column sizing lives in CoursesPage.jsx.
+   Scoped to this page and to desktop widths; tablet and mobile are unchanged.
+   The overridden sizes are plain Tailwind utilities, so no !important. */
+
+@media (min-width: 1024px) {
+  /* KPI cards (~62px): five in one row; captions fit their narrow cards. */
+  html body [data-dashboard-role] .org-courses-page [aria-label="Course statistics"] {
+    gap: 8px;
+  }
+  /* Each card sits in an entrance-animation wrapper (see useRouteAos). */
+  html body [data-dashboard-role] .org-courses-page [aria-label="Course statistics"] > * > * {
+    min-height: 0;
+    border-radius: 12px;
+  }
+  html body [data-dashboard-role] .org-courses-page [aria-label="Course statistics"] .kpi-content {
+    gap: 9px;
+    padding: 6px 10px;
+  }
+  html body [data-dashboard-role] .org-courses-page [aria-label="Course statistics"] .kpi-icon {
+    width: 32px;
+    height: 32px;
+  }
+  html body [data-dashboard-role] .org-courses-page [aria-label="Course statistics"] .kpi-icon svg {
+    width: 16px;
+    height: 16px;
+  }
+  html body [data-dashboard-role] .org-courses-page [aria-label="Course statistics"] .kpi-value {
+    font-size: 18px;
+  }
+  html body [data-dashboard-role] .org-courses-page [aria-label="Course statistics"] .kpi-content p.mt-2 {
+    margin-top: 3px;
+  }
+  html body [data-dashboard-role] .org-courses-page [aria-label="Course statistics"] .kpi-description {
+    font-size: 10.5px;
+  }
+
+  /* Table header (~30px) through the header system's own variable. */
+  html body [data-dashboard-role] .org-courses-page table[aria-label="Courses"] {
+    --hr-standard-head-padding: 8px 8px;
+  }
+
+  /* Rows (~44px, as on Employees, Mentors and Batches). */
+  html body [data-dashboard-role] .org-courses-page table[aria-label="Courses"] > tbody > tr > td {
+    height: 44px;
+    padding-top: 3px;
+    padding-bottom: 3px;
+  }
+  html body [data-dashboard-role] .org-courses-page table[aria-label="Courses"] > tbody > tr > td button.h-9\.5 {
+    width: 30px;
+    height: 30px;
+  }
+}

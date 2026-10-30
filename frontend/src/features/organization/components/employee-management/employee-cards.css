@@ -1,0 +1,523 @@
+/* ──────────────────────────────────────────────────────────────────────
+   Organization → Employees: employee card grid (`ec-`).
+   Tokens follow the Kini brand: navy #133B5D, orange #F39924. Selectors
+   carry [data-dashboard-role] so they out-rank the portal theme rules
+   without !important. Real sizes only (no zoom/scale).
+   ────────────────────────────────────────────────────────────────────── */
+
+[data-dashboard-role] .ec-grid {
+  --ec-navy: #133b5d;
+  --ec-ink: #16324f;
+  --ec-muted: #64748b;
+  --ec-line: #e2e8f0;
+  --ec-line-soft: #eef2f7;
+  --ec-orange: #f39924;
+  --ec-orange-ink: #b45309;
+  --ec-blue: #1677f2;
+  --ec-gap: 16px;
+  display: grid;
+  gap: var(--ec-gap);
+  /* As many ≥300px columns as fit, but never more than four. */
+  grid-template-columns: repeat(auto-fill, minmax(max(300px, calc((100% - 3 * var(--ec-gap)) / 4)), 1fr));
+  padding: 16px;
+}
+@media (max-width: 640px) {
+  [data-dashboard-role] .ec-grid { grid-template-columns: minmax(0, 1fr); padding: 12px; --ec-gap: 12px; }
+}
+
+/* ── Card ─────────────────────────────────────────────────────────────── */
+[data-dashboard-role] .ec-card {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px 18px 16px;
+  border: 1px solid var(--ec-line);
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 1px 2px rgba(19, 59, 93, .04);
+  transition: border-color .15s ease, box-shadow .15s ease, transform .15s ease;
+}
+[data-dashboard-role] .ec-card:not(.is-skeleton):hover { border-color: #cfdbea; box-shadow: 0 10px 28px -14px rgba(19, 59, 93, .28); transform: translateY(-2px); }
+[data-dashboard-role] .ec-card:focus-within { border-color: #c4d4ea; }
+[data-dashboard-role] .ec-card.is-selected { border-color: var(--ec-orange); box-shadow: 0 0 0 3px rgba(243, 153, 36, .16); }
+
+[data-dashboard-role] .ec-card__head { display: flex; align-items: center; gap: 12px; min-width: 0; }
+[data-dashboard-role] .ec-check {
+  flex: 0 0 auto; width: 16px; height: 16px; margin: 0; cursor: pointer; accent-color: var(--ec-orange);
+}
+[data-dashboard-role] .ec-avatar {
+  display: grid; flex: 0 0 auto; place-items: center; width: 48px; height: 48px; overflow: hidden;
+  border-radius: 999px; background: #e6f0fb; color: #2a5da8; font-size: 15px; font-weight: 800;
+  box-shadow: inset 0 0 0 1px #d3e3f7;
+}
+[data-dashboard-role] .ec-avatar img { width: 100%; height: 100%; object-fit: cover; }
+[data-dashboard-role] .ec-card__identity { flex: 1; min-width: 0; }
+[data-dashboard-role] .ec-card__name {
+  display: block; max-width: 100%; overflow: hidden; color: var(--ec-ink); font-size: 16px; font-weight: 700;
+  line-height: 1.3; text-align: left; text-overflow: ellipsis; white-space: nowrap; cursor: pointer;
+}
+[data-dashboard-role] .ec-card__name:hover { color: var(--ec-blue); }
+[data-dashboard-role] .ec-card__role {
+  margin: 2px 0 0; overflow: hidden; color: var(--ec-muted); font-size: 13px; text-overflow: ellipsis; white-space: nowrap;
+}
+[data-dashboard-role] .ec-card__id { color: #94a3b8; }
+
+/* ── Badges ───────────────────────────────────────────────────────────── */
+[data-dashboard-role] .ec-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; min-height: 24px; }
+[data-dashboard-role] .ec-badge {
+  display: inline-flex; align-items: center; max-width: 100%; overflow: hidden; padding: 3px 10px;
+  border-radius: 999px; font-size: 12px; font-weight: 600; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap;
+}
+[data-dashboard-role] .ec-badge.is-type { background: #eef4fe; color: #1d4fb8; }
+[data-dashboard-role] .ec-badge.is-dept { background: #fff3e2; color: var(--ec-orange-ink); }
+[data-dashboard-role] .ec-leave {
+  display: flex; align-items: center; gap: 6px; margin: -6px 0 0; color: #be123c; font-size: 12px; font-weight: 600;
+}
+[data-dashboard-role] .ec-leave svg { width: 14px; height: 14px; }
+
+/* ── Details ──────────────────────────────────────────────────────────── */
+[data-dashboard-role] .ec-details { display: grid; gap: 8px; margin: 0; }
+[data-dashboard-role] .ec-details > div { display: flex; align-items: center; gap: 10px; min-width: 0; }
+[data-dashboard-role] .ec-details dt { display: grid; flex: 0 0 auto; place-items: center; width: 28px; height: 28px; border-radius: 8px; background: #f4f7fb; color: var(--ec-muted); }
+[data-dashboard-role] .ec-details dt svg { width: 14px; height: 14px; }
+[data-dashboard-role] .ec-details dd { min-width: 0; margin: 0; overflow: hidden; color: var(--ec-ink); font-size: 13.5px; text-overflow: ellipsis; white-space: nowrap; }
+[data-dashboard-role] .ec-details dd a { color: inherit; text-decoration: none; }
+[data-dashboard-role] .ec-details dd a:hover { color: var(--ec-blue); text-decoration: underline; }
+[data-dashboard-role] .ec-muted { color: #94a3b8; }
+
+/* ── Footer actions ───────────────────────────────────────────────────── */
+[data-dashboard-role] .ec-card__foot {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(0, 1fr)); gap: 8px;
+  margin-top: auto; padding-top: 14px; border-top: 1px solid var(--ec-line-soft);
+}
+[data-dashboard-role] .ec-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 38px;
+  border: 1px solid transparent; border-radius: 10px; font-size: 13px; font-weight: 700; cursor: pointer;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+[data-dashboard-role] .ec-btn svg { width: 15px; height: 15px; }
+[data-dashboard-role] .ec-btn.is-access { border-color: #f6d9ae; background: #fdf0dc; color: var(--ec-orange-ink); }
+[data-dashboard-role] .ec-btn.is-access:hover { border-color: #f0c27f; background: #fbe5c2; }
+[data-dashboard-role] .ec-btn.is-edit { border-color: var(--ec-line); background: #fff; color: var(--ec-navy); }
+[data-dashboard-role] .ec-btn.is-edit:hover { border-color: #b9cce6; background: #f4f8fd; }
+
+/* ── More menu ────────────────────────────────────────────────────────── */
+[data-dashboard-role] .ec-menu { position: relative; flex: 0 0 auto; }
+[data-dashboard-role] .ec-icon-btn {
+  display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; color: var(--ec-muted); cursor: pointer;
+}
+[data-dashboard-role] .ec-icon-btn:hover, [data-dashboard-role] .ec-icon-btn[aria-expanded="true"] { background: #f1f5f9; color: var(--ec-ink); }
+[data-dashboard-role] .ec-icon-btn svg { width: 18px; height: 18px; }
+[data-dashboard-role] .ec-menu__list {
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 30; width: 196px; padding: 6px;
+  border: 1px solid var(--ec-line); border-radius: 12px; background: #fff;
+  box-shadow: 0 20px 48px -12px rgba(19, 59, 93, .35);
+  animation: ec-pop .14s ease-out;
+}
+[data-dashboard-role] .ec-menu__item {
+  display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 10px; border-radius: 8px;
+  color: var(--ec-ink); font-size: 13px; font-weight: 600; text-align: left; cursor: pointer;
+}
+[data-dashboard-role] .ec-menu__item svg { width: 15px; height: 15px; color: var(--ec-muted); }
+[data-dashboard-role] .ec-menu__item:hover, [data-dashboard-role] .ec-menu__item:focus-visible { background: #f1f6fd; outline: none; }
+[data-dashboard-role] .ec-menu__item:disabled { opacity: .5; cursor: wait; }
+[data-dashboard-role] .ec-menu__item.is-danger { margin-top: 4px; border-top: 1px solid var(--ec-line-soft); border-radius: 0 0 8px 8px; color: #be123c; }
+[data-dashboard-role] .ec-menu__item.is-danger svg { color: #be123c; }
+[data-dashboard-role] .ec-menu__item.is-danger:hover { background: #fff1f3; }
+@keyframes ec-pop { from { opacity: 0; transform: translateY(-4px); } }
+
+[data-dashboard-role] :is(.ec-card__name, .ec-btn, .ec-icon-btn, .ec-check, .ec-details a):focus-visible {
+  outline: 2px solid var(--ec-blue); outline-offset: 2px;
+}
+
+/* ── Skeleton ─────────────────────────────────────────────────────────── */
+[data-dashboard-role] .ec-card.is-skeleton { pointer-events: none; }
+[data-dashboard-role] .ec-sk-lines { display: grid; flex: 1; gap: 8px; }
+[data-dashboard-role] .ec-sk {
+  display: block; height: 12px; border-radius: 6px;
+  background: linear-gradient(90deg, #edf1f6 0%, #f6f8fb 50%, #edf1f6 100%); background-size: 200% 100%;
+  animation: ec-shimmer 1.3s ease-in-out infinite;
+}
+[data-dashboard-role] .ec-sk--avatar { width: 48px; height: 48px; border-radius: 999px; }
+[data-dashboard-role] .ec-sk--pill { width: 64px; height: 22px; border-radius: 999px; }
+[data-dashboard-role] .ec-sk--btn { height: 38px; border-radius: 10px; }
+[data-dashboard-role] .ec-card.is-skeleton .ec-details { gap: 10px; }
+@keyframes ec-shimmer { to { background-position: -200% 0; } }
+
+/* ── Grid toolbar strip (select all) ──────────────────────────────────── */
+[data-dashboard-role] .ec-gridbar {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px;
+  padding: 12px 16px 0; color: #64748b; font-size: 13px;
+}
+[data-dashboard-role] .ec-gridbar label { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; cursor: pointer; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-dashboard-role] .ec-card, [data-dashboard-role] .ec-menu__list, [data-dashboard-role] .ec-sk { animation: none; transition: none; }
+  [data-dashboard-role] .ec-card:not(.is-skeleton):hover { transform: none; }
+}
+
+/* ── Dark mode ────────────────────────────────────────────────────────── */
+.dark [data-dashboard-role] .ec-card, [data-dashboard-role].dark .ec-card,
+.dark [data-dashboard-role] .ec-menu__list { border-color: #22324a; background: #0f1c2e; }
+.dark [data-dashboard-role] :is(.ec-card__name, .ec-details dd, .ec-menu__item) { color: #e2e8f0; }
+.dark [data-dashboard-role] .ec-details dt { background: #15263c; }
+.dark [data-dashboard-role] .ec-btn.is-edit { border-color: #22324a; background: #0f1c2e; color: #e2e8f0; }
+.dark [data-dashboard-role] .ec-card__foot { border-color: #22324a; }
+
+/* ── Premium pass (Taste skill, app-screen rules) ────────────────────────
+   Brand palette: navy #133B5D, orange #F39924 kept for the one primary
+   action, ink #0F172A, secondary #64748B, borders #E2E8F0. Colour sits on
+   status and identity only; surfaces are flat (a border, no resting
+   shadow, no lift); icons are plain grey, never in tinted boxes. */
+[data-dashboard-role] .ec-grid {
+  --ec-navy: #133b5d;
+  --ec-ink: #0f172a;
+  --ec-muted: #64748b;
+  --ec-line: #e2e8f0;
+  --ec-line-soft: #f1f5f9;
+  /* Up to four ≥270px cards: 4 at 1440, 3 at 1280, 2 on a tablet, 1 on a phone. */
+  grid-template-columns: repeat(auto-fill, minmax(max(270px, calc((100% - 3 * var(--ec-gap)) / 4)), 1fr));
+}
+[data-dashboard-role] .ec-card { gap: 12px; padding: 18px; border-radius: 14px; box-shadow: none; }
+[data-dashboard-role] .ec-card:not(.is-skeleton):hover { border-color: #cbd5e1; box-shadow: none; transform: none; }
+[data-dashboard-role] .ec-card.is-selected { border-color: var(--ec-navy); box-shadow: 0 0 0 1px var(--ec-navy); }
+[data-dashboard-role] .ec-check { accent-color: var(--ec-navy); }
+
+[data-dashboard-role] .ec-card__head { align-items: flex-start; gap: 10px; }
+[data-dashboard-role] .ec-check { margin-top: 2px; }
+[data-dashboard-role] .ec-avatar { width: 44px; height: 44px; font-size: 14px; box-shadow: none; }
+[data-dashboard-role] .ec-card__identity { padding-top: 1px; }
+/* Names wrap to two lines rather than being cut at one. */
+[data-dashboard-role] .ec-card__name {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+  white-space: normal; overflow-wrap: anywhere;
+  color: var(--ec-ink); font-size: 15px; font-weight: 600; line-height: 1.3;
+}
+[data-dashboard-role] .ec-card__name:hover { color: var(--ec-navy); text-decoration: underline; text-underline-offset: 3px; }
+[data-dashboard-role] .ec-card__role { margin-top: 3px; color: var(--ec-muted); font-size: 13px; }
+[data-dashboard-role] .ec-card__id { color: var(--ec-muted); font-variant-numeric: tabular-nums; }
+[data-dashboard-role] .ec-icon-btn { width: 32px; height: 32px; margin: -4px -6px 0 0; }
+
+/* Employment type is a fact, not a status: a neutral chip. */
+[data-dashboard-role] .ec-badge.is-type { background: #f1f5f9; color: #334155; }
+
+/* Details: plain 15px grey icons on one left edge, no tinted squares. */
+[data-dashboard-role] .ec-details { gap: 7px; }
+[data-dashboard-role] .ec-details > div { gap: 10px; }
+[data-dashboard-role] .ec-details dt { width: 16px; height: 20px; border-radius: 0; background: none; color: var(--ec-muted); }
+[data-dashboard-role] .ec-details dt svg { width: 15px; height: 15px; }
+[data-dashboard-role] .ec-details dd { color: var(--ec-ink); font-size: 13.5px; }
+[data-dashboard-role] .ec-details dd a:hover { color: var(--ec-navy); }
+[data-dashboard-role] .ec-muted { color: var(--ec-muted); }
+
+/* Actions: Edit is the outlined navy action, Access a quieter ghost. */
+[data-dashboard-role] .ec-card__foot { gap: 8px; padding-top: 12px; border-top-color: var(--ec-line-soft); }
+[data-dashboard-role] .ec-btn { height: 36px; border-radius: 9px; font-size: 13px; font-weight: 600; }
+[data-dashboard-role] .ec-btn.is-edit { border-color: #cbd5e1; background: #fff; color: var(--ec-navy); }
+[data-dashboard-role] .ec-btn.is-edit:hover { border-color: var(--ec-navy); background: #f8fafc; }
+[data-dashboard-role] .ec-btn.is-access { border-color: transparent; background: #f8fafc; color: var(--ec-navy); }
+[data-dashboard-role] .ec-btn.is-access:hover { background: #eef2f7; }
+
+[data-dashboard-role] .ec-gridbar { color: var(--ec-muted); }
+[data-dashboard-role] .ec-gridbar label { color: var(--ec-ink); font-weight: 500; }
+[data-dashboard-role] .ec-gridbar input { accent-color: #133b5d; }
+
+/* Email: the local part truncates, the domain stays readable. */
+[data-dashboard-role] .ec-email { display: flex; min-width: 0; max-width: 100%; }
+[data-dashboard-role] .ec-email__local { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+[data-dashboard-role] .ec-email__domain { flex: none; white-space: nowrap; }
+[data-dashboard-role] .ec-details dd:has(.ec-email) { overflow: visible; }
+
+/* ── Premium cards (requested spec) ──────────────────────────────────────
+   Visible border, a soft resting shadow that deepens on hover, a ringed
+   avatar, coloured status/type badges, icon tiles for the details and
+   colour-coded Access (orange) / Edit (blue) actions. The card is a flex
+   column, so the footer stays pinned to the bottom of equal-height cards. */
+[data-dashboard-role] .ec-card {
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #d7e2ee;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 4px 14px rgba(19, 59, 93, .08);
+  transition: border-color .2s ease, box-shadow .2s ease;
+}
+[data-dashboard-role] .ec-card:not(.is-skeleton):hover {
+  border-color: #a9c5e0;
+  box-shadow: 0 10px 28px rgba(19, 59, 93, .14);
+  transform: none;
+}
+[data-dashboard-role] .ec-card.is-selected {
+  border-color: #133b5d;
+  box-shadow: 0 0 0 1px #133b5d, 0 10px 28px rgba(19, 59, 93, .14);
+}
+
+/* Header: ringed avatar, navy name, grey role · ID, menu top-right. */
+[data-dashboard-role] .ec-avatar {
+  width: 46px; height: 46px; font-size: 15px; font-weight: 700;
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #dde6fb;
+}
+[data-dashboard-role] .ec-card__head { gap: 12px; }
+[data-dashboard-role] .ec-card__name { color: #133b5d; font-size: 15.5px; font-weight: 700; }
+[data-dashboard-role] .ec-card__name:hover { color: #0f2e4a; }
+[data-dashboard-role] .ec-card__role { color: #64748b; font-size: 12.5px; }
+[data-dashboard-role] .ec-icon-btn { color: #64748b; border-radius: 9px; transition: background-color .2s ease, color .2s ease; }
+[data-dashboard-role] .ec-icon-btn:hover, [data-dashboard-role] .ec-icon-btn[aria-expanded="true"] { background: #eef3f9; color: #133b5d; }
+
+/* Badges: compact, with a status dot. */
+[data-dashboard-role] .ec-badges { gap: 6px; }
+[data-dashboard-role] .ec-badge { gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+[data-dashboard-role] .ec-status__dot { width: 6px; height: 6px; border-radius: 999px; background: currentColor; }
+[data-dashboard-role] .ec-status.is-active { background: #d1fae5; color: #047857; }
+[data-dashboard-role] .ec-status.is-inactive { background: #fee2e2; color: #b91c1c; }
+[data-dashboard-role] .ec-status.is-other { background: #fef3c7; color: #92400e; }
+[data-dashboard-role] .ec-badge.is-type.is-full { background: #dbeafe; color: #1d4ed8; }
+[data-dashboard-role] .ec-badge.is-type.is-part { background: #ccfbf1; color: #0f766e; }
+[data-dashboard-role] .ec-badge.is-type.is-contract { background: #ffedd5; color: #c2410c; }
+[data-dashboard-role] .ec-badge.is-type.is-intern { background: #fce7f3; color: #be185d; }
+[data-dashboard-role] .ec-badge.is-type.is-other { background: #f1f5f9; color: #334155; }
+
+/* Details: 16px icons on a soft 28px tile, one row rhythm. */
+[data-dashboard-role] .ec-details { gap: 9px; }
+[data-dashboard-role] .ec-details > div { gap: 10px; }
+[data-dashboard-role] .ec-details dt {
+  width: 28px; height: 28px; border-radius: 8px; background: #f1f5f9; color: #64748b;
+}
+[data-dashboard-role] .ec-details dt svg { width: 16px; height: 16px; }
+[data-dashboard-role] .ec-details dd { color: #1e293b; font-size: 13.5px; }
+
+/* Footer: divider, two equal colour-coded actions. */
+[data-dashboard-role] .ec-card__foot {
+  grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px;
+  padding-top: 14px; border-top: 1px solid #e8eef5;
+}
+[data-dashboard-role] .ec-card__foot > :only-child { grid-column: 1 / -1; }
+[data-dashboard-role] .ec-btn {
+  height: 38px; border-radius: 10px; font-size: 13px; font-weight: 600;
+  transition: background-color .2s ease, border-color .2s ease;
+}
+[data-dashboard-role] .ec-btn svg { width: 16px; height: 16px; }
+[data-dashboard-role] .ec-btn.is-access { border: 1px solid #fed7aa; background: #fff3e0; color: #b45309; }
+[data-dashboard-role] .ec-btn.is-access:hover { border-color: #fdba74; background: #ffe7c2; }
+[data-dashboard-role] .ec-btn.is-edit { border: 1px solid #bfdbfe; background: #eff6ff; color: #1d4ed8; }
+[data-dashboard-role] .ec-btn.is-edit:hover { border-color: #93c5fd; background: #dbeafe; }
+[data-dashboard-role] .ec-btn:focus-visible { outline: 2px solid #133b5d; outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-dashboard-role] .ec-card, [data-dashboard-role] .ec-btn, [data-dashboard-role] .ec-icon-btn { transition: none; }
+}
+
+/* ── Reference profile card: banner, overlapping avatar, coloured tiles ───
+   Built from the uploaded reference in CSS only (no image per card). The
+   card does not clip its overflow, so the ⋮ menu can open past its edge;
+   the banner clips its own shapes and carries the rounded top corners. */
+[data-dashboard-role] .ec-grid { background: #f4f8fd; }
+[data-dashboard-role] .ec-gridbar { background: #f4f8fd; padding-bottom: 4px; }
+
+[data-dashboard-role] .ec-card {
+  position: relative;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #d6e4f3;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 8px 28px rgba(19, 59, 93, .10);
+  transition: border-color .22s ease, box-shadow .22s ease;
+}
+[data-dashboard-role] .ec-card:not(.is-skeleton):hover { border-color: #a9c9ec; box-shadow: 0 14px 36px rgba(19, 59, 93, .16); }
+[data-dashboard-role] .ec-card.is-selected { border-color: #133b5d; box-shadow: 0 0 0 1px #133b5d, 0 14px 36px rgba(19, 59, 93, .16); }
+
+/* Banner: soft blue field, a pale blue circle, an orange curve, a dot grid. */
+[data-dashboard-role] .ec-banner {
+  position: relative;
+  height: 116px;
+  margin: -18px -18px 0;
+  overflow: hidden;
+  border-radius: 19px 19px 0 0;
+  background: #eaf4ff;
+}
+[data-dashboard-role] .ec-banner::before {
+  content: ""; position: absolute; top: -70px; left: -40px; width: 230px; height: 190px;
+  border-radius: 50%; background: #d8e9fc;
+  box-shadow: 150px 70px 0 -40px rgba(214, 232, 252, .7);
+}
+[data-dashboard-role] .ec-banner::after {
+  content: ""; position: absolute; right: -60px; bottom: -78px; width: 260px; height: 140px;
+  border-radius: 50%; background: #ffe1b8;
+  box-shadow: -70px 30px 0 -20px rgba(255, 225, 184, .55);
+}
+[data-dashboard-role] .ec-banner__dots {
+  position: absolute; top: 18px; right: 58px; width: 54px; height: 40px;
+  background-image: radial-gradient(circle, #b9d3f1 1.6px, transparent 1.8px); background-size: 13px 13px;
+}
+
+/* Checkbox and ⋮ float over the banner corners. */
+[data-dashboard-role] .ec-card__tools {
+  position: absolute; top: 12px; left: 12px; right: 12px; z-index: 2;
+  display: flex; align-items: center; justify-content: space-between; pointer-events: none;
+}
+[data-dashboard-role] .ec-card__tools > * { pointer-events: auto; }
+[data-dashboard-role] .ec-check-wrap {
+  display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px;
+  background: rgba(255, 255, 255, .92); box-shadow: 0 2px 8px rgba(19, 59, 93, .10); cursor: pointer;
+}
+[data-dashboard-role] .ec-check { margin: 0; accent-color: #133b5d; }
+[data-dashboard-role] .ec-icon-btn {
+  width: 34px; height: 34px; margin: 0; border-radius: 999px;
+  background: rgba(255, 255, 255, .92); color: #475569; box-shadow: 0 2px 8px rgba(19, 59, 93, .10);
+}
+[data-dashboard-role] .ec-icon-btn:hover, [data-dashboard-role] .ec-icon-btn[aria-expanded="true"] { background: #fff; color: #133b5d; }
+
+/* Identity: the avatar overlaps the banner; name and role sit below it. */
+[data-dashboard-role] .ec-card__head { flex-direction: column; align-items: flex-start; gap: 12px; margin-top: -58px; }
+[data-dashboard-role] .ec-avatar {
+  position: relative; width: 88px; height: 88px; overflow: visible;
+  border: 4px solid #fff; font-size: 26px; font-weight: 700;
+  box-shadow: 0 6px 18px rgba(19, 59, 93, .16);
+}
+[data-dashboard-role] .ec-avatar > :not(.ec-avatar__status) { overflow: hidden; border-radius: 999px; }
+[data-dashboard-role] .ec-avatar__status {
+  position: absolute; right: 2px; bottom: 4px; width: 16px; height: 16px;
+  border: 3px solid #fff; border-radius: 999px; background: #94a3b8;
+}
+[data-dashboard-role] .ec-avatar.is-active .ec-avatar__status { background: #10b981; }
+[data-dashboard-role] .ec-avatar.is-inactive .ec-avatar__status { background: #ef4444; }
+[data-dashboard-role] .ec-avatar.is-other .ec-avatar__status { background: #f59e0b; }
+[data-dashboard-role] .ec-card__identity { width: 100%; padding: 0; }
+[data-dashboard-role] .ec-card__name { color: #133b5d; font-size: 20px; font-weight: 700; line-height: 1.25; }
+[data-dashboard-role] .ec-card__role { margin-top: 4px; color: #64748b; font-size: 14px; }
+
+/* Badges: pastel pills; the employment type carries a briefcase. */
+[data-dashboard-role] .ec-badges { gap: 8px; }
+[data-dashboard-role] .ec-badge { gap: 6px; padding: 4px 12px; font-size: 12.5px; font-weight: 600; }
+[data-dashboard-role] .ec-badge svg { width: 14px; height: 14px; }
+
+/* Details: 34px pastel tiles with 17px icons, coded by kind. */
+[data-dashboard-role] .ec-details { gap: 10px; }
+[data-dashboard-role] .ec-details > div { gap: 12px; }
+[data-dashboard-role] .ec-details dt { width: 34px; height: 34px; border-radius: 10px; }
+[data-dashboard-role] .ec-details dt svg { width: 17px; height: 17px; }
+[data-dashboard-role] .ec-details dt.is-blue { background: #eaf2ff; color: #2563eb; }
+[data-dashboard-role] .ec-details dt.is-lavender { background: #efebfe; color: #5b4bc4; }
+[data-dashboard-role] .ec-details dt.is-orange { background: #fff1dd; color: #c96a08; }
+[data-dashboard-role] .ec-details dt.is-slate { background: #f1f5f9; color: #64748b; }
+[data-dashboard-role] .ec-details dd { color: #334155; font-size: 14px; }
+
+/* Footer: divider, two equal 48px actions. */
+[data-dashboard-role] .ec-card__foot { gap: 12px; padding-top: 16px; border-top: 1px solid #e5edf5; }
+[data-dashboard-role] .ec-btn { height: 48px; border-radius: 12px; font-size: 14px; font-weight: 600; gap: 8px; }
+[data-dashboard-role] .ec-btn svg { width: 18px; height: 18px; }
+[data-dashboard-role] .ec-btn.is-access { border: 1px solid #ffd8a8; background: #fff3e0; color: #c96a08; }
+[data-dashboard-role] .ec-btn.is-access:hover { border-color: #ffc887; background: #ffe7c2; }
+[data-dashboard-role] .ec-btn.is-edit { border: 1px solid #bfdbfe; background: #eff6ff; color: #1d4ed8; }
+[data-dashboard-role] .ec-btn.is-edit:hover { border-color: #93c5fd; background: #dbeafe; }
+[data-dashboard-role] .ec-btn:disabled { opacity: .55; cursor: not-allowed; }
+[data-dashboard-role] .ec-btn:focus-visible { outline: 2px solid #133b5d; outline-offset: 2px; }
+
+/* Skeleton keeps the same shape. */
+[data-dashboard-role] .ec-card.is-skeleton .ec-banner { background: #edf2f8; }
+[data-dashboard-role] .ec-card.is-skeleton .ec-banner::before,
+[data-dashboard-role] .ec-card.is-skeleton .ec-banner::after { display: none; }
+[data-dashboard-role] .ec-card.is-skeleton .ec-card__head { flex-direction: column; align-items: flex-start; }
+[data-dashboard-role] .ec-card.is-skeleton .ec-sk--avatar { width: 88px; height: 88px; border: 4px solid #fff; }
+[data-dashboard-role] .ec-card.is-skeleton .ec-sk-lines { width: 100%; }
+[data-dashboard-role] .ec-card.is-skeleton .ec-sk--btn { height: 48px; border-radius: 12px; }
+
+/* ── Compact density (real sizes, no zoom or scale) ────────────────────────
+   Four ≥230px cards fit from about 1200px of viewport (1280 at 125% display
+   scaling gives a ~1040px grid: 4 × 249 + 3 × 14). Below that the grid
+   falls to 3, then 2 on a tablet and 1 on a phone. */
+[data-dashboard-role] .ec-grid {
+  --ec-gap: 14px;
+  padding: 14px;
+  grid-template-columns: repeat(auto-fill, minmax(max(230px, calc((100% - 3 * var(--ec-gap)) / 4)), 1fr));
+}
+[data-dashboard-role] .ec-grid > * { min-width: 0; }
+[data-dashboard-role] .ec-gridbar { padding: 10px 14px 0; }
+
+[data-dashboard-role] .ec-card { gap: 10px; padding: 14px; border-radius: 16px; }
+[data-dashboard-role] .ec-banner { height: 92px; margin: -14px -14px 0; border-radius: 15px 15px 0 0; }
+[data-dashboard-role] .ec-banner::before { top: -62px; left: -36px; width: 190px; height: 150px; box-shadow: 120px 56px 0 -34px rgba(214, 232, 252, .7); }
+[data-dashboard-role] .ec-banner::after { right: -56px; bottom: -64px; width: 210px; height: 112px; box-shadow: -56px 24px 0 -16px rgba(255, 225, 184, .55); }
+[data-dashboard-role] .ec-banner__dots { top: 14px; right: 50px; width: 44px; height: 32px; background-size: 11px 11px; }
+
+[data-dashboard-role] .ec-card__tools { top: 10px; left: 10px; right: 10px; }
+[data-dashboard-role] .ec-check-wrap { width: 28px; height: 28px; border-radius: 8px; }
+[data-dashboard-role] .ec-icon-btn { width: 30px; height: 30px; }
+[data-dashboard-role] .ec-icon-btn svg { width: 16px; height: 16px; }
+
+/* Avatar 68px, centred on the banner's lower edge. */
+[data-dashboard-role] .ec-card__head { gap: 8px; margin-top: -44px; }
+[data-dashboard-role] .ec-avatar { width: 68px; height: 68px; border-width: 3px; font-size: 20px; }
+[data-dashboard-role] .ec-avatar__status { right: 1px; bottom: 3px; width: 13px; height: 13px; border-width: 2px; }
+[data-dashboard-role] .ec-card__name { font-size: 16px; }
+[data-dashboard-role] .ec-card__role { margin-top: 2px; font-size: 12.5px; }
+
+[data-dashboard-role] .ec-badges { gap: 6px; min-height: 0; }
+[data-dashboard-role] .ec-badge { gap: 5px; padding: 3px 9px; font-size: 11.5px; }
+[data-dashboard-role] .ec-badge svg { width: 13px; height: 13px; }
+
+[data-dashboard-role] .ec-details { gap: 7px; }
+[data-dashboard-role] .ec-details > div { gap: 10px; }
+[data-dashboard-role] .ec-details dt { width: 30px; height: 30px; border-radius: 9px; }
+[data-dashboard-role] .ec-details dt svg { width: 15px; height: 15px; }
+[data-dashboard-role] .ec-details dd { font-size: 13px; }
+
+[data-dashboard-role] .ec-card__foot { gap: 8px; padding-top: 12px; }
+[data-dashboard-role] .ec-btn { height: 38px; border-radius: 10px; font-size: 13px; gap: 6px; }
+[data-dashboard-role] .ec-btn svg { width: 16px; height: 16px; }
+
+[data-dashboard-role] .ec-card.is-skeleton .ec-sk--avatar { width: 68px; height: 68px; border-width: 3px; }
+[data-dashboard-role] .ec-card.is-skeleton .ec-sk--btn { height: 38px; border-radius: 10px; }
+
+/* Roomier at very wide screens (≥1700px), where four cards have width to spare. */
+@media (min-width: 1700px) {
+  [data-dashboard-role] .ec-card { padding: 16px; }
+  [data-dashboard-role] .ec-banner { height: 100px; margin: -16px -16px 0; }
+  [data-dashboard-role] .ec-card__head { margin-top: -48px; }
+  [data-dashboard-role] .ec-avatar { width: 76px; height: 76px; font-size: 22px; }
+  [data-dashboard-role] .ec-card__name { font-size: 17px; }
+  [data-dashboard-role] .ec-btn { height: 40px; }
+}
+/* Long emails: the name part keeps at least 6 characters and gives way first;
+   an unusually long domain may shorten too (the full address is on hover). */
+[data-dashboard-role] .ec-email__local { flex: 0 3 auto; min-width: 6ch; }
+[data-dashboard-role] .ec-email__domain { flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+
+/* ── Laptop density, 1024-1699px (matches the 75% zoom reference) ─────────
+   Real sizes at the lower end of the requested ranges, so four cards per row
+   read like the reference at 100% browser zoom. No zoom or scale. */
+@media (min-width: 1024px) and (max-width: 1699px) {
+  [data-dashboard-role] .ec-grid { --ec-gap: 12px; padding: 12px; }
+  [data-dashboard-role] .ec-gridbar { padding: 8px 12px 0; }
+  [data-dashboard-role] .ec-card { gap: 8px; padding: 12px; border-radius: 14px; }
+  [data-dashboard-role] .ec-banner { height: 86px; margin: -12px -12px 0; border-radius: 13px 13px 0 0; }
+  [data-dashboard-role] .ec-card__head { gap: 6px; margin-top: -42px; }
+  [data-dashboard-role] .ec-avatar { width: 64px; height: 64px; font-size: 19px; }
+  [data-dashboard-role] .ec-avatar__status { width: 12px; height: 12px; }
+  [data-dashboard-role] .ec-card__name { font-size: 15px; }
+  [data-dashboard-role] .ec-card__role { font-size: 12px; }
+  [data-dashboard-role] .ec-badge { padding: 2px 8px; font-size: 11px; }
+  [data-dashboard-role] .ec-badge svg { width: 12px; height: 12px; }
+  [data-dashboard-role] .ec-details { gap: 6px; }
+  [data-dashboard-role] .ec-details > div { gap: 8px; }
+  [data-dashboard-role] .ec-details dt { width: 28px; height: 28px; border-radius: 8px; }
+  [data-dashboard-role] .ec-details dt svg { width: 14px; height: 14px; }
+  [data-dashboard-role] .ec-details dd { font-size: 12.5px; }
+  [data-dashboard-role] .ec-card__foot { padding-top: 10px; }
+  [data-dashboard-role] .ec-btn { height: 36px; font-size: 12.5px; }
+  [data-dashboard-role] .ec-btn svg { width: 15px; height: 15px; }
+  [data-dashboard-role] .ec-card.is-skeleton .ec-sk--avatar { width: 64px; height: 64px; }
+  [data-dashboard-role] .ec-card.is-skeleton .ec-sk--btn { height: 36px; }
+}
+
+/* Emails break at the "@" instead of clipping the domain: when the address
+   is wider than the line, the domain moves to a second line and only an
+   over-long name part shortens (the full address stays on hover and in the
+   link's accessible name). */
+[data-dashboard-role] .ec-email { flex-wrap: wrap; row-gap: 1px; }
+[data-dashboard-role] .ec-email__local { flex: 0 1 auto; min-width: 0; max-width: 100%; }
+[data-dashboard-role] .ec-email__domain { flex: 0 0 auto; max-width: 100%; }
+[data-dashboard-role] .ec-details dd:has(.ec-email) { white-space: normal; }

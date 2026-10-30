@@ -1,0 +1,64 @@
+/* Mentor dashboard — laptop density (1025–1600px wide, 100% zoom).
+   At these widths the dashboard should read like the wide-screen design:
+   a compact hero (~160px), the compact KPI row (KPI.css) and tighter
+   section headers and gaps. Real layout values only — no zoom or scale.
+   Selectors start with `main.mentor-dashboard-home` so they outrank the
+   v17 dashboard rules in kini-mentor-v17.css and mentor-banner.css. */
+@media (min-width: 1025px) and (max-width: 1600px) {
+  /* Page rhythm: ~12px between rows, 8px between KPI cards */
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 > div > * + * { margin-top: 12px; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 > div > .mentor-banner--dashboard + * { margin-top: 14px; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 > div > section:has(> .kini-kpi) { gap: 8px; }
+
+  /* ── Hero ─────────────────────────────────────────────────────────── */
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mentor-banner--dashboard {
+    --mb-h: 160px;
+    --mb-padding: 18px 28px 16px 32px;
+    --mb-bottom-gap: 0px;
+    --mb-badge-gap: 8px;
+    --mb-lead-gap: 6px;
+    --mb-copy: 46%;
+    --mb-art-left: auto;
+    --mb-art-right: 1.5%;
+    --mb-art-w: 34%;
+    --mb-art-h: 72%;
+    --mb-script-top: 46px;
+    --mb-script-left: 45%;
+    --mb-script-right: auto;
+    --mb-script-size: 25px;
+    --mb-script-step: 10px;
+    --mb-script-rotate: -8deg;
+    --mb-swoosh-w: 92px;
+  }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mentor-banner--dashboard .mentor-banner__eyebrow { font-size: 11px !important; letter-spacing: 0.16em; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mentor-banner--dashboard .mentor-banner__title { font-size: 27px !important; white-space: nowrap; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mentor-banner--dashboard .mentor-banner__subtitle { margin-top: 6px !important; font-size: 13px !important; line-height: 1.4 !important; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mentor-banner--dashboard .mentor-banner__meta { gap: 8px; margin-top: 10px; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mentor-banner--dashboard .mentor-banner-pill { gap: 7px; padding: 5px 12px; font-size: 12.5px; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mentor-banner--dashboard .mentor-banner-pill i { width: 8px; height: 8px; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mentor-banner--dashboard .mentor-banner__actions { top: 14px; right: 18px; gap: 7px; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mentor-banner--dashboard .mentor-banner__actions .mentor-hero-btn { height: 32px; gap: 6px; padding: 0 11px; border-radius: 9px; font-size: 12px; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mentor-banner--dashboard .mentor-banner__actions .mentor-hero-btn svg { width: 14px; height: 14px; }
+  /* The handwritten "Organize / Teach / Inspire" sits between copy and art. */
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mentor-banner--dashboard .mentor-banner__script { display: flex; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mentor-banner--dashboard .mentor-banner__script em { font-size: var(--mb-script-size); }
+
+  /* ── Section headers ──────────────────────────────────────────────── */
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mv17-dhead { gap: 10px; padding: 10px 14px 8px; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mv17-dhead h2 { font-size: 14.5px; line-height: 1.25; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mv17-dhead p { margin-top: 1px; font-size: 11.5px; line-height: 1.35; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mv17-dhead__icon { width: 32px; height: 32px; border-radius: 9px; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mv17-dhead__icon svg { width: 16px; height: 16px; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mv17-dhead__action { margin-top: 2px; font-size: 12px; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mv17-insights { gap: 10px; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mv17-insights .mv17-dhead { padding: 10px 12px 8px; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mv17-insights .mv17-dhead h2 { font-size: 13.5px; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mv17-insights .mv17-dhead__icon { width: 30px; height: 30px; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mv17-insights .mv17-dhead__action { font-size: 11.5px; }
+
+  /* ── Empty states: compact and centred ───────────────────────────── */
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mv17-dempty { gap: 4px; min-height: 68px; padding: 10px 12px; border-radius: 10px; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mv17-dempty > svg { width: 20px; height: 20px; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mv17-dempty b { font-size: 12.5px; }
+  html body [data-dashboard-role] main.mentor-dashboard-home.mv17 .mv17-dempty span { font-size: 11.5px; }
+}

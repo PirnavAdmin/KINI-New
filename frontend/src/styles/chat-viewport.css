@@ -1,0 +1,57 @@
+/* Only these two chat routes inherit the dashboard's existing 100dvh. */
+[data-chat-viewport="true"] [data-ui="dashboard-header"] {
+  flex-shrink: 0;
+}
+[data-chat-viewport="true"] .mentor-content-shell > main {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+[data-chat-viewport="true"] .mentor-content-shell > main > div {
+  display: flex;
+  flex: 1 1 0%;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  padding: 12px;
+}
+[data-chat-viewport="true"] .chat-page {
+  min-width: 0;
+  overflow: hidden;
+}
+[data-chat-viewport="true"] .chat-page > header,
+[data-chat-viewport="true"] .chat-conversation > header,
+[data-chat-viewport="true"] .chat-conversation-sidebar > :not(.chat-conversation-list) {
+  flex-shrink: 0;
+}
+[data-chat-viewport="true"] .chat-conversation-list {
+  overscroll-behavior: contain;
+}
+[data-chat-viewport="true"] .chat-history {
+  overflow-wrap: anywhere;
+}
+[data-chat-viewport="true"] .chat-composer {
+  /* Keep the existing assistant launcher clear of all composer controls. */
+  padding-right: 88px;
+  padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+body:has([data-chat-viewport="true"]) button[aria-label="Open Kini Assistant"] {
+  bottom: max(20px, env(safe-area-inset-bottom));
+  right: 24px;
+}
+@media (min-width: 1024px) {
+  [data-chat-viewport="true"] .chat-conversation-sidebar {
+    width: clamp(280px, 26vw, 360px);
+  }
+}
+@media (max-width: 639px) {
+  [data-chat-viewport="true"] .mentor-content-shell > main > div {
+    padding: 8px;
+  }
+  [data-chat-viewport="true"] .chat-composer {
+    padding-right: 72px;
+  }
+  body:has([data-chat-viewport="true"]) button[aria-label="Open Kini Assistant"] {
+    right: 16px;
+  }
+}

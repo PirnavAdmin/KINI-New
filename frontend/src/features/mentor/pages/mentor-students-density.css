@@ -1,0 +1,32 @@
+/* Mentor › My Students — desktop touches on top of the existing compact
+   layout (mentor-banner.css already gives this page a 144px hero from 1100px).
+   Scoped to .mentor-students-page and desktop widths. */
+
+/* 1100–1299px: keep the "Guide · Support · Grow Together" tagline, as in the
+   reference, by making it smaller and narrowing the art so they never meet
+   (mentor-banner.css hides the tagline in this range). */
+@media (min-width: 1100px) and (max-width: 1299px) {
+  html body .mentor-students-page .mentor-banner.mentor-banner--students {
+    --mb-art-w: 35%;
+    --mb-script-left: 45%;
+    --mb-script-size: 19px;
+    --mb-script-step: 8px;
+    --mb-swoosh-w: 70px;
+  }
+  html body .mentor-students-page .mentor-banner.mentor-banner--students .mentor-banner__script {
+    display: flex;
+  }
+}
+
+/* KPI sparklines stay clear of the card text (they ran under the caption,
+   e.g. "Across all my batches", on laptop widths). Narrower cards keep the
+   default so their captions are not squeezed. */
+@media (min-width: 1280px) {
+  html body .mentor-students-page .mentor-students-kpis > * svg.absolute {
+    width: 28%;
+    height: 38%;
+  }
+  html body .mentor-students-page .mentor-students-kpis > * .kpi-content {
+    padding-right: calc(28% + 14px);
+  }
+}

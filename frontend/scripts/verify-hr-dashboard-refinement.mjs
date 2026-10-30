@@ -1,0 +1,128 @@
+﻿import { chromium } from 'playwright';
+import assert from 'node:assert/strict';
+const browser = await chromium.launch({ headless: true });
+const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+page.setDefaultTimeout(15000);
+const errors = [];
+page.on('pageerror', error => errors.push(error.message));
+await page.addInitScript(() => {
+  const user = { employeeId: 7, userId: 91, role: 'employee', userRole: 'HR', department: 'HR', firstName: 'HR', lastName: 'Team', email: 'hr@example.com' };
+  localStorage.setItem('user', JSON.stringify(user));
+  for (const [key, value] of Object.entries({ auth_token: 'test-hr', token: 'test-hr', role: 'employee', user_role: 'employee', isAuthenticated: 'true' })) localStorage.setItem(key, value);
+});
+const calls = [];
+let failAttendance = false;
+let syllabusStatus = 200;
+let restricted = false;
+let allowCreate = false;
+let emptyAttendance = false;
+await page.route('**/*', async route => {
+  const url = new URL(route.request().url());
+  if (!url.pathname.startsWith('/api/')) return ['localhost','127.0.0.1'].includes(url.hostname) ? route.continue() : route.abort();
+  calls.push(url.pathname);
+  let data = [];
+  if (url.pathname.startsWith('/api/Permission/')) data = (restricted ? ['Dashboard','Employees'] : ['Dashboard','Employees','Attendance','Leave','Performance','Announcements','Calendar','Students','Resources','Batches','Settings']).map(moduleName => ({ moduleName, canAccess: true, canView: true, canAdd: allowCreate }));
+  else if (url.pathname.includes('employee-profile')) data = { employeeId: 7, role: 'HR', department: 'HR' };
+  else if (url.pathname === '/api/hr/employees/summary') data = { totalEmployees: 6, trainersMentors: 2, administrativeStaff: 3, academicStaff: 1, onLeaveToday: 0 };
+  else if (url.pathname === '/api/hr/employees') data = { items: Array.from({ length: 6 }, (_, i) => ({ employeeId: i+1, fullName: `Employee ${i+1}`, status: 'Active', role: i < 2 ? 'Mentor' : 'Employee', departmentName: i < 2 ? 'Training' : 'Operations' })) };
+  else if (url.pathname === '/api/hr/attendance') {
+    if (emptyAttendance) return route.fulfill({ json: { data: [] } });
+    if (failAttendance) return route.fulfill({ status: 500, json: { message: 'Unavailable' } });
+    data = { items: [{ employeeName: 'Team member', date: new Date().toLocaleDateString('en-CA'), status: 'Late' }, { date: new Date().toLocaleDateString('en-CA'), status: 'OnLeave' }] };
+  }
+  else if (url.pathname === '/api/hr/leave') data = [{ leaveId: 1, employeeName: 'Test employee', leaveType: 'Annual', fromDate: '2026-09-18', toDate: '2026-09-19', status: 'Pending' }];
+  else if (url.pathname === '/api/employee/syllabus' && syllabusStatus !== 200) return route.fulfill({ status: syllabusStatus, json: { message: 'Test failure' } });
+  else if (url.pathname === '/api/employee/syllabus') data = [{ courseName: 'Assigned course', dueDate: '2026-10-01', progress: 25, status: 'Assigned' }];
+  else if (url.pathname === '/api/students') data = [{ fullName: 'Dashboard student', courseName: 'Web development', status: 'Active' }];
+  else if (url.pathname === '/api/hr/resources') data = [{ name: 'Employee handbook', category: 'Onboarding', fileType: 'PDF' }];
+  return route.fulfill({ json: { data } });
+});
+try {
+  await page.goto('http://127.0.0.1:5173/employee/hr-dashboard');
+  await page.getByRole('heading', { name: 'HR dashboard', exact: true }).waitFor();
+  await page.waitForFunction(() => document.querySelector('.hr-dashboard')?.getAttribute('aria-busy') === 'false');
+  assert.equal(await page.getByText('Sample data', { exact: false }).count(), 0);
+  assert.equal(await page.locator('.hr-kpi').count(), 7);
+  for (const title of ['Batches', 'Assigned Syllabus', 'Students', 'Resources']) {
+    await page.locator('.hr-module-previews').getByRole('heading', { name: title, exact: true }).waitFor();
+  }
+  await page.getByText('Dashboard student', { exact: true }).waitFor();
+  await page.getByText('Employee handbook', { exact: true }).waitFor();
+  await page.getByText('Assigned course', { exact: true }).waitFor();
+  assert.equal(await page.locator('.hr-kpi').filter({ hasText: 'Present today' }).locator('strong').textContent(), '1');
+  assert.equal(await page.locator('.hr-kpi').filter({ hasText: 'On leave today' }).locator('strong').textContent(), '1');
+  const bounds = await page.evaluate(() => ({ sidebar: document.querySelector('aside').getBoundingClientRect().right, content: document.querySelector('.mentor-content-shell').getBoundingClientRect().left }));
+  assert.ok(Math.abs(bounds.sidebar - bounds.content) < 2, JSON.stringify(bounds));
+  await page.screenshot({ path: 'hr-dashboard-refined-desktop.png', fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({ path: 'hr-dashboard-refined-mobile.png', fullPage: true });
+  assert.equal(await page.locator('.hr-kpis').evaluate(el => getComputedStyle(el).gridTemplateColumns.split(' ').length), 1);
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
+  failAttendance = true;
+  await page.getByRole('button', { name: 'Refresh', exact: true }).click();
+  await page.getByRole('alert').filter({ hasText: 'Something went wrong' }).waitFor();
+  failAttendance = false;
+  await page.getByRole('button', { name: 'Retry', exact: true }).click();
+  await page.waitForFunction(() => document.querySelector('.hr-dashboard')?.getAttribute('aria-busy') === 'false');
+  assert.equal(await page.locator('.hr-kpi').filter({ hasText: 'Present today' }).locator('strong').textContent(), '1');
+  assert.ok(!calls.some(path => path.includes('EmployeeAttendance')));
+  console.log('Checking syllabus states');
+  syllabusStatus = 500;
+  await page.getByRole('button', { name: 'Refresh', exact: true }).click();
+  const syllabus = page.locator('.hr-panel').filter({ has: page.getByRole('heading', { name: 'Assigned Syllabus', exact: true }) });
+  await syllabus.getByText('Unable to load assigned syllabus.').waitFor();
+  const beforeRetry = calls.length;
+  syllabusStatus = 200;
+  await syllabus.getByRole('button', { name: 'Retry' }).click();
+  await syllabus.getByText('Assigned course', { exact: true }).waitFor();
+  assert.deepEqual(calls.slice(beforeRetry), ['/api/employee/syllabus']);
+  syllabusStatus = 403;
+  await page.getByRole('button', { name: 'Refresh', exact: true }).click();
+  await syllabus.getByText('You do not have permission to view this section.').waitFor();
+  assert.equal(await syllabus.getByRole('button', { name: 'Retry' }).count(), 0);
+  const forbiddenCalls = calls.filter(path => path === '/api/employee/syllabus').length;
+  emptyAttendance = true;
+  await page.getByRole('button', { name: 'Refresh', exact: true }).click();
+  await page.getByText('No attendance records available for this period.').waitFor();
+  assert.equal(await page.locator('.hr-chart').count(), 0);
+  assert.equal(calls.filter(path => path === '/api/employee/syllabus').length, forbiddenCalls);
+  console.log('Checking restricted grants');
+  restricted = true;
+  const restrictedStart = calls.length;
+  await page.reload();
+  await page.waitForFunction(() => document.querySelector('.hr-dashboard')?.getAttribute('aria-busy') === 'false');
+  assert.equal(await page.getByRole('heading', { name: 'Assigned Syllabus', exact: true }).count(), 0);
+  assert.equal(await page.locator('aside a').filter({ hasText: 'Assigned Syllabus' }).count(), 0);
+  assert.ok(!calls.slice(restrictedStart).includes('/api/employee/syllabus'));
+  assert.equal(await page.locator('.hr-kpi').count(), 4);
+  restricted = false;
+  syllabusStatus = 404;
+  await page.reload();
+  await page.waitForFunction(() => document.querySelector('.hr-dashboard')?.getAttribute('aria-busy') === 'false');
+  await page.getByText('This section is currently unavailable.').waitFor();
+  assert.equal(await page.getByRole('button', { name: 'Retry', exact: true }).count(), 0);
+  restricted = false;
+  allowCreate = true;
+  syllabusStatus = 200;
+  await page.reload();
+  await page.waitForFunction(() => document.querySelector('.hr-dashboard')?.getAttribute('aria-busy') === 'false');
+  console.log('Checking create actions');
+  for (const label of ['Add Employee', 'Create Announcement', 'Schedule Event']) {
+    await page.getByRole('link', { name: label, exact: true }).click();
+    await page.getByRole('heading', { name: label === 'Create Announcement' ? 'Add Announcement' : label === 'Schedule Event' ? 'Add Event' : 'Add Employee', exact: true }).waitFor();
+    await page.goto('http://127.0.0.1:5173/employee/hr-dashboard');
+    await page.waitForFunction(() => document.querySelector('.hr-dashboard')?.getAttribute('aria-busy') === 'false');
+  }
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.goto('http://127.0.0.1:5173/employee/hr-employees');
+  await page.locator('.hr-summary-card').first().waitFor();
+  const metrics = await page.locator('.hr-summary-card').evaluateAll(cards => cards.map(card => ({ y: card.getBoundingClientRect().y, height: card.getBoundingClientRect().height })));
+  assert.equal(metrics.length, 5);
+  assert.ok(metrics.every(card => card.height < 90 && Math.abs(card.y - metrics[0].y) < 2));
+  await page.screenshot({ path: 'hr-employees-refined.png', fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  assert.ok(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth));
+  assert.deepEqual(errors, []);
+  console.log('PASS: syllabus retry/403, restricted visibility, real create-form navigation, empty attendance; desktop alignment, mobile overflow, live HR widgets, normalized attendance, failure states; no sample records or runtime errors.');
+} finally { await browser.close(); }
+

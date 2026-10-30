@@ -1,0 +1,20 @@
+@media print {
+  @page { size: A4 landscape; margin: 10mm; }
+  body:has(.certificate-preview-modal) > :not(.certificate-preview-modal) { display: none; }
+  .certificate-preview-modal, .certificate-preview-shell, .certificate-preview-scroll {
+    position: static;
+    display: block;
+    width: 100%;
+    max-width: none;
+    height: auto;
+    max-height: none;
+    overflow: visible;
+    padding: 0;
+    background: white;
+    box-shadow: none;
+  }
+  .certificate-preview-shell > header, .certificate-preview-shell > div:last-child { display: none; }
+  .certificate-document { max-width: none; box-shadow: none; break-inside: avoid; }
+  .certificate-frame { min-height: 175mm; padding: 8mm; gap: 5mm; }
+  .certificate-signatures { grid-template-columns: 1fr 1.5fr 1fr auto; }
+}

@@ -1,0 +1,72 @@
+/* Opt-in employee controls. Scoped specificity also wins over dashboard themes. */
+html body .employee-form [data-form-control] {
+  box-sizing: border-box;
+  width: 100%;
+  height: 44px;
+  min-height: 44px;
+  padding: 12px 14px;
+  border: 1px solid #E8D2B8 !important;
+  border-radius: 14px;
+  background: #FFF8EF !important;
+  color: #1E293B !important;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05) !important;
+  font-size: 14px;
+  line-height: 18px;
+  appearance: none;
+  outline: none;
+  transition: border-color 150ms, box-shadow 150ms;
+}
+
+html body .employee-form [data-form-control]::placeholder,
+html body .employee-form [data-form-control][data-placeholder] {
+  color: #94A3B8 !important;
+  opacity: 1;
+}
+
+html body .employee-form [data-form-control]:hover:where(:not(:disabled):not(:has(input:disabled))) {
+  border-color: #dbb88c !important;
+}
+
+html body .employee-form [data-form-control]:is(:focus, :focus-within, [aria-expanded="true"], [data-state="open"]) {
+  border-color: #F39924 !important;
+  box-shadow: 0 2px 4px rgba(15, 23, 42, 0.05), 0 0 0 3px rgba(243, 153, 36, 0.16) !important;
+  outline: none;
+}
+
+html body .employee-form [data-form-control]:is([aria-invalid="true"], .is-invalid) {
+  border-color: #dc4444 !important;
+}
+
+html body .employee-form [data-form-control]:is(:disabled, [data-disabled], :has(input:disabled)) {
+  color: #94A3B8 !important;
+  cursor: not-allowed;
+  opacity: 1;
+}
+
+/* Keep the existing absolutely positioned icons and chevrons clear of text. */
+html body .employee-form input[data-form-control].pl-10 { padding-left: 40px; }
+html body .employee-form button[data-form-control][aria-haspopup] { padding-right: 40px; }
+
+/* HR uses an icon/input shell rather than an absolutely positioned icon. */
+html body .employee-form .hae-input[data-form-control],
+html body .employee-form .hae-select[data-form-control] { padding: 0 14px; gap: 12px; }
+html body .employee-form .hae-field-icon {
+  width: 20px;
+  align-self: center;
+  background: transparent;
+  color: #94A3B8;
+}
+html body .employee-form .hae-input input {
+  height: 100%;
+  padding: 12px 0;
+  border: 0 !important;
+  background: transparent !important;
+  color: inherit !important;
+  box-shadow: none !important;
+  outline: none;
+  font-size: 14px;
+  line-height: 18px;
+  opacity: 1;
+}
+html body .employee-form .hae-input input::placeholder { color: #94A3B8 !important; opacity: 1; }
+html body .employee-form .hae-select-chevron { padding-right: 0; }

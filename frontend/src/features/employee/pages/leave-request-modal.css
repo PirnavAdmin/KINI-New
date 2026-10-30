@@ -1,0 +1,49 @@
+/* New Leave Request dialog — a compact KiniDialog header and footer so the
+   whole form fits short laptop screens without scrolling. Scoped by the
+   className passed to KiniDialog; other dialogs keep the default sizing.
+   Lengths follow the app density tokens (app-density.css) like the rest
+   of the dialog. */
+.leave-request-modal header {
+  gap: 14px;
+  padding-right: calc(72px * var(--ui-space, 1));
+  padding-top: calc(14px * var(--ui-space, 1));
+  padding-bottom: calc(14px * var(--ui-space, 1));
+}
+.leave-request-modal header > span:first-of-type {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+}
+.leave-request-modal header > span:first-of-type svg {
+  width: 26px;
+  height: 26px;
+}
+.kini-dialog.leave-request-modal header h2[id] {
+  font-size: calc(24px * var(--ui-display, 1));
+  line-height: 1.15;
+}
+.leave-request-modal header > div[aria-hidden="true"] {
+  width: 160px;
+  height: 100px;
+}
+.leave-request-modal header > button {
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+}
+.leave-request-modal header > div[aria-hidden="true"] svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+}
+.leave-request-modal header > button svg {
+  width: 16px;
+  height: 16px;
+}
+.leave-request-modal footer {
+  padding-top: calc(10px * var(--ui-space, 1));
+  padding-bottom: calc(10px * var(--ui-space, 1));
+}
