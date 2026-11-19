@@ -99,6 +99,10 @@ html.dark .cfm-drop__icon { background: #1e293b; color: #93c5fd; }
   transition: background-color .15s ease, border-color .15s ease, box-shadow .15s ease;
 }
 .cfm-btn:focus-visible { outline: 2px solid #ff941f; outline-offset: 2px; }
+.cfm-poster { min-width: 0; }
+.cfm-poster > label { display: block; margin-bottom: 8px; color: #0b2545; font-size: 14px; font-weight: 600; }
+.cfm-poster-picker { display: flex; align-items: center; gap: 12px; min-height: 78px; padding: 12px; border: 1px dashed #d6e0ee; border-radius: 12px; }
+html.dark .cfm-poster > label { color: #e2e8f0; }
 .cfm-btn:disabled { cursor: not-allowed; opacity: .6; }
 .cfm-btn--sm { height: 36px; padding: 0 14px; font-size: 13px; }
 .cfm-btn--ghost { border: 1px solid #d6e0ee; background: #fff; color: #0b2545; }

@@ -604,6 +604,7 @@ export const ROUTE_META = {
   [ROUTES.MENTOR.ASSIGNMENTS]: { title: "Assignments", module: "mentor" },
   [ROUTES.MENTOR.ASSESSMENTS]: { title: "Assessments", module: "mentor" },
   [ROUTES.MENTOR.PERFORMANCE]: { title: "Performance", module: "mentor" },
+  [ROUTES.MENTOR.REPORTS]: { title: "Reports", module: "mentor" },
   [ROUTES.MENTOR.CALENDAR]: { title: "Class Schedule", module: "mentor" },
   [ROUTES.MENTOR.MESSAGES]: { title: "Messages", module: "mentor" },
   [ROUTES.MENTOR.NOTIFICATIONS]: { title: "Notifications", module: "mentor" },

@@ -13,6 +13,7 @@
 export const SETTINGS_TABS = [
   { id: 'organization', label: 'Organization' },
   { id: 'invoice', label: 'Invoice' },
+  { id: 'payments', label: 'UPI Payments' },
   { id: 'email-templates', label: 'Email Templates' },
   { id: 'general', label: 'General' },
   { id: 'roles', label: 'Roles & Permissions' },

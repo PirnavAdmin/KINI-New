@@ -796,6 +796,7 @@ export default function MentorLiveClasses({ initialStatus = "all", allowCreate =
     link.download = "classes.csv";
     document.body.appendChild(link); link.click(); link.remove();
     URL.revokeObjectURL(url);
+    toast.success('Class records export download started.');
   };
 
   const copyMeetingLink = async (cls) => {

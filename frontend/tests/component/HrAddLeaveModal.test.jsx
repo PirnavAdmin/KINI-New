@@ -166,5 +166,6 @@ it('creates through the existing authenticated service and refreshes leave recor
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   expect(apiClient.request).toHaveBeenCalledWith(expect.objectContaining({ method: 'POST', url: '/api/hr/leave', data: { employeeId: '9', leaveType: 'Sick', fromDate: '2026-10-02', toDate: '2026-10-02', reason: 'Appointment' } }))
   await waitFor(() => expect(apiClient.request.mock.calls.filter(([request]) => request.url === '/api/hr/leave/summary')).toHaveLength(2), { timeout: 5000 })
-  expect(apiClient.request.mock.calls.filter(([request]) => request.url === '/api/hr/employees')).toHaveLength(1)
+  // Initial roster, form options, and post-save roster refresh each read employees.
+  expect(apiClient.request.mock.calls.filter(([request]) => request.url === '/api/hr/employees')).toHaveLength(3)
 })

@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
+using TalentSphereAPI.Enums;
 using TalentSphereAPI.Models;
 using TalentSphereAPI.Models.EmployeeProfile;
 
@@ -98,6 +99,17 @@ namespace TalentSphereAPI.Data
         public DbSet<ChatAttachment> ChatAttachments { get; set; }
 
         public DbSet<ChatMessage> ChatMessages { get; set; }
+
+        // Public enrollment + UPI payment workflow
+        // Public enrollment + UPI payments (existing CourseEnrollments workflow tables)
+        public DbSet<CourseEnrollment> CourseEnrollments { get; set; }
+        public DbSet<CoursePayment> CoursePayments { get; set; }
+        public DbSet<EnrollmentApprovalHistory> EnrollmentApprovalHistories { get; set; }
+        public DbSet<BatchAssignmentHistory> BatchAssignmentHistories { get; set; }
+        public DbSet<OrganizationPaymentSetting> OrganizationPaymentSettings { get; set; }
+        public DbSet<PasswordSetupToken> PasswordSetupTokens { get; set; }
+        public DbSet<LeaveRequestAttachment> LeaveRequestAttachments { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -2761,6 +2773,200 @@ new RolePermission
 
 
             );
+
+
+            // ==========================================
+            // PUBLIC ENROLLMENT + UPI PAYMENT WORKFLOW
+            // Maps to the existing CourseEnrollments / CoursePayments /
+            // EnrollmentApprovalHistory / BatchAssignmentHistory /
+            // OrganizationPaymentSettings tables (column names as in MySQL).
+            // ==========================================
+
+            modelBuilder.Entity<CourseEnrollment>(entity =>
+            {
+                entity.ToTable("CourseEnrollments");
+                entity.HasKey(e => e.CourseEnrollmentId);
+
+                entity.Property(e => e.CourseEnrollmentId).HasColumnName("Id");
+                entity.Property(e => e.EnrollmentNumber).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.PaymentReference).IsRequired().HasMaxLength(100).HasDefaultValue("");
+                entity.Property(e => e.BatchId).HasColumnName("CurrentBatchId");
+                entity.Property(e => e.FeeAmount).HasColumnName("CourseFee").HasColumnType("decimal(18,2)");
+                entity.Property(e => e.FullName).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.Email).IsRequired().HasMaxLength(254);
+                entity.Property(e => e.Phone).HasColumnName("MobileNumber").IsRequired().HasMaxLength(20);
+                entity.Property(e => e.HighestQualification).HasColumnName("Qualification").HasMaxLength(150);
+                entity.Property(e => e.InstitutionName).HasColumnName("CollegeName").HasMaxLength(200);
+                entity.Property(e => e.Address).HasMaxLength(500);
+                entity.Property(e => e.EnrollmentStatus).HasConversion<string>().HasMaxLength(30);
+                entity.Property(e => e.AccessTokenHash).HasColumnName("EnrollmentAccessKeyHash").HasMaxLength(64);
+                entity.Property(e => e.AccessTokenExpiresAt).HasColumnName("EnrollmentAccessKeyExpiresAt");
+
+                // Columns added for the UPI workflow.
+                entity.Property(e => e.PaymentStatus).HasConversion<string>().HasMaxLength(30).HasDefaultValue(EnrollmentPaymentStatus.NotSubmitted).HasSentinel(EnrollmentPaymentStatus.NotSubmitted);
+                entity.Property(e => e.AccountStatus).HasConversion<string>().HasMaxLength(30).HasDefaultValue(EnrollmentAccountStatus.NotCreated).HasSentinel(EnrollmentAccountStatus.NotCreated);
+                entity.Property(e => e.ReviewedBy).HasMaxLength(100);
+                entity.Property(e => e.RejectionReason).HasMaxLength(500);
+                entity.Property(e => e.ConcurrencyStamp).HasMaxLength(64).IsConcurrencyToken();
+                entity.Property(e => e.IdempotencyKeyHash).HasMaxLength(64);
+                entity.HasIndex(e => e.IdempotencyKeyHash).IsUnique();
+
+                entity.HasIndex(e => e.EnrollmentNumber).IsUnique();
+                entity.HasIndex(e => e.PaymentReference).IsUnique();
+                entity.HasIndex(e => e.CourseId);
+                entity.HasIndex(e => e.BatchId);
+                entity.HasIndex(e => new { e.OrganizationId, e.EnrollmentStatus });
+                entity.HasIndex(e => new { e.StudentId, e.EnrollmentStatus });
+                entity.HasIndex(e => new { e.OrganizationId, e.CourseId, e.Email });
+                entity.HasIndex(e => e.UserId);
+
+                entity.HasOne(e => e.Organization).WithMany()
+                    .HasForeignKey(e => e.OrganizationId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.Course).WithMany()
+                    .HasForeignKey(e => e.CourseId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.Batch).WithMany()
+                    .HasForeignKey(e => e.BatchId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.Student).WithMany()
+                    .HasForeignKey(e => e.StudentId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.User).WithMany()
+                    .HasForeignKey(e => e.UserId).OnDelete(DeleteBehavior.SetNull);
+            });
+
+            modelBuilder.Entity<CoursePayment>(entity =>
+            {
+                entity.ToTable("CoursePayments");
+                entity.HasKey(p => p.CoursePaymentId);
+
+                entity.Property(p => p.CoursePaymentId).HasColumnName("Id");
+                entity.Property(p => p.CourseEnrollmentId).HasColumnName("EnrollmentId");
+                entity.Property(p => p.UtrNumber).HasColumnName("UTRNumber").IsRequired().HasMaxLength(100);
+                entity.Property(p => p.Amount).HasColumnType("decimal(18,2)");
+                entity.Property(p => p.ScreenshotStoragePath).HasColumnName("ScreenshotPath").IsRequired().HasMaxLength(500);
+                entity.Property(p => p.Status).HasColumnName("PaymentStatus").HasConversion<string>().HasMaxLength(30);
+                entity.Property(p => p.RejectionReason).HasMaxLength(500);
+                entity.Property(p => p.VerifiedByUserId).HasColumnName("VerifiedBy");
+                entity.Property(p => p.ReviewedAt).HasColumnName("VerifiedAt");
+                entity.Property(p => p.SubmittedAt).HasColumnName("CreatedAt");
+                entity.Property(p => p.PaymentMethod).IsRequired().HasMaxLength(30).HasDefaultValue("");
+
+                // Columns added for the UPI workflow.
+                entity.Property(p => p.ScreenshotContentType).HasMaxLength(100);
+                entity.Property(p => p.ScreenshotSha256).HasMaxLength(64);
+                entity.Property(p => p.ReviewNote).HasColumnName("Remarks").HasMaxLength(500);
+                entity.Property(p => p.ReviewedBy).HasMaxLength(100);
+                entity.Property(p => p.IdempotencyKeyHash).HasMaxLength(64);
+                entity.HasIndex(p => p.IdempotencyKeyHash).IsUnique();
+
+                // A UTR can be used once, ever (also after a rejection).
+                entity.HasIndex(p => p.UtrNumber).IsUnique();
+                entity.HasIndex(p => new { p.CourseEnrollmentId, p.Status });
+                entity.HasIndex(p => p.VerifiedByUserId);
+                entity.HasIndex(p => p.ScreenshotSha256);
+
+                entity.HasOne(p => p.CourseEnrollment).WithMany(e => e.Payments)
+                    .HasForeignKey(p => p.CourseEnrollmentId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne<User>().WithMany()
+                    .HasForeignKey(p => p.VerifiedByUserId).OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<EnrollmentApprovalHistory>(entity =>
+            {
+                entity.ToTable("EnrollmentApprovalHistory");
+                entity.HasKey(h => h.EnrollmentApprovalHistoryId);
+
+                entity.Property(h => h.EnrollmentApprovalHistoryId).HasColumnName("Id");
+                entity.Property(h => h.CourseEnrollmentId).HasColumnName("EnrollmentId");
+                entity.Property(h => h.Action).IsRequired().HasMaxLength(30);
+                entity.Property(h => h.ActionByUserId).HasColumnName("ActionBy");
+                entity.Property(h => h.Reason).HasColumnName("Remarks").HasMaxLength(500);
+                entity.Property(h => h.Actor).HasMaxLength(100);
+                entity.Property(h => h.FromStatus).HasMaxLength(100);
+                entity.Property(h => h.ToStatus).HasMaxLength(100);
+
+                entity.HasIndex(h => h.ActionByUserId);
+                entity.HasIndex(h => new { h.CourseEnrollmentId, h.CreatedAt });
+
+                entity.HasOne(h => h.CourseEnrollment).WithMany(e => e.StatusHistory)
+                    .HasForeignKey(h => h.CourseEnrollmentId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne<User>().WithMany()
+                    .HasForeignKey(h => h.ActionByUserId).OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<BatchAssignmentHistory>(entity =>
+            {
+                entity.ToTable("BatchAssignmentHistory");
+
+                entity.Property(h => h.ActionByUserId).HasColumnName("ActionBy");
+                entity.Property(h => h.Remarks).HasMaxLength(500);
+                entity.Property(h => h.Actor).HasMaxLength(100);
+
+                entity.HasIndex(h => h.ActionByUserId);
+                entity.HasIndex(h => new { h.CourseEnrollmentId, h.CreatedAt });
+                entity.HasIndex(h => h.NewBatchId);
+                entity.HasIndex(h => h.PreviousBatchId);
+
+                entity.HasOne(h => h.CourseEnrollment).WithMany()
+                    .HasForeignKey(h => h.CourseEnrollmentId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne<Batch>().WithMany()
+                    .HasForeignKey(h => h.NewBatchId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne<Batch>().WithMany()
+                    .HasForeignKey(h => h.PreviousBatchId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne<User>().WithMany()
+                    .HasForeignKey(h => h.ActionByUserId).OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<OrganizationPaymentSetting>(entity =>
+            {
+                entity.ToTable("OrganizationPaymentSettings");
+
+                entity.Property(s => s.UpiId).IsRequired().HasMaxLength(150);
+                entity.Property(s => s.PayeeName).IsRequired().HasMaxLength(200);
+                entity.Property(s => s.QrCodePath).HasMaxLength(500);
+
+                entity.HasIndex(s => s.OrganizationId).IsUnique();
+
+                entity.HasOne(s => s.Organization).WithOne(o => o.PaymentSetting)
+                    .HasForeignKey<OrganizationPaymentSetting>(s => s.OrganizationId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<LeaveRequestAttachment>(entity =>
+            {
+                entity.ToTable("LeaveRequestAttachments");
+                entity.HasKey(a => a.LeaveRequestAttachmentId);
+
+                entity.Property(a => a.OriginalFileName).IsRequired().HasMaxLength(255);
+                entity.Property(a => a.ContentType).IsRequired().HasMaxLength(100);
+                entity.Property(a => a.Sha256).IsRequired().HasMaxLength(64);
+                entity.Property(a => a.StoragePath).IsRequired().HasMaxLength(500);
+
+                entity.HasIndex(a => new { a.OrganizationId, a.LeaveRequestId });
+
+                entity.HasOne(a => a.LeaveRequest)
+                    .WithMany()
+                    .HasForeignKey(a => a.LeaveRequestId)
+                    .OnDelete(DeleteBehavior.Restrict);
+            });
+
+            modelBuilder.Entity<PasswordSetupToken>(entity =>
+            {
+                entity.ToTable("PasswordSetupTokens");
+
+                entity.Property(t => t.TokenHash).IsRequired().HasMaxLength(64);
+
+                entity.HasIndex(t => t.TokenHash).IsUnique();
+                entity.HasIndex(t => new { t.UserId, t.UsedAt });
+
+                entity.Property(t => t.Purpose).HasConversion<string>().HasMaxLength(32);
+
+                // Single use: a second concurrent completion fails its UPDATE.
+                entity.Property(t => t.UsedAt).IsConcurrencyToken();
+
+                entity.HasOne(t => t.User).WithMany()
+                    .HasForeignKey(t => t.UserId).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(t => t.CourseEnrollment).WithMany()
+                    .HasForeignKey(t => t.CourseEnrollmentId).OnDelete(DeleteBehavior.SetNull);
+            });
 
         }
 

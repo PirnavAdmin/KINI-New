@@ -165,6 +165,27 @@ export const courseService = {
       timeout: 120000,
     }), { id, fileName: file?.name })
   },
+  // POST multipart "file" (JPG/PNG/WebP, max 5 MB). Resolves with the saved
+  // poster URL only when the server confirms it; anything else throws.
+  uploadPoster: async (id, file) => {
+    const endpoint = API_ENDPOINTS.courses.poster(id)
+    const formData = new FormData()
+    formData.append('file', file)
+    const response = await apiClient.post(endpoint, formData, { headers: { Accept: 'application/json' }, timeout: 120000 })
+    const posterUrl = response?.data?.data?.posterUrl
+    if (response?.data?.success === false || typeof posterUrl !== 'string' || !posterUrl) {
+      throw Object.assign(new Error(response?.data?.message || 'The server did not confirm the poster upload.'), { response })
+    }
+    return posterUrl
+  },
+  removePoster: async (id) => {
+    const endpoint = API_ENDPOINTS.courses.poster(id)
+    const response = await apiClient.delete(endpoint)
+    if (response?.data?.success === false) {
+      throw Object.assign(new Error(response.data.message || 'The poster could not be removed.'), { response })
+    }
+    return true
+  },
 }
 
 export default courseService

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import assessmentService, { normalizeAssessment } from "../services/assessmentService";
-import { getMentorDashboardBatches } from "@shared/services/mentorService";
+import { getMentorDashboardBatches, getMentorDashboardCourses } from "@shared/services/mentorService";
 import { batchService } from "@shared/services/batchService";
 import { courseService } from "@shared/services/courseService";
 import { getApiErrorMessage, getListPayload, readStoredOrganizationId } from "@shared/services/apiServices";
@@ -54,7 +54,9 @@ export function useAssessments() {
         window.location.pathname.startsWith("/organization/")
           ? batchService.getOrganizationBatches({ pageNumber: 1, pageSize: 1000 })
           : getMentorDashboardBatches(),
-        courseService.getCourses({ pageSize: 1000 }),
+        window.location.pathname.startsWith("/mentor/")
+          ? getMentorDashboardCourses()
+          : courseService.getCourses({ pageSize: 1000 }),
       ]);
       setCourses(getListPayload(courseResult));
       const batchPayload = batchResult?.data ?? batchResult;

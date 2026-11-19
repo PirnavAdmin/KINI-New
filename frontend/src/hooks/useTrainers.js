@@ -315,7 +315,7 @@ export default function useTrainers() {
       const matchedCourseNames = mentorBatchRows
         .map((batch) => batch.courseName ?? batch.course?.courseName ?? batch.course?.name)
         .filter(Boolean);
-      const rosterSummary = mentorRosterSummary(mentorBatchRows, rosters);
+      const rosterSummary = mentorRosterSummary(mentorBatchRows, rosters, studentRows);
       const students = batchesError ? null
         : mentorBatchRows.length ? rosterSummary.students
         : studentResult.status === 'fulfilled' ? countUniqueStudents(matchedStudents) : null;

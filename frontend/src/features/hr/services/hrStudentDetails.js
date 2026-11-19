@@ -3,6 +3,7 @@ import { courseService } from '@shared/services/courseService'
 import { batchService } from '@shared/services/batchService'
 import { mentorService } from '@shared/services/mentorService'
 import { loadHrStudentRoster } from './hrStudentRoster'
+import { studentStatusOf } from '@shared/utils/studentStatus'
 
 export const studentIdOf = row => [hrField(row, 'studentId'), hrField(row, 'id')].find(value => value != null && String(value).trim() !== '')
 export const studentName = row => hrField(row, 'fullName', 'studentName', 'name') || [hrField(row, 'firstName'), hrField(row, 'lastName')].filter(Boolean).join(' ')
@@ -36,6 +37,7 @@ export async function loadHrStudentDetails(id, signal) {
       student[key] = item
     }
   }
+  student.status = studentStatusOf(student, 'Active')
   if (studentName(value)) student.fullName = studentName(value)
   for (const key of ['course', 'batch', 'mentor']) {
     const nested = hrField(value, key)

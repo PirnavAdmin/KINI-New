@@ -1,4 +1,4 @@
-import { normalizeEmploymentType } from "@shared/utils/employeePresentation";
+import { normalizeEmploymentType, formatEmployeeAddress } from "@shared/utils/employeePresentation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -41,6 +41,7 @@ import { permissionApi, permissionRowsToMatrix } from "@shared/services/platform
 import { getApiErrorMessage } from "@shared/services/apiServices";
 import { courseService } from "@shared/services/courseService";
 import { batchService } from "@shared/services/batchService";
+import { reconcileBatchRoster } from '@shared/utils/batchRoster';
 import { ROUTES } from "@shared/constants/routeConstants";
 import { Button } from "@shared/components/FormElements";
 import EmptyState from "@shared/components/EmptyState";
@@ -153,6 +154,7 @@ const pick = (record, ...keys) =>
 // an empty placeholder.
 const normalizeEmployeeDetails = (record = {}) => ({
   ...record,
+  address: formatEmployeeAddress(record),
   phone: pick(
     record,
     "phone",
@@ -167,7 +169,6 @@ const normalizeEmployeeDetails = (record = {}) => ({
     "ContactNumber",
   ) ?? "",
 });
-const sameId = (left, right) => String(left ?? "") === String(right ?? "");
 const studentKey = (student) =>
   String(student?.studentId ?? student?.id ?? student?.email ?? student?.name ?? "").trim().toLowerCase();
 const mergeStudents = (...groups) => {
@@ -535,8 +536,8 @@ export default function EmployeeDetails() {
     assignedBatches.forEach((batch) => {
       const courseId = batch.courseId ?? batch.course?.courseId ?? batch.course?.id;
       const courseName = batch.courseName ?? batch.course?.courseName ?? batch.course?.name;
-      const key = courseId ?? courseName;
-      if (key === undefined || key === null || key === "") return;
+      const key = String(courseId ?? courseName ?? '').trim();
+      if (!key) return;
       if (!byKey.has(key)) {
         const catalogCourse = courseId !== undefined ? catalogById.get(Number(courseId)) : undefined;
         byKey.set(key, {
@@ -546,14 +547,13 @@ export default function EmployeeDetails() {
           duration: catalogCourse?.duration ?? null,
           status: catalogCourse?.status ?? null,
           batches: [],
-          studentCount: 0,
+          studentCount: 0, studentIds: new Set(),
         });
       }
       const entry = byKey.get(key);
       entry.batches.push(batch);
-      entry.studentCount += Number(
-        batch.studentCount ?? batch.studentsCount ?? batch.enrolledStudents ?? 0,
-      );
+      (batch.students ?? []).forEach(student => entry.studentIds.add(studentKey(student)));
+      entry.studentCount = entry.studentIds.size;
     });
     return [...byKey.values()];
   }, [assignedBatches, courseCatalog]);
@@ -586,9 +586,6 @@ export default function EmployeeDetails() {
     let active = true;
     setStudentsLoading(true);
     setStudentsError("");
-    const batchIds = assignedBatches
-      .map((batch) => batch.batchId ?? batch.id)
-      .filter((id) => id !== undefined && id !== null && String(id).trim() !== "");
     Promise.allSettled([
       studentsApi.list(),
       ...assignedBatches.map((batch) =>
@@ -605,28 +602,13 @@ export default function EmployeeDetails() {
         if (!active) return;
         const listResult = results[0];
         const data = listResult.status === "fulfilled" ? (listResult.value?.data ?? []) : [];
-        const ids = [employee.employeeId, employee.mentorId, employee.id]
-          .filter(Boolean)
-          .map(String);
-        const name = [employee.firstName, employee.lastName]
-          .filter(Boolean)
-          .join(" ")
-          .trim()
-          .toLowerCase();
-        const rosterStudents = results
-          .slice(1)
-          .filter((result) => result.status === "fulfilled")
-          .flatMap((result) => result.value);
-        const directStudents = data.filter(
-          (student) =>
-            ids.includes(String(student.mentorId ?? "")) ||
-            batchIds.some((batchId) => sameId(student.batchId, batchId)) ||
-            (name &&
-              String(student.mentorName ?? "")
-                .trim()
-                .toLowerCase() === name),
-        );
-        setAssignedStudents(mergeStudents(directStudents, rosterStudents));
+        const rosterStudents = assignedBatches.flatMap((batch, index) => {
+          const result = results[index + 1];
+          if (result.status !== 'fulfilled') return [];
+          return reconcileBatchRoster(batch, { students: result.value }, data)
+            .map(student => normalizeRosterStudent(student, batch));
+        });
+        setAssignedStudents(mergeStudents(rosterStudents));
         if (listResult.status === "rejected" && !rosterStudents.length) throw listResult.reason;
       })
       .catch((requestError) => {
@@ -651,12 +633,19 @@ export default function EmployeeDetails() {
     setBatchesError("");
     employeeService
       .getEmployeeBatches(employeeId)
-      .then((result) => {
+      .then(async (result) => {
         if (!active) return;
         const payload = result?.data ?? result;
-        setAssignedBatches(
-          Array.isArray(payload?.batches) ? payload.batches : [],
-        );
+        const batches = [...new Map((Array.isArray(payload?.batches) ? payload.batches : Array.isArray(payload) ? payload : [])
+          .map(batch => [String(batch.batchId ?? batch.id), batch])).values()];
+        if (!batches.length) { setAssignedBatches([]); return; }
+        const organizationStudents = (await studentsApi.list()).data;
+        const enriched = await Promise.all(batches.map(async batch => {
+          const roster = await batchService.getStudents(batch.batchId ?? batch.id);
+          const students = reconcileBatchRoster(batch, roster, organizationStudents);
+          return { ...batch, studentCount: students.length, studentsCount: students.length, enrolledStudents: students.length, students };
+        }));
+        if (active) setAssignedBatches(enriched);
       })
       .catch((requestError) => {
         if (!active) return;

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { announceOrganizationLogo } from '@shared/hooks/useOrganizationLogo'
 import { motion } from 'framer-motion'
 import {
   FileText, Image as ImageIcon, Upload, Trash2, Receipt, Building2,
@@ -35,7 +36,7 @@ const DEFAULT_FORM = {
 }
 
 const MAX_LOGO_SIZE = 2 * 1024 * 1024
-const ALLOWED_LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml']
+const ALLOWED_LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp'] // SVG is refused by the backend
 
 const InvoicePreview = ({ form, currencySymbol }) => {
   const numberPreview = buildInvoiceNumberPreview(form.numberFormat)
@@ -132,7 +133,7 @@ const InvoiceLogoUploader = ({ logoUrl, onUploaded, onRemove, notify }) => {
     event.target.value = ''
     if (!file) return
     if (!ALLOWED_LOGO_TYPES.includes(file.type)) {
-      setError('Please upload a PNG, JPG, WebP or SVG image.')
+      setError('Please upload a PNG, JPG or WebP image.')
       return
     }
     if (file.size > MAX_LOGO_SIZE) {
@@ -144,6 +145,8 @@ const InvoiceLogoUploader = ({ logoUrl, onUploaded, onRemove, notify }) => {
     const objectUrl = URL.createObjectURL(file)
     try {
       const result = await uploadOrganizationLogo(file)
+      // This posts to the organization logo endpoint, so the header logo changes too.
+      if (result?.logoUrl) announceOrganizationLogo(result.logoUrl)
       onUploaded(result?.logoUrl || result?.url || objectUrl)
       notify('Invoice logo updated successfully.')
     } catch (uploadError) {
@@ -155,7 +158,7 @@ const InvoiceLogoUploader = ({ logoUrl, onUploaded, onRemove, notify }) => {
 
   return (
     <div>
-      <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" className="hidden" onChange={handleFile} />
+      <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={handleFile} />
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex h-16 w-16 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800/50">
           {logoUrl ? <img src={logoUrl} alt="Invoice logo" className="h-full w-full object-contain" /> : <ImageIcon className="h-6 w-6 text-slate-300 dark:text-slate-600" />}
@@ -183,7 +186,7 @@ const InvoiceLogoUploader = ({ logoUrl, onUploaded, onRemove, notify }) => {
         </div>
       </div>
       {error && <p className="mt-2 text-xs font-medium text-red-600">{error}</p>}
-      <p className="mt-2 text-xs text-slate-400">PNG, JPG, WebP or SVG · max 2 MB.</p>
+      <p className="mt-2 text-xs text-slate-400">PNG, JPG or WebP · max 2 MB.</p>
     </div>
   )
 }

@@ -1,8 +1,16 @@
 import { describe, expect, it } from "vitest";
 import { getBatchSeats } from "../../src/pages/students/studentBatchSeats";
+import { reconcileBatchRoster } from '../../src/shared/utils/batchRoster';
 import { buildApprovalQueue } from "../../src/pages/students/studentApproval";
 
 describe("student count consistency", () => {
+  it('uses the same Java Full Stack count in batch details and assignment seats', () => {
+    const batch = { batchId: 7, batchName: 'Java Full Stack', capacity: 25 };
+    const primary = [{ studentId: 1, batchId: 7, status: 'Active' }, { studentId: 2, batch: { id: 7 }, status: 'Inactive' }, { studentId: 3, batchId: 7, status: 'PendingApproval' }];
+    const roster = { students: [{ studentId: '1' }, { studentId: 3 }, { studentId: 4, status: 'Active' }] };
+    expect(reconcileBatchRoster(batch, roster, primary)).toHaveLength(3);
+    expect(getBatchSeats(batch, roster, primary).enrolled).toBe(3);
+  });
   it("counts unique members from both APIs using the requested roster batch", () => {
     const seats = getBatchSeats({ batchId: 7, capacity: 12 }, { students: [{ studentId: 1, batchId: 99 }, { studentId: "1" }, { studentId: 2 }] }, [{ studentId: 2, batchId: 7 }, { studentId: 3, batchId: "7" }, { studentId: 4, batchId: 99 }]);
     expect(seats).toMatchObject({ enrolled: 3, capacity: 12, available: 9, isFull: false });

@@ -1,4 +1,4 @@
-﻿namespace TalentSphereAPI.DTOs.Course
+namespace TalentSphereAPI.DTOs.Course
 {
     public class PublicCourseDto
     {
@@ -15,6 +15,9 @@
         public decimal Price { get; set; }
 
         public string? PdfUrl { get; set; }
+
+        // Public poster image URL path (null = no poster).
+        public string? PosterUrl { get; set; }
 
         public bool Status { get; set; }
 

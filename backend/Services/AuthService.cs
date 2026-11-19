@@ -15,13 +15,16 @@ namespace TalentSphereAPI.Services
         private readonly IJwtService _jwtService;
         private readonly IEmailService _emailService;
         private readonly ISmsService _smsService;
+        private readonly IPasswordResetTokenService? _resetTokens;
 
         public AuthService(
             IAuthRepository authRepository,
             IJwtService jwtService,
             IEmailService emailService,
-            ISmsService smsService)
+            ISmsService smsService,
+            IPasswordResetTokenService? resetTokens = null)
         {
+            _resetTokens = resetTokens;
             _authRepository = authRepository;
             _jwtService = jwtService;
             _emailService = emailService;
@@ -422,11 +425,25 @@ public async Task<LoginResponseDto> LoginAsync(LoginDto dto)
                 };
             }
 
-            return new ApiResponseDto
+            var response = new VerifyOtpResponseDto
             {
                 Success = true,
                 Message = "OTP verified successfully."
             };
+
+            // The code is now consumed, so hand back reset-only authorization for
+            // the two-screen forgot-password flow (other callers ignore it).
+            if (_resetTokens != null)
+            {
+                var issued = await _resetTokens.IssueAsync(dto.Identifier);
+                if (issued is { } reset)
+                {
+                    response.ResetToken = reset.Token;
+                    response.ResetTokenExpiresAt = reset.ExpiresAt;
+                }
+            }
+
+            return response;
         }
         public async Task<ApiResponseDto> ForgotPasswordAsync(ForgotPasswordDto dto)
         {
@@ -501,6 +518,15 @@ public async Task<LoginResponseDto> LoginAsync(LoginDto dto)
                     Success = false,
                     Message = "New Password and Confirm Password do not match."
                 };
+            }
+
+            // Two-screen flow: verify-otp already consumed the code and issued a
+            // reset token. The token path never falls back to the OTP path.
+            if (!string.IsNullOrWhiteSpace(dto.ResetToken))
+            {
+                if (_resetTokens == null)
+                    return new ApiResponseDto { Success = false, Message = "Password reset is not available." };
+                return await _resetTokens.ResetAsync(dto.Identifier, dto.ResetToken, dto.NewPassword);
             }
 
             // Get OTP Record

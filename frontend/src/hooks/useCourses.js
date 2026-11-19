@@ -63,6 +63,7 @@ const normalizeCourse = (course = {}) => ({
   courseId: course.courseId ?? course.id,
   name: course.title ?? course.courseName ?? course.name ?? "Untitled course",
   code: course.courseCode ?? course.CourseCode ?? course.course_code ?? course.code ?? course.Code ?? "",
+  posterUrl: course.posterUrl ?? course.coursePosterUrl ?? '',
   category: course.level ?? course.category ?? "General",
   duration: normalizeDuration(course.duration),
   fee: Number(course.price ?? course.fee ?? 0),

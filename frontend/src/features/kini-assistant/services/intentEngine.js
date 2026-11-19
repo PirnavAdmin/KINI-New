@@ -5,6 +5,10 @@ export const detectIntent = (prompt) => detectAssistantIntent(prompt);
 export const buildSmartActions = (role = "guest", prompt = "") => {
   const intent = detectIntent(prompt);
   const prompts = getQuickPrompts(role);
+  if (role === 'guest') return prompts.map(label => ({ label, prompt: label }));
+  if (['mentor', 'hr', 'employee'].includes(role) || (intent.primary === 'organization' && role === 'student')) {
+    return prompts.map(label => ({ label, prompt: label }));
+  }
 
   const labelsByIntent = {
     courses: ["Show My Courses", "Recommend Next Course", "Search Course"],

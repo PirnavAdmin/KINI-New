@@ -620,23 +620,15 @@ html body .mentor-batches-page.mv15 > div > .mv15-pager { padding-top: 8px; padd
 }
 
 /* ── Students ─────────────────────────────────────────────────────────── */
-/* Fixed layout with percentage columns so all eleven columns fit the laptop
-   content width (≈1080–1320px) instead of a 1240px minimum that scrolled.
-   Below 900px the table keeps a minimum width and scrolls horizontally. */
+/* Five roster columns. Keep student identity wide enough to read, with
+   horizontal scrolling below the table's minimum width. */
 html body .mv15 .mv15-table--students { min-width: 900px; table-layout: fixed; }
-/* Widths leave "BATCH / COURSE", "ATTENDANCE", "ASSIGNMENTS" and "LAST
-   ACTIVE" room for their pastel header block at a ~1050px content width. */
-html body .mv15 .mv15-table--students th:nth-child(1) { width: 3.5%; }
-html body .mv15 .mv15-table--students th:nth-child(2) { width: 3%; }
-html body .mv15 .mv15-table--students th:nth-child(3) { width: 18%; }
-html body .mv15 .mv15-table--students th:nth-child(4) { width: 11.5%; }
-html body .mv15 .mv15-table--students th:nth-child(5) { width: 8%; }
-html body .mv15 .mv15-table--students th:nth-child(6) { width: 8.5%; }
-html body .mv15 .mv15-table--students th:nth-child(7) { width: 9.5%; }
-html body .mv15 .mv15-table--students th:nth-child(8) { width: 10%; }
-html body .mv15 .mv15-table--students th:nth-child(9) { width: 7.5%; }
-html body .mv15 .mv15-table--students th:nth-child(10) { width: 10%; }
-html body .mv15 .mv15-table--students th:nth-child(11) { width: 10.5%; }
+/* Student and batch details receive most of the available space. */
+html body .mv15 .mv15-table--students th:nth-child(1) { width: 5%; }
+html body .mv15 .mv15-table--students th:nth-child(2) { width: 35%; }
+html body .mv15 .mv15-table--students th:nth-child(3) { width: 28%; }
+html body .mv15 .mv15-table--students th:nth-child(4) { width: 14%; }
+html body .mv15 .mv15-table--students th:nth-child(5) { width: 18%; }
 html body .mv15 .mv15-table--students tbody td { padding: 4px 8px; border-bottom-color: #edf1f7 !important; font-size: 12px; line-height: 1.2; }
 /* Header row: a white strip holding one pastel block per column (≈36px). */
 html body .mv15 .mv15-table--students thead th { padding: 5px 3px !important; background: #ffffff !important; font-size: 11px !important; line-height: 1.2; }
@@ -698,6 +690,14 @@ html body .mv15 .mv15-person small,
 html body .mv15 .mv15-stack small { overflow: hidden; color: var(--v-text) !important; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
 html body .mv15 .mv15-person b { font-size: 13px; }
 html body .mv15 .mv15-person small { font-size: 11px; }
+html body .mv15 .mv15-table--students .mv15-person > span:last-child { flex: 1; }
+html body .mv15 .mv15-table--students .mv15-person :is(b, small),
+html body .mv15 .mv15-table--students .mv15-stack :is(b, small) {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  text-overflow: clip;
+  line-height: 1.4;
+}
 html body .mv15 .mv15-stack--date b { font-weight: 500; font-size: 13.5px; }
 html body .mv15 .mv15-progress { display: flex; align-items: center; gap: 8px; min-width: 0; }
 html body .mv15 .mv15-progress > span { flex: 1; height: 6px; overflow: hidden; border-radius: 6px; background: #edf1f6; }

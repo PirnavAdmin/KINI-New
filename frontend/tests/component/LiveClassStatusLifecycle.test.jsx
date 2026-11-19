@@ -12,6 +12,10 @@ import { liveClassService } from "../../src/features/live-classes/services/liveC
 import { jitsiAttendanceService } from "../../src/shared/services/jitsiAttendanceService";
 import { loadJitsiScript } from "../../src/shared/utils/loadJitsiScript";
 import useLiveClasses from "../../src/features/live-classes/hooks/useLiveClasses";
+import { attendanceService } from '../../src/shared/services/attendanceService';
+vi.mock('../../src/shared/services/attendanceService', () => ({ attendanceService: {
+  byLiveClass: vi.fn().mockResolvedValue([]), liveClassDashboard: vi.fn().mockResolvedValue(null),
+} }));
 import JitsiMeetingModal from "../../src/shared/components/JitsiMeetingModal";
 
 vi.mock("../../src/features/live-classes/services/liveClassService", () => {
@@ -29,7 +33,7 @@ vi.mock("../../src/features/live-classes/services/liveClassService", () => {
     default: {},
   };
 });
-vi.mock("../../src/shared/services/batchService", () => ({ batchService: { getAll: vi.fn().mockResolvedValue([]), list: vi.fn().mockResolvedValue([]) } }));
+vi.mock("../../src/shared/services/batchService", () => ({ batchService: { getAll: vi.fn().mockResolvedValue([]), list: vi.fn().mockResolvedValue([]), getOrganizationBatches: vi.fn().mockResolvedValue({ data: [{ batchId: 41 }] }) } }));
 vi.mock("../../src/shared/services/courseService", () => ({ courseService: { getAll: vi.fn().mockResolvedValue([]), list: vi.fn().mockResolvedValue([]) } }));
 vi.mock("../../src/shared/services/mentorService", () => ({ mentorService: { getAll: vi.fn().mockResolvedValue([]), list: vi.fn().mockResolvedValue([]) } }));
 vi.mock("../../src/shared/hooks/useAuth", () => ({
@@ -45,6 +49,7 @@ vi.mock("../../src/shared/utils/loadJitsiScript", () => ({ loadJitsiScript: vi.f
 // scheduledDate is a midnight DateTime, start/end are TimeSpans with seconds.
 const backendClass = (overrides = {}) => ({
   liveClassId: 501,
+  batchId: 41,
   classTitle: "Late Start Regression",
   scheduledDate: "2026-10-05T00:00:00",
   startTime: "15:21:00",
@@ -60,6 +65,18 @@ const at = (iso) => vi.setSystemTime(new Date(iso));
 beforeEach(() => {
   vi.useFakeTimers({ toFake: ["Date"] });
   vi.clearAllMocks();
+});
+
+it('loads attendance on completed-class View and clears stale rows after a subsequent load failure', async () => {
+  liveClassService.getById.mockResolvedValue(backendClass({ status: 'Completed' }));
+  attendanceService.byLiveClass.mockResolvedValueOnce([{ studentId: 9, studentName: 'Test Learner', status: 'Present' }]);
+  const { result } = renderHook(() => useLiveClasses());
+  await act(async () => { await result.current.openDetails(backendClass({ status: 'Completed' })); });
+  expect(result.current.selectedAttendance[0]).toMatchObject({ studentId: 9, name: 'Test Learner' });
+  attendanceService.byLiveClass.mockRejectedValueOnce(new Error('Attendance unavailable'));
+  await act(async () => { await result.current.openDetails(backendClass({ liveClassId: 502, status: 'Completed' })); });
+  expect(result.current.selectedAttendance).toEqual([]);
+  expect(result.current.selectedAttendanceError).toBeTruthy();
 });
 afterEach(() => {
   cleanup();

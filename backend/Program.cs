@@ -125,35 +125,37 @@ builder.Services.AddScoped<ISmsService, Msg91SmsService>();
 
 // CORS
 
-builder.Services.AddCors(options =>
+// CORS
+// Origins come from configuration (Cors:AllowedOrigins, e.g. env var
+// Cors__AllowedOrigins__0=http://localhost:5173). Without configuration the
+// existing production origins are used, so current deployments are unchanged.
+var allowedCorsOrigins =
+    builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
+        ?.Where(o => !string.IsNullOrWhiteSpace(o))
+        .Select(o => o.Trim().TrimEnd('/'))
+        .ToArray();
 
+if (allowedCorsOrigins == null || allowedCorsOrigins.Length == 0)
 {
-
-    options.AddPolicy("AllowReactApp", policy =>
-
+    allowedCorsOrigins = new[]
     {
+        "https://kiniedx.com",
+        "https://www.kiniedx.com"
+    };
+}
 
+Console.WriteLine($"CORS allowed origins: {string.Join(", ", allowedCorsOrigins)}");
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", policy =>
+    {
         policy
-
-            .WithOrigins(
-
-            //    "http://localhost:5173",
-
-            //     "https://localhost:5173"
-
-            "https://kiniedx.com",
-"https://www.kiniedx.com"
-
-            )
-
+            .WithOrigins(allowedCorsOrigins)
             .AllowAnyHeader()
-
             .AllowAnyMethod()
-
             .AllowCredentials();
-
     });
-
 });
 
 // Database
@@ -284,6 +286,22 @@ builder.Services.AddScoped<ITeamService, TeamService>();
 builder.Services.AddScoped<IMentorService, MentorService>();
 
 builder.Services.AddScoped<IPaymentService, PaymentService>();
+
+// Public enrollment + UPI payment workflow
+builder.Services.Configure<PublicEnrollmentOptions>(
+    builder.Configuration.GetSection(PublicEnrollmentOptions.SectionName));
+builder.Services.AddSingleton<IPrivateFileStorage, PrivateFileStorage>();
+builder.Services.AddScoped<IPublicEnrollmentService, PublicEnrollmentService>();
+builder.Services.AddScoped<IOrganizationActorResolver, OrganizationActorResolver>();
+builder.Services.AddScoped<IOrganizationEnrollmentService, OrganizationEnrollmentService>();
+builder.Services.AddScoped<IPasswordSetupService, PasswordSetupService>();
+builder.Services.AddScoped<IPasswordResetTokenService, PasswordResetTokenService>();
+builder.Services.AddScoped<ILeaveAttachmentService, LeaveAttachmentService>();
+builder.Services.AddScoped<ICoursePosterService, CoursePosterService>();
+builder.Services.AddScoped<IOrganizationLogoService, OrganizationLogoService>();
+builder.Services.AddScoped<IFinanceOverviewService, FinanceOverviewService>();
+builder.Services.AddScoped<IStudentEnrollmentQueryService, StudentEnrollmentQueryService>();
+builder.Services.AddPublicEnrollmentRateLimits();
 
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IHrEmployeeService, HrEmployeeService>();
@@ -441,6 +459,9 @@ builder.Services.AddScoped<
     IAuthorizationHandler,
     PermissionAuthorizationHandler>();
 
+// Opt-in: trust X-Forwarded-* only from configured proxies (nginx/ngrok).
+var useForwardedHeaders = builder.Services.AddTrustedProxies(builder.Configuration);
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -465,7 +486,16 @@ if (app.Environment.IsDevelopment())
 // /coursepdfs/*.pdf responses receive
 // Access-Control-Allow-Origin.
 
+if (useForwardedHeaders)
+{
+    // Must run first so rate limiting sees the real client IP.
+    app.UseForwardedHeaders();
+}
+
 app.UseCors("AllowReactApp");
+
+// Endpoint-level rate limits ([EnableRateLimiting]) for public enrollment APIs.
+app.UseRateLimiter();
 
 app.UseStaticFiles();
 

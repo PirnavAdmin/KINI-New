@@ -30,10 +30,16 @@ export function buildDashboardSchedule(classes, now = new Date()) {
   };
   const nowMs = now.getTime();
   const upcoming = rowsOf(classes).filter(row => {
-    if (row.status === "live") return true;
+    const end = timestamp(row.endAt);
+    if (end != null && end <= nowMs) return false;
+    if (row.status === "live") {
+      const start = timestamp(row.startAt);
+      const todayStart = new Date(now);
+      todayStart.setHours(0, 0, 0, 0);
+      return start != null && (end != null || start >= todayStart.getTime());
+    }
     if (!["scheduled", "upcoming"].includes(row.status)) return false;
     const start = timestamp(row.startAt);
-    const end = timestamp(row.endAt);
     return start != null && (start >= nowMs || (end != null && end > nowMs));
   }).sort((a, b) => Number(b.status === "live") - Number(a.status === "live")
     || (timestamp(a.startAt) ?? Infinity) - (timestamp(b.startAt) ?? Infinity));

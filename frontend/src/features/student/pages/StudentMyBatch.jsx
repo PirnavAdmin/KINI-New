@@ -23,6 +23,7 @@ import { batchService } from "@shared/services/batchService";
 import { useStudentEnrollments } from "@features/student/hooks/useStudentEnrollments";
 import { batchEnrollments } from "@features/student/utils/studentEnrollments";
 import { ROUTES } from "@shared/constants/routeConstants";
+import { reconcileBatchRoster } from "@shared/utils/batchRoster";
 
 const positiveId = (value) => {
   const id = Number(value);
@@ -67,7 +68,7 @@ const formatBatchDuration = (batch = {}) => {
 
 const getMentorDetails = (source = {}) => {
   const mentor = source?.mentor && typeof source.mentor === "object" ? source.mentor : {};
-  const name = source?.mentorName ?? source?.tutorName ?? mentor?.mentorName ?? mentor?.name ?? mentor?.fullName ?? [mentor?.firstName, mentor?.lastName].filter(Boolean).join(" ");
+  const name = source?.mentorName || source?.assignedMentorName || source?.trainerName || source?.tutorName || mentor?.mentorName || mentor?.name || mentor?.fullName || [mentor?.firstName, mentor?.lastName].filter(Boolean).join(" ");
   return {
     id: positiveId(source?.mentorId ?? source?.tutorId ?? mentor?.mentorId ?? mentor?.tutorId ?? mentor?.id),
     name: titleCase(name),
@@ -135,7 +136,7 @@ const mergeBatch = (base, extra) => ({ ...base, ...filled(extra), ...filled({ ba
 
 const toBatchDetails = (batch) => {
   const capacity = numericValue(batch.capacity ?? batch.maxStudents);
-  const enrolled = numericValue(batch.enrolledStudents ?? batch.studentCount ?? batch.studentsCount);
+  const enrolled = batch.rosterUnavailable ? null : numericValue(batch.enrolledStudents ?? batch.studentCount ?? batch.studentsCount);
   return {
     name: titleCase(batch.batchName || batch.name),
     course: titleCase(batch.courseName || batch.course?.courseName || batch.course?.name),
@@ -177,7 +178,6 @@ function BatchView({ details }) {
   const navigate = useNavigate();
 
   const openMentorChat = () => {
-    if (!details?.mentor?.name) return;
     // StudentMentorChat resolves the same real assigned mentor on its own
     // (useAssignedMentor) and starts/opens the conversation via the real
     // Chat API — ?mentorId= just lets it jump straight there instead of
@@ -246,8 +246,8 @@ function BatchView({ details }) {
                 <span className="ksl-avatar">{initials(details.mentor.name)}</span>
                 <div><p className="ksl-mentor__name">{details.mentor.name}</p><p className="ksl-mentor__role">{details.mentor.designation}</p></div>
               </div>
-              <button type="button" onClick={openMentorChat} className="ksl-btn ksl-btn--navy ksl-btn--block"><MessageCircle />Chat with Mentor<CircleArrowRight /></button>
-            </> : <p className="ksl-muted">A mentor has not been assigned yet.</p>}
+            </> : <p className="ksl-muted">Mentor details are not available in this batch record. Open chat to check your assigned mentor.</p>}
+            <button type="button" onClick={openMentorChat} className="ksl-btn ksl-btn--navy ksl-btn--block"><MessageCircle />Chat with Mentor<CircleArrowRight /></button>
           </article>
           <article className="ksl-card ksl-side-card">
             <h2 className="ksl-card__title"><BookOpen className="ksl-card__title-icon ksl-card__title-icon--orange" />Course</h2>
@@ -293,7 +293,11 @@ export default function StudentMyBatch() {
     Promise.all(ids.map(async (batchId) => {
       const [byId, roster] = await Promise.allSettled([batchService.getById(batchId), batchService.getStudents(batchId)]);
       const batch = byId.status === "fulfilled" ? byId.value?.data ?? byId.value : null;
-      return [batchId, { ...(batch ?? {}), ...(roster.status === "fulfilled" ? roster.value ?? {} : {}) }];
+      const rosterDetails = roster.status === "fulfilled" ? roster.value : null;
+      const enrolledStudents = rosterDetails
+        ? reconcileBatchRoster({ ...batch, batchId }, rosterDetails).length
+        : null;
+      return [batchId, { ...(batch ?? {}), ...(rosterDetails ?? {}), capacity: rosterDetails?.capacity || batch?.capacity, enrolledStudents, studentCount: enrolledStudents, studentsCount: enrolledStudents, rosterUnavailable: !rosterDetails }];
     })).then((pairs) => {
       if (!cancelled) setExtras(Object.fromEntries(pairs));
     });

@@ -7,6 +7,7 @@ import { paymentApi } from "@shared/services/apiServices";
 import LegalSection from "@shared/components/legal/LegalSection";
 import { batchFieldName } from "../utils/enrollmentDraft";
 import { BRAND } from "../theme";
+import "./student-details-form.css";
 
 
 const t = (dark) => ({
@@ -39,7 +40,7 @@ const FloatingInput = ({ id, label, placeholder, type = "text", icon: Icon, erro
     "aria-invalid": Boolean(error),
     "aria-required": required,
     "aria-describedby": errorId,
-    className: "w-full bg-transparent py-0.5 text-sm outline-none disabled:cursor-not-allowed",
+    className: "enrollment-field-control w-full bg-transparent py-0.5 text-sm outline-none disabled:cursor-not-allowed",
     style: { color: theme.text },
   };
 
@@ -68,7 +69,10 @@ const FloatingInput = ({ id, label, placeholder, type = "text", icon: Icon, erro
               type={type}
               placeholder={placeholder}
               onInput={(event) => {
-                if (id === "phone") event.currentTarget.value = event.currentTarget.value.replace(/\D/g, "").slice(0, 10);
+                if (id === "phone") {
+                  const digits = event.currentTarget.value.replace(/\D/g, "").slice(0, 10);
+                  event.currentTarget.value = digits && !/^[6-9]/.test(digits) ? "" : digits;
+                }
               }}
               {...props}
             />
@@ -209,7 +213,7 @@ const CouponInput = ({ appliedCoupon, onApply, onRemove, isDark, amount, canVali
 // `courseBatches` = [{ course: { id, name }, batches: [{ id, name, shift }] }] — one
 // batch picker per purchased course, each validated against that course's own
 // batches so a batch from another course can never be chosen.
-const StudentDetailsForm = ({ register, errors, appliedCoupon, onApplyCoupon, onRemoveCoupon, courseBatches = [], batchesLoading = false, couponAmount, canValidateCoupon = false }) => {
+const StudentDetailsForm = ({ register, errors, appliedCoupon, onApplyCoupon, onRemoveCoupon, courseBatches = [], batchesLoading = false, couponAmount, canValidateCoupon = false, showCoupon = true }) => {
   const { isDark } = useThemeContext();
   const theme = t(isDark);
 
@@ -295,7 +299,11 @@ const StudentDetailsForm = ({ register, errors, appliedCoupon, onApplyCoupon, on
             isDark={isDark}
             inputMode="numeric"
             maxLength={10}
-            {...register("phone", { required: "Phone is required", pattern: { value: /^[6-9]\d{9}$/, message: "Enter a valid 10-digit mobile number" } })}
+            {...register("phone", {
+              required: "Phone is required",
+              pattern: { value: /^[6-9]\d{9}$/, message: "Enter a 10-digit Indian mobile number starting with 6, 7, 8 or 9" },
+              validate: (value) => !/^(\d)\1{9}$/.test(value) || "Enter a valid Indian mobile number, not repeated digits",
+            })}
             error={errors.phone?.message}
           />
           <FloatingInput
@@ -398,15 +406,17 @@ const StudentDetailsForm = ({ register, errors, appliedCoupon, onApplyCoupon, on
           );
         })}
 
-        {/* Coupon */}
-        <CouponInput
-          appliedCoupon={appliedCoupon}
-          onApply={onApplyCoupon}
-          onRemove={onRemoveCoupon}
-          amount={couponAmount}
-          canValidate={canValidateCoupon}
-          isDark={isDark}
-        />
+        {/* Coupon (UPI checkout prices the enrollment on the backend, which takes no coupon) */}
+        {showCoupon && (
+          <CouponInput
+            appliedCoupon={appliedCoupon}
+            onApply={onApplyCoupon}
+            onRemove={onRemoveCoupon}
+            amount={couponAmount}
+            canValidate={canValidateCoupon}
+            isDark={isDark}
+          />
+        )}
 
         {/* Terms & Conditions + Privacy Policy */}
         <LegalSection register={register} errors={errors} />

@@ -19,7 +19,6 @@ import {
   BriefcaseBusiness,
   BookOpen,
   CalendarDays,
-  ClipboardList,
   ChevronDown,
   IndianRupee,
   Plus,
@@ -68,7 +67,7 @@ import {
   getPendingEnrollmentApprovals,
 } from "@shared/services/enrollmentApprovalStore";
 import { buildDashboardSchedule, loadDashboardLearning } from "@features/organization/utils/dashboardCards";
-import { latestActivity } from "@features/organization/utils/recentActivity";
+import { latestActivity, readStudentDeletionActivity } from "@features/organization/utils/recentActivity";
 import { isPendingApprovalStudent } from "@shared/utils/studentApprovalStatus";
 import {
   employeeAttendanceEvent,
@@ -81,8 +80,7 @@ const CREATE_ACTIONS = [
   ["Create Course", BookOpen, "/organization/courses?create=true"],
   ["Create Batch", CalendarDays, "/organization/batches?create=true"],
   ["Schedule Class", Video, "/organization/live-classes?create=true"],
-  ["Create Assessment", ClipboardList, "/organization/assessments?create=true"],
-  ["Record Payment", IndianRupee, "/organization/finance?create=true"],
+  ["Fees & Payments", IndianRupee, "/organization/finance?create=true"],
 ];
 // Dashboard metric → global KPI component (dashboard tones map onto KPI accents).
 
@@ -763,6 +761,7 @@ export default function InstituteAdminDashboard() {
       // The record entries are kept so a notifications-only refresh can merge
       // new notifications without reloading every module.
       const recordActivity = [
+        ...readStudentDeletionActivity(organizationScope),
         ...studentRows.map((student) => ({
           key: `student:${student.studentId ?? student.id}`,
           type: "student",
@@ -979,7 +978,7 @@ export default function InstituteAdminDashboard() {
   const metricOf = (key) => dashboard.metrics.find((metric) => metric.key === key);
   // Count exactly the records opened by the Inactive Students link.
   const inactiveStudents = approvalStudents == null ? null
-    : approvalStudents.filter(student => recordStatus(student) === "inactive").length.toLocaleString("en-IN");
+    : approvalStudents.filter(student => ["inactive", "disabled", "false", "0"].includes(recordStatus(student))).length.toLocaleString("en-IN");
   // Month-over-month change from the revenue series itself; no figure is shown
   // without two months of data.
   const revenueTrendNote = (() => {
@@ -1085,7 +1084,7 @@ export default function InstituteAdminDashboard() {
         onOpen={(path) => navigate(path)}
         items={[
           { key: "students", label: "Total Students", value: metricOf("enrollments")?.value, note: "Registered learners", path: "/organization/students" },
-          { key: "active", label: "Active Students", value: metricOf("students")?.value, note: "Currently learning", path: "/organization/students?status=active" },
+          { key: "active", label: "Active Students", value: approvalStudents == null ? metricOf("students")?.value : approvalStudents.filter(activeStudentRecord).length.toLocaleString("en-IN"), note: "Currently learning", path: "/organization/students?status=active" },
           { key: "inactive", label: "Inactive Students", value: inactiveStudents, note: "Not currently learning", path: "/organization/students?status=inactive" },
           { key: "mentors", label: "Mentors", value: metricOf("trainers")?.value, note: "Expert mentors", path: "/organization/tutors" },
           { key: "courses", label: "Total Courses", value: dashboard.courseCount == null ? null : Number(dashboard.courseCount).toLocaleString("en-IN"), note: "Published courses", path: "/organization/courses" },
@@ -1198,7 +1197,7 @@ export default function InstituteAdminDashboard() {
           onAnalytics={() => navigate(
             attendanceScope === "students"
               ? "/organization/attendance?period=7-days&scope=students"
-              : "/employee/hr-attendance",
+              : "/organization/attendance?period=7-days&scope=employees",
           )}
         />
       </div>

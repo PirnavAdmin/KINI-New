@@ -179,9 +179,6 @@ const MentorProfile = lazy(
 const MentorNotifications = lazy(
   () => import("@features/mentor/pages/MentorNotifications"),
 );
-const MentorSettings = lazy(
-  () => import("@features/mentor/pages/MentorSettings"),
-);
 const StudentNotifications = lazy(
   () => import("@features/student/pages/StudentNotifications"),
 );
@@ -289,7 +286,7 @@ const CourseMaterials = lazy(
   () => import("@features/organization/pages/CourseMaterials"),
 );
 const OrgPayroll = lazy(() => import("@features/organization/pages/PayrollApiReady"));
-const OrgAttendance = lazy(() => import("@features/organization/pages/AttendanceApiReady"));
+const OrgAttendance = lazy(() => import("@features/organization/pages/OrganizationAttendance"));
 const OrgRevenue = lazy(() => import("@features/organization/pages/RevenueApiReady"));
 const OrgInvoices = lazy(() => import("@features/organization/pages/InvoiceManagement"));
 const OrgInvoiceDetails = lazy(() => import("@features/organization/pages/InvoiceDetails"));
@@ -971,6 +968,7 @@ const AppRoutes = () => {
 
         {/* Auth Routes */}
         <Route element={<PublicRoute />}>
+          <Route path="/Auth/login" element={<SuspenseWrapper><Login /></SuspenseWrapper>} />
           <Route
             path={ROUTES.AUTH.LOGIN}
             element={
@@ -2472,7 +2470,7 @@ const AppRoutes = () => {
             path={ROUTES.MENTOR.SETTINGS}
             element={
               <PermissionGuard permission="settings">
-                <SuspenseWrapper><MentorSettings /></SuspenseWrapper>
+                <Navigate to={ROUTES.MENTOR.PROFILE} replace />
               </PermissionGuard>
             }
           />

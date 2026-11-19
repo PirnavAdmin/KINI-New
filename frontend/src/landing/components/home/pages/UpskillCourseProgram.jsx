@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  ArrowRight, PlayCircle, TrendingUp, Radio,
-  Star, Plus, BarChart3, Code2, Languages, Megaphone, DollarSign, Palette,
-  PiggyBank, Users, Video, Gamepad2, Clock, BookOpen, ShieldCheck,
-  Briefcase, Rocket, CheckCircle2, MessageCircle, ChevronDown, ChevronUp,
+  ArrowRight, PlayCircle, TrendingUp, Star, BarChart3, Code2, Languages, Megaphone, DollarSign, Palette,
+  Users, Video, Gamepad2, BookOpen, ShieldCheck,
+  Briefcase, Rocket, MessageCircle, ChevronDown, ChevronUp,
   Award
 } from 'lucide-react';
 import Navbar from '@landing-shared/components/navbar';
@@ -14,7 +13,7 @@ import RegisterModal from '../../../shared/components/RegisterModal';
 import { useThemeContext } from '@landing-shared/context/ThemeContext';
 
 // ─── Import real course data ──────────────────────────────────────────────
-import { featuredCourses } from "../data/homeData";
+import PublicCourseCatalog from "../components/FeaturedCourses";
 
 // ---------------------------------------------------------------
 // Reveal-on-scroll helpers
@@ -394,137 +393,9 @@ function CategoriesSection() {
 }
 
 // ---------------------------------------------------------------
-// Featured Courses
+// Courses: the live public catalogue (same cards as the home page),
+// every published course, no limit. See landing FeaturedCourses.
 // ---------------------------------------------------------------
-const BADGE_COLOR_MAP = {
-  Hot: 'bg-brand',
-  New: 'bg-primary-600',
-  Popular: 'bg-primary-600',
-  'In Demand': 'bg-emerald-500',
-  Trending: 'bg-brand',
-};
-const DEFAULT_BADGE_COLOR = 'bg-slate-600';
-
-function CourseCard({ title, lessons, duration, rating, reviews, badge, badgeClass, image, index, onOpenModal }) {
-  return (
-    <Reveal
-      delay={index * 80}
-      className="group overflow-hidden rounded-2xl border border-[#CFE1EF] bg-white shadow-[0_2px_8px_rgba(19,59,93,0.06)] transition-all duration-300 hover:shadow-md flex flex-col justify-between dark:border-white/10 dark:bg-white/[0.03]"
-    >
-      <div className="relative h-40 w-full overflow-hidden bg-slate-100">
-        {image ? (
-          <img
-            src={image}
-            alt={title}
-            loading="lazy"
-            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
-          />
-        ) : (
-          <div className="h-full w-full bg-gradient-to-br from-primary-200 to-secondary-200" />
-        )}
-        {badge && (
-          <span className={`absolute left-2.5 top-2.5 rounded-full ${badgeClass} px-2.5 py-0.5 usk-mono text-[10px] font-semibold uppercase tracking-wide text-white shadow-sm`}>
-            {badge}
-          </span>
-        )}
-      </div>
-
-      {/* FIX: consistent p-5 padding on card body */}
-      <div className="p-5">
-        <div className="flex items-center gap-1 text-xs">
-          {/* FIX: star color uses theme-aware brand variable */}
-          <Star size={12} className="fill-current text-amber-400" />
-          <span className="font-semibold text-slate-900 dark:text-white">{rating}</span>
-          {/* FIX: hide "N/A reviews" — show dash when not available */}
-          <span className="text-slate-400 dark:text-slate-500 text-[11px]">
-            {reviews && reviews !== 'N/A' ? `(${reviews} reviews)` : ''}
-          </span>
-        </div>
-        <h3 className="mt-2 usk-display text-sm font-semibold leading-snug text-slate-900 dark:text-white">{title}</h3>
-        <div className="mt-3 flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
-          <span className="flex items-center gap-1.5">
-            <BookOpen size={13} className="text-primary-600 dark:text-primary-400" />
-            {lessons}
-          </span>
-          <span className="flex items-center gap-1.5">
-            <Clock size={13} className="text-secondary-600 dark:text-secondary-400" />
-            {duration}
-          </span>
-        </div>
-      </div>
-
-      {/* FIX: px-5 pb-5 for consistent bottom padding */}
-      <div className="px-5 pb-5">
-        <button
-          type="button"
-          onClick={() => onOpenModal({ title, lessons, duration })}
-          className="w-full inline-flex items-center justify-center gap-1.5 rounded-full bg-secondary-500 text-primary-700 border border-secondary-500 px-4 py-2.5 text-xs font-semibold transition-all duration-300 hover:bg-secondary-600 hover:scale-[1.02]"
-        >
-          Enroll Now
-          <Plus size={13} />
-        </button>
-      </div>
-    </Reveal>
-  );
-}
-// ─── Course image map by title keyword ───────────────────────────────────────
-const COURSE_IMAGE_MAP = [
-  { key: "python",    url: "https://i.pinimg.com/736x/f9/0a/cb/f90acb224dfbb653ad778cee91217b78.jpg" },
-  { key: "react",     url: "https://i.pinimg.com/1200x/9f/4f/cf/9f4fcf5aa7766a03f042b1e15489b39f.jpg" },
-  { key: "node",      url: "https://i.pinimg.com/1200x/9f/4f/cf/9f4fcf5aa7766a03f042b1e15489b39f.jpg" },
-  { key: "laravel",   url: "https://i.pinimg.com/1200x/9f/4f/cf/9f4fcf5aa7766a03f042b1e15489b39f.jpg" },
-  { key: "web dev",   url: "https://i.pinimg.com/1200x/9f/4f/cf/9f4fcf5aa7766a03f042b1e15489b39f.jpg" },
-  { key: "cloud",     url: "https://i.pinimg.com/736x/6d/3b/2d/6d3b2d761f653056f9866cc1fa518f6e.jpg" },
-  { key: "aws",       url: "https://i.pinimg.com/736x/6d/3b/2d/6d3b2d761f653056f9866cc1fa518f6e.jpg" },
-  { key: "cyber",     url: "https://i.pinimg.com/1200x/e6/ec/86/e6ec86d140147e8dc72514dbd2af546f.jpg" },
-  { key: "security",  url: "https://i.pinimg.com/1200x/e6/ec/86/e6ec86d140147e8dc72514dbd2af546f.jpg" },
-];
-function getCourseImage(title = "") {
-  const t = title.toLowerCase();
-  const match = COURSE_IMAGE_MAP.find((m) => t.includes(m.key));
-  return match ? match.url : "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&q=80&w=600&h=400";
-}
-
-
-function FeaturedCourses({ onOpenModal }) {
-  const displayedCourses = featuredCourses.slice(0, 4);
-
-  return (
-    <section id="courses" className="bg-white py-10 dark:bg-app-dark-gradient sm:py-12">
-      <div className="mx-auto max-w-7xl px-6">
-        <Reveal className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-end">
-          <div>
-            <p className="usk-mono text-xs uppercase tracking-widest text-primary-600 font-semibold dark:text-primary-400">
-              Handpicked for you
-            </p>
-            <h2 className="mt-2 usk-display text-2xl font-semibold text-slate-900 dark:text-white sm:text-3xl">
-              Featured Courses
-            </h2>
-          </div>
-        </Reveal>
-
-        {/* FIX: gap-6 for more breathing room between course cards */}
-        <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {displayedCourses.map((course, i) => (
-            <CourseCard
-              key={course.slug}
-              title={course.title}
-              lessons={course.sessions}
-              duration={course.duration}
-              rating={4.8}
-              reviews={null}
-              badge={course.badge}
-              badgeClass={BADGE_COLOR_MAP[course.badge] || DEFAULT_BADGE_COLOR}
-              image={getCourseImage(course.title)}
-              index={i}
-              onOpenModal={onOpenModal}
-            />
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 // ---------------------------------------------------------------
 // Internship Section
@@ -721,7 +592,7 @@ function WhyChooseUs() {
 // ---------------------------------------------------------------
 const INSTRUCTORS = [
   {
-    name: 'Srinivas',
+    name: 'Learner',
     role: 'Lead Mentor',
     bio: '10+ years in product and tech. Previously at major startups. Teaches practical skills, not theory.',
     initials: 'SS',
@@ -1072,7 +943,7 @@ export default function UpskillCourseProgram() {
       <main className="overflow-x-hidden">
         <Hero onOpenModal={handleOpenModal} />
         <CareerRoadmapGenerator />
-        <FeaturedCourses onOpenModal={handleOpenModal} />
+        <PublicCourseCatalog eyebrow="All Programs" />
         <InternshipSection onOpenModal={handleOpenModal} />
         <WhyChooseUs />
         <InstructorsSection />

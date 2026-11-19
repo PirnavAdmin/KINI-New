@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import LeaveAttachments from '@features/hr/components/LeaveAttachments';
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   ArrowUpDown,
@@ -34,6 +35,8 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import leaveRequestService from "@shared/services/leaveRequestService";
+import leaveAttachmentService from "@shared/services/leaveAttachmentService";
+import { leaveWorkingDays } from '@shared/utils/leaveDuration';
 import { getApiErrorMessage } from "@shared/services/apiServices";
 import KiniDialog, { KiniDetailRow } from "@shared/components/KiniDialog";
 import KPI from "@/components/common/KPI";
@@ -84,16 +87,10 @@ const localDateKey = (date = new Date()) => {
   return `${year}-${month}-${day}`;
 };
 
-// Inclusive calendar-day span; only used when the API does not send totalDays.
-const spanDays = (start, end) => {
-  const a = toDay(start);
-  const b = toDay(end);
-  if (!a || !b || b < a) return null;
-  return Math.round((b - a) / 86400000) + 1;
-};
+const spanDays = leaveWorkingDays;
 
 const durationLabel = (row) => {
-  const days = row.days ?? spanDays(row.startDate, row.endDate);
+  const days = spanDays(row.startDate, row.endDate) ?? row.days;
   if (days == null || days === "") return "—";
   const n = Number(days);
   return Number.isFinite(n) ? `${n} day${n === 1 ? "" : "s"}` : String(days);
@@ -107,6 +104,7 @@ const dateLabel = (value) => {
 };
 
 const normalizeRequest = (item = {}) => ({
+  ...item,
   id: item.leaveRequestId ?? item.leaveId ?? item.id,
   type: item.leaveType ?? item.type ?? "Leave",
   startDate: item.startDate ?? item.fromDate ?? item.start,
@@ -125,6 +123,8 @@ export default function EmployeeLeaveRequests({ audience = "employee" }) {
   const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [formOpen, setFormOpen] = useState(Boolean(location.state?.openAdd));
+  const [returnToDashboard] = useState(location.state?.returnTo === '/mentor/dashboard');
+  const closeLeaveForm = () => { setFormOpen(false); if (returnToDashboard) navigate('/mentor/dashboard', { replace: true }); };
   const [form, setForm] = useState(emptyForm);
   const [submitting, setSubmitting] = useState(false);
   const [loadError, setLoadError] = useState(null);
@@ -135,6 +135,15 @@ export default function EmployeeLeaveRequests({ audience = "employee" }) {
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [dateOpen, setDateOpen] = useState(false);
+  const dateFilterRef = useRef(null);
+  useEffect(() => {
+    if (!dateOpen) return;
+    const outside = event => { if (!dateFilterRef.current?.contains(event.target)) setDateOpen(false); };
+    const escape = event => { if (event.key === 'Escape') { setDateOpen(false); dateFilterRef.current?.querySelector('button')?.focus(); } };
+    document.addEventListener('pointerdown', outside);
+    document.addEventListener('keydown', escape);
+    return () => { document.removeEventListener('pointerdown', outside); document.removeEventListener('keydown', escape); };
+  }, [dateOpen]);
   const [sort, setSort] = useState({ key: "index", dir: "asc" });
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(PAGE_SIZES[0]);
@@ -214,7 +223,7 @@ export default function EmployeeLeaveRequests({ audience = "employee" }) {
       switch (sort.key) {
         case "type": return String(row.type).toLowerCase();
         case "date": return toDay(row.startDate)?.getTime() ?? 0;
-        case "duration": return Number(row.days ?? spanDays(row.startDate, row.endDate) ?? 0);
+        case "duration": return Number(spanDays(row.startDate, row.endDate) ?? row.days ?? 0);
         case "reason": return String(row.reason).toLowerCase();
         case "status": return row.status;
         default: return row.index;
@@ -317,18 +326,35 @@ export default function EmployeeLeaveRequests({ audience = "employee" }) {
       setSubmitError("End date cannot be before the start date.");
       return;
     }
+    if (spanDays(form.startDate, form.endDate) === 0) {
+      setSubmitError('Select at least one weekday. Saturdays and Sundays do not count as leave days.');
+      return;
+    }
     submitLock.current = true;
     setSubmitting(true);
     try {
-      await leaveRequestService.create({
+      const created = await leaveRequestService.create({
         leaveType: form.leaveType,
         startDate: form.startDate,
         endDate: form.endDate,
         reason: form.reason.trim(),
       });
+      // The document counts as sent only when the server confirms it with an attachment id.
+      let documentNote = "";
+      if (attachment) {
+        const leaveId = created?.leaveRequestId ?? created?.leaveId ?? created?.id;
+        try {
+          if (leaveId == null) throw new Error("The server did not return the new leave request ID.");
+          await leaveAttachmentService.upload(leaveId, attachment);
+          documentNote = " Your supporting document was uploaded.";
+        } catch (uploadError) {
+          documentNote = ` However, the document was not uploaded (${getApiErrorMessage(uploadError, "upload failed")}). Open the request in Request history and use "Add document" to try again.`;
+          toast.error("Leave submitted, but the document was not uploaded.");
+        }
+      }
       toast.success("Leave request submitted.");
-      setConfirmation("Leave request submitted successfully. Track the HR decision in Request history below.");
-      setFormOpen(false);
+      setConfirmation(`Leave request submitted successfully.${documentNote} Track the HR decision in Request history below.`);
+      closeLeaveForm();
       setForm(emptyForm);
       setAttachment(null);
       await refresh();
@@ -425,7 +451,7 @@ export default function EmployeeLeaveRequests({ audience = "employee" }) {
           <option value="approved">Approved</option>
           <option value="rejected">Rejected</option>
         </select>
-        <div className="relative">
+        <div className="relative" ref={dateFilterRef}>
           <button
             type="button"
             onClick={() => setDateOpen((open) => !open)}
@@ -489,9 +515,9 @@ export default function EmployeeLeaveRequests({ audience = "employee" }) {
               <table className="w-full min-w-[980px] border-separate border-spacing-x-1.5 text-left text-sm [--ui-space:0.6]">
                 <thead>
                   <tr>
-                    <th {...thVariant("purple")} className="w-12">
+                    {audience !== 'mentor' && <th {...thVariant("purple")} className="w-12">
                       <input type="checkbox" aria-label="Select all requests on this page" checked={allOnPageSelected} onChange={togglePage} className="h-4 w-4 accent-[#F39924]" />
-                    </th>
+                    </th>}
                     <th {...thVariant("purple")} className="w-16">{sortHeader("index", "#")}</th>
                     <th {...thVariant("blue")}>{sortHeader("type", "Leave Type", FileText)}</th>
                     <th {...thVariant("orange")}>{sortHeader("date", "Date Range", CalendarDays)}</th>
@@ -509,9 +535,9 @@ export default function EmployeeLeaveRequests({ audience = "employee" }) {
                     const key = rowKey(row);
                     return (
                       <tr key={key} data-leave-row={key} className={`group transition-colors ${highlightId === key ? "bg-[#fff6ea]" : ""}`}>
-                        <td className="border-b border-slate-100 px-4 py-2.5 dark:border-slate-800">
+                        {audience !== 'mentor' && <td className="border-b border-slate-100 px-4 py-2.5 dark:border-slate-800">
                           <input type="checkbox" aria-label={`Select request ${row.id ?? position + 1}`} checked={selected.has(key)} onChange={() => toggleRow(row)} className="h-4 w-4 accent-[#F39924]" />
-                        </td>
+                        </td>}
                         <td className="border-b border-slate-100 px-4 py-2.5 font-semibold text-slate-600 dark:border-slate-800 dark:text-slate-300">{firstShown + position}</td>
                         <td className="border-b border-slate-100 px-4 py-2.5 dark:border-slate-800">
                           <div className="flex items-center gap-3">
@@ -580,7 +606,7 @@ export default function EmployeeLeaveRequests({ audience = "employee" }) {
             <div className="flex flex-col gap-2 border-t border-slate-100 px-4 py-2 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between dark:border-slate-800">
               <p>
                 Showing {firstShown} to {lastShown} of {filtered.length} records
-                {selected.size ? <span className="ml-2 font-semibold text-[#133b5d] dark:text-slate-200">· {selected.size} selected</span> : null}
+                {audience !== 'mentor' && selected.size ? <span className="ml-2 font-semibold text-[#133b5d] dark:text-slate-200">· {selected.size} selected</span> : null}
               </p>
               <div className="flex items-center gap-2">
                 <button type="button" aria-label="Previous page" disabled={currentPage <= 1} onClick={() => setPage(currentPage - 1)} className="grid h-9 w-9 place-items-center rounded-xl border border-[#dfe7f1] bg-white text-[#133b5d] disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"><ChevronLeft className="h-4 w-4" /></button>
@@ -632,6 +658,7 @@ export default function EmployeeLeaveRequests({ audience = "employee" }) {
             <KiniDetailRow icon={FileText} label="Reason">
               <p className="break-words rounded-xl bg-[#f6f8fb] px-4 py-3 font-medium dark:bg-slate-800">{viewing.reason || "—"}</p>
             </KiniDetailRow>
+            <LeaveAttachments value={viewing} leaveId={viewing.id} allowUpload={["pending", "0"].includes(viewing.status)} />
             {viewing.rejectionReason && (
               <KiniDetailRow icon={MessageSquareText} label="HR response" tone="orange">
                 <p className="break-words rounded-xl bg-[#f6f8fb] px-4 py-3 font-medium dark:bg-slate-800">{viewing.rejectionReason}</p>
@@ -643,7 +670,7 @@ export default function EmployeeLeaveRequests({ audience = "employee" }) {
 
       <KiniDialog
         open={formOpen}
-        onClose={() => { if (!submitting) setFormOpen(false); }}
+        onClose={() => { if (!submitting) closeLeaveForm(); }}
         icon={CalendarCheck}
         title="New Leave Request"
         subtitle="Submit your leave request for approval. You can track its status in the request history."
@@ -652,7 +679,7 @@ export default function EmployeeLeaveRequests({ audience = "employee" }) {
         className="leave-request-modal"
         footer={
           <>
-            <button type="button" disabled={submitting} onClick={() => setFormOpen(false)} className="h-12 min-w-[124px] rounded-xl border border-[#d7e1ec] bg-white px-6 text-[15px] font-bold text-[#0f2a4a] hover:bg-[#f6f9fd] disabled:opacity-50">Cancel</button>
+            <button type="button" disabled={submitting} onClick={closeLeaveForm} className="h-12 min-w-[124px] rounded-xl border border-[#d7e1ec] bg-white px-6 text-[15px] font-bold text-[#0f2a4a] hover:bg-[#f6f9fd] disabled:opacity-50">Cancel</button>
             <button type="submit" form="employee-leave-request-form" disabled={submitting} className="inline-flex h-12 items-center gap-2 rounded-xl bg-[#F39924] px-6 text-[15px] font-bold text-white shadow-[0_10px_20px_-10px_rgba(243,153,36,.9)] hover:bg-[#e2860f] disabled:cursor-not-allowed disabled:opacity-60">
               <Send className="h-4 w-4" />{submitting ? "Submitting…" : "Send to HR Review"}
             </button>
@@ -684,7 +711,7 @@ export default function EmployeeLeaveRequests({ audience = "employee" }) {
               ))}
             </div>
             <div className="-mt-1.5 flex flex-wrap items-center justify-between gap-2">
-              <p className="text-sm text-[#5b6f88]">Leave will be calculated for selected dates.</p>
+              <p className="text-sm text-[#5b6f88]">Leave counts weekdays only; Saturdays and Sundays are excluded.</p>
               {spanDays(form.startDate, form.endDate) != null && (
                 <span className="inline-flex items-center gap-2 rounded-xl bg-[#e8f1ff] px-3 py-1.5 text-sm font-bold text-[#2f6fe4]"><CalendarDays className="h-4 w-4" />{spanDays(form.startDate, form.endDate)} Day{spanDays(form.startDate, form.endDate) === 1 ? "" : "s"}</span>
               )}
@@ -701,7 +728,7 @@ export default function EmployeeLeaveRequests({ audience = "employee" }) {
               <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[#fff1df] text-[#F39924]"><Paperclip className="h-5 w-5" /></span>
               <div className="min-w-0 flex-1">
                 <p className="text-[15px] font-bold text-[#0f2a4a] dark:text-white">{attachment ? attachment.name : "Add Attachment (Optional)"}</p>
-                <p className="text-sm text-[#5b6f88]">{attachment ? `${Math.max(1, Math.round(attachment.size / 1024))} KB · kept with this request form` : "Upload supporting documents (PDF, JPG, PNG, max 5MB)"}</p>
+                <p className="text-sm text-[#5b6f88]">{attachment ? `${Math.max(1, Math.round(attachment.size / 1024))} KB · uploaded to HR when you submit` : "PDF, JPG or PNG, up to 5 MB (e.g. a medical certificate)."}</p>
               </div>
               <input ref={fileRef} type="file" accept=".pdf,.jpg,.jpeg,.png" className="hidden" onChange={pickAttachment} />
               {attachment ? (

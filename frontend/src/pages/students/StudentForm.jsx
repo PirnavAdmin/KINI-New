@@ -273,15 +273,15 @@ export default function StudentForm({ open, student, onClose, onSave, onEnrolled
         } else {
           try {
             const [profileResult, enrollmentResult] = editResult.value;
-            const profile = profileResult.data;
+            const profile = { ...student, ...Object.fromEntries(Object.entries(profileResult.data).filter(([, value]) => value !== undefined && value !== null && value !== '')) };
             if (enrollmentId(profile.studentId ?? profile.id) !== enrollmentId(student.studentId ?? student.id)) throw new Error("The student response does not match this student.");
             // Match the list's primary + per-student + batch-roster sources.
             const rosterEnrollments = rosterResults.flatMap((result, index) => {
-              if (result.status !== "fulfilled" || !result.value.students.some(member => enrollmentId(member.studentId ?? member.id) === enrollmentId(profile.studentId ?? profile.id))) return [];
+              if (result.status !== "fulfilled" || !(result.value.students ?? []).some(member => enrollmentId(member.studentId ?? member.id) === enrollmentId(profile.studentId ?? profile.id))) return [];
               const batch = liveBatches[index];
               return [{ batchId: batch.batchId ?? batch.id, courseId: batchCourseIdOf(batch), courseName: batch.courseName, batchName: batch.batchName ?? batch.name }];
             });
-            const existing = existingStudentEnrollments(profile, [...enrollmentResult.data, ...rosterEnrollments], liveBatches);
+            const existing = existingStudentEnrollments(profile, [...rowsFrom(enrollmentResult), ...rosterEnrollments], liveBatches);
             setEditProfile(profile);
             setExistingEnrollments(existing);
             reset({
@@ -380,7 +380,7 @@ export default function StudentForm({ open, student, onClose, onSave, onEnrolled
       try {
         await saveStudentEdit({
           studentId: student.studentId ?? student.id, initialEnrollments: existingEnrollments,
-          values, api: studentsApi, onSave,
+          values, api: studentsApi, onSave, batches,
           onConfirmed: row => {
             const index = values.enrollments.findIndex(item => item.courseId === row.courseId && item.batchId === row.batchId);
             setRowResults(current => ({ ...current, [index]: "ok" }));
@@ -542,10 +542,10 @@ export default function StudentForm({ open, student, onClose, onSave, onEnrolled
             <FormSection tone="blue" number={1} title="Student Information" subtitle="Basic identity details of the student">
               <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
                 <Field id="student-first-name" label="First Name" icon={UserRound} error={errors.firstName?.message}>
-                  <input id="student-first-name" disabled={lookupsLoading || isSubmitting} autoComplete="given-name" {...register("firstName")} className={fieldClass(errors.firstName)} placeholder="Srinivas" />
+                  <input id="student-first-name" disabled={lookupsLoading || isSubmitting} autoComplete="given-name" {...register("firstName")} className={fieldClass(errors.firstName)} placeholder="Enter first name" />
                 </Field>
                 <Field id="student-last-name" label="Last Name" icon={UserRound} error={errors.lastName?.message}>
-                  <input id="student-last-name" disabled={lookupsLoading || isSubmitting} autoComplete="family-name" {...register("lastName")} className={fieldClass(errors.lastName)} placeholder="Sree" />
+                  <input id="student-last-name" disabled={lookupsLoading || isSubmitting} autoComplete="family-name" {...register("lastName")} className={fieldClass(errors.lastName)} placeholder="Enter last name" />
                 </Field>
               </div>
             </FormSection>
@@ -553,10 +553,10 @@ export default function StudentForm({ open, student, onClose, onSave, onEnrolled
             <FormSection tone="violet" number={2} title="Contact Information" subtitle="Communication and login contact details">
               <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
                 <Field id="student-email" label="Email" icon={Mail} error={errors.email?.message}>
-                  <input id="student-email" disabled={lookupsLoading || isSubmitting} type="email" autoComplete="email" {...register("email")} className={fieldClass(errors.email)} placeholder="student@example.com" />
+                  <input id="student-email" disabled={lookupsLoading || isSubmitting} type="email" autoComplete="email" {...register("email")} className={fieldClass(errors.email)} placeholder="Enter email address" />
                 </Field>
                 <Field id="student-phone" label="Phone" icon={Phone} error={errors.phone?.message}>
-                  <input id="student-phone" disabled={lookupsLoading || isSubmitting} inputMode="numeric" autoComplete="tel" maxLength={10} {...register("phone", { onChange: (event) => { event.target.value = event.target.value.replace(/\D/g, ""); } })} className={fieldClass(errors.phone)} placeholder="8125336729" />
+                  <input id="student-phone" disabled={lookupsLoading || isSubmitting} inputMode="numeric" autoComplete="tel" maxLength={10} {...register("phone", { onChange: (event) => { event.target.value = event.target.value.replace(/\D/g, ""); } })} className={fieldClass(errors.phone)} placeholder="Enter phone number" />
                 </Field>
               </div>
             </FormSection>
@@ -575,6 +575,18 @@ export default function StudentForm({ open, student, onClose, onSave, onEnrolled
                   const result = rowResults[index];
                   // A course already saved stays fixed so a retry can't change it.
                   const locked = existing || result === "ok";
+                  if (existing) return (
+                    <div key={field.id} className="rounded-xl border border-emerald-100 bg-white/80 p-3 sm:p-4">
+                      <span className="text-xs font-semibold text-emerald-700">Existing enrollment</span>
+                      <dl className="mt-2 grid gap-3 sm:grid-cols-2">
+                        <div><dt className="text-xs text-slate-500">Course</dt><dd className="font-semibold">{row.courseName}</dd></div>
+                        <div><dt className="text-xs text-slate-500">Batch</dt><dd className="font-semibold">{row.batchName}</dd></div>
+                      </dl>
+                      <input type="hidden" {...register(`enrollments.${index}.courseId`)} />
+                      <input type="hidden" {...register(`enrollments.${index}.batchId`)} />
+                      <input type="hidden" {...register(`enrollments.${index}.existing`)} />
+                    </div>
+                  );
                   return (
                     <div key={field.id} className="rounded-xl border border-emerald-100 bg-white/80 p-3 sm:p-4">
                       <div className="mb-2 flex items-center justify-between gap-3">

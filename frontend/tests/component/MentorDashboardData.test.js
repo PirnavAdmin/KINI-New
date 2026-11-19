@@ -14,6 +14,16 @@ vi.mock('../../src/features/live-classes/services/liveClassService', () => ({ li
 } }));
 beforeEach(() => { vi.clearAllMocks(); Object.values(api).forEach((fn) => fn.mockResolvedValue([])); });
 
+it('excludes elapsed classes today and completed records from upcoming API results', () => {
+  const result = selectDashboardClasses([
+    { id: 1, scheduledDate: '2030-01-02', startTime: '08:00:00', endTime: '09:00:00', status: 'Scheduled' },
+    { id: 2, scheduledDate: '2030-01-02', startTime: '13:00:00', endTime: '14:00:00', status: 'Scheduled' },
+    { id: 3, scheduledDate: '2030-01-03', status: 'Completed' },
+    { id: 4, scheduledDate: '2029-12-31', status: 'Upcoming' },
+  ], new Date(2030, 0, 2, 12));
+  expect(result.upcoming.map(row => row.id)).toEqual([2]);
+});
+
 it('loads real user-scoped data without a mentor ID or an invented ID', async () => {
   api.getMentorDashboardCourses.mockResolvedValue([{ courseId: 8, name: 'Node.js' }]);
   const result = await loadMentorDashboardSources({ mentorId: null, employeeId: 9 });

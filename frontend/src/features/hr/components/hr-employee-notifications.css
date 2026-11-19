@@ -1,0 +1,11 @@
+[data-sonner-toast].hr-export-toast {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 360px;
+  max-width: calc(100vw - 32px);
+  padding: 16px;
+  text-align: left;
+}
+[data-sonner-toast].hr-export-toast [data-content] { min-width: 0; flex: 1; }
+[data-sonner-toast].hr-export-toast [data-icon] { flex: 0 0 auto; margin: 0; }

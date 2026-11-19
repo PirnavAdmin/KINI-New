@@ -59,10 +59,10 @@ export default function ConversationSidebar({ context }) {
 
   return (
     <div className="flex h-full min-h-0 flex-col gap-3 overflow-y-auto p-3">
-      <section className="rounded-[1.6rem] border border-slate-200 bg-gradient-to-br from-[#085FA7] via-[#0A6BB5] to-[#5CA347] p-4 text-white shadow-[0_20px_45px_rgba(8,95,167,0.22)] dark:border-slate-800">
+      <section className="rounded-[1.6rem] border border-slate-200 bg-gradient-to-br from-[#143A5B] via-[#174D72] to-[#FF981B] p-4 text-white shadow-[0_20px_45px_rgba(8,95,167,0.22)] dark:border-slate-800">
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/70">Live backend</p>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/70">Assistant context</p>
             <h2 className="mt-1 text-lg font-semibold tracking-tight">Kini Copilot</h2>
           </div>
           <span className="grid h-10 w-10 place-items-center rounded-2xl bg-white/15 backdrop-blur">
@@ -70,7 +70,7 @@ export default function ConversationSidebar({ context }) {
           </span>
         </div>
         <p className="mt-3 text-sm leading-6 text-white/82">
-          Intelligent, role-aware answers powered by your real platform data and the AI backend.
+          Role-aware guidance using available platform context. Missing information is not assumed.
         </p>
       </section>
 

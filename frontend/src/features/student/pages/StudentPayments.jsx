@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { CheckCircle2, CreditCard, Download, IndianRupee, ReceiptText, RefreshCw } from "lucide-react";
 import { studentsApi } from "@/api/students";
 import { paymentApi } from "@shared/services/apiServices";
+import { upiPaymentApi } from "@shared/services/upiPaymentService";
 import invoiceService from "@shared/services/invoiceService";
 import { useAuth } from "@shared/hooks/useAuth";
 import PageHeader from "@shared/components/PageHeader";
@@ -16,9 +17,11 @@ const money = (value) => {
   return Number.isFinite(amount) ? amount.toLocaleString("en-IN", { style: "currency", currency: "INR" }) : "Not available";
 };
 const invoiceIdOf = (record) => record?.invoiceId ?? record?.invoice?.invoiceId ?? record?.invoice?.id ?? null;
-const isPaid = (record) => ["paid", "paid in full", "completed", "success", "successful"]
+const isPaid = (record) => ["paid", "paid in full", "completed", "success", "successful", "verified"]
   .includes(String(record?.status ?? record?.paymentStatus ?? "").toLowerCase());
 const validInvoiceId = (value) => Number.isInteger(Number(value)) && Number(value) > 0;
+// UPI course payments have no invoice record: their PDF comes from /student/payments/{id}/invoice.
+const isUpiInvoice = (record) => record?.invoiceAvailable === true && validInvoiceId(record?.paymentId);
 const safeFilename = (value) => String(value || "invoice.pdf").split(/[\\/]/).pop().replace(/[^a-z0-9._-]/gi, "_");
 
 const downloadMessage = async (error) => {
@@ -26,6 +29,7 @@ const downloadMessage = async (error) => {
   if (status === 401) return "Your session has expired. Please log in again.";
   if (status === 403) return "You are not authorized to download this invoice.";
   if (status === 404) return "Invoice PDF is not available.";
+  if (status === 409) return "The invoice will be available once the organization verifies this payment.";
   if (status >= 500) return "Unable to generate the invoice PDF. Please try again.";
   if (!error?.response) return "Unable to connect to the server. Please try again.";
   return "Unable to download this invoice. Please try again.";
@@ -66,6 +70,18 @@ export default function StudentPayments() {
         setPayments(ownInvoices);
         return;
       }
+      // UPI course payments (public enrollment), read from the student's own account.
+      let upiLoaded = false;
+      try {
+        const upiPayments = await upiPaymentApi.studentPayments();
+        upiLoaded = true;
+        if (upiPayments.length) {
+          setPayments(upiPayments);
+          return;
+        }
+      } catch {
+        // Fall back to the older payment sources below.
+      }
       let historyError;
       let records = [];
       try {
@@ -77,6 +93,11 @@ export default function StudentPayments() {
         try {
           records = rowsFrom((await studentsApi.getPayments(studentId)).data);
         } catch (error) {
+          // The UPI list answered (empty): a missing legacy route just means no records.
+          if (upiLoaded && (error?.response?.status === 404 || historyError?.response?.status === 404)) {
+            setPayments([]);
+            return;
+          }
           if (historyError) throw historyError;
           throw error;
         }
@@ -104,7 +125,8 @@ export default function StudentPayments() {
   const downloadInvoice = async (payment, rowKey) => {
     const invoiceId = invoiceIdOf(payment);
     if (downloadingRef.current.has(rowKey)) return;
-    if (!validInvoiceId(invoiceId)) {
+    const upi = !validInvoiceId(invoiceId) && isUpiInvoice(payment);
+    if (!validInvoiceId(invoiceId) && !upi) {
       setDownloadError({ rowKey, message: "Invoice PDF is not available for this payment." });
       return;
     }
@@ -112,8 +134,12 @@ export default function StudentPayments() {
     setDownloadingInvoiceIds((current) => new Set(current).add(rowKey));
     setDownloadError(null);
     try {
-      const { blob, filename } = await invoiceService.downloadPdf(invoiceId);
-      const fallback = `Invoice_${payment.invoiceNumber ?? payment.invoiceNo ?? invoiceId}.pdf`;
+      const { blob, filename } = upi
+        ? await invoiceService.downloadUpiPaymentPdf(payment.paymentId)
+        : await invoiceService.downloadPdf(invoiceId);
+      const fallback = upi
+        ? `Invoice_${payment.enrollmentNumber ?? payment.paymentId}.pdf`
+        : `Invoice_${payment.invoiceNumber ?? payment.invoiceNo ?? invoiceId}.pdf`;
       triggerFileDownload(blob, safeFilename(filename || fallback));
     } catch (error) {
       setDownloadError({ rowKey, message: await downloadMessage(error) });
@@ -167,7 +193,7 @@ export default function StudentPayments() {
                   <td className="px-3 py-2.5">{payment.paymentMethod ?? payment.method ?? "Not available"}</td>
                   <td className="px-3 py-2.5"><span className={`rounded-full px-2 py-1 text-[11px] font-bold ${isPaid(payment) ? "bg-emerald-50 text-emerald-700" : "bg-amber-50 text-amber-700"}`}>{payment.status ?? payment.paymentStatus ?? "Not available"}</span></td>
                   <td className="w-[120px] px-3 py-2.5 text-right"><button type="button" disabled={busy} onClick={() => downloadInvoice(payment, rowKey)} className="inline-flex min-w-[96px] items-center justify-center gap-1.5 whitespace-nowrap rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-[10px] font-extrabold text-slate-600 shadow-sm transition hover:border-[#f39924] hover:text-[#133b5d] disabled:cursor-wait disabled:opacity-65"><Download className="h-3.5 w-3.5" />{busy ? "Downloading..." : "Download"}</button>
-                    {downloadError?.rowKey === rowKey && <div role="alert" className="mt-1 text-left text-xs text-rose-700"><p>{downloadError.message}</p>{validInvoiceId(invoiceIdOf(payment)) && <button type="button" onClick={() => downloadInvoice(payment, rowKey)} className="mt-1 font-semibold underline">Retry this invoice</button>}</div>}
+                    {downloadError?.rowKey === rowKey && <div role="alert" className="mt-1 text-left text-xs text-rose-700"><p>{downloadError.message}</p>{(validInvoiceId(invoiceIdOf(payment)) || isUpiInvoice(payment)) && <button type="button" onClick={() => downloadInvoice(payment, rowKey)} className="mt-1 font-semibold underline">Retry this invoice</button>}</div>}
                   </td>
                 </tr>;
               })}</tbody>

@@ -163,6 +163,7 @@ const MENU_CONFIG = {
       {
         title: "Finance",
         items: [
+          { label: "Fees & Payments", icon: "CreditCard", path: ROUTES.ORG_ADMIN.FINANCE, permissionKey: "dashboard" },
           {
             label: "Payroll",
             icon: "CreditCard",
@@ -621,7 +622,7 @@ const MENU_CONFIG = {
         title: "Learning",
         items: [
           {
-            label: "Quizzes",
+            label: "Assessments",
             icon: "ClipboardCheck",
             path: ROUTES.MENTOR.ASSESSMENTS,
             permissionKey: "assessments",
@@ -646,7 +647,7 @@ const MENU_CONFIG = {
           {
             label: "Settings",
             icon: "Settings",
-            path: ROUTES.MENTOR.SETTINGS,
+            path: ROUTES.MENTOR.PROFILE,
             permissionKey: "settings",
           },
         ],
@@ -1326,15 +1327,15 @@ export default function Sidebar({ role = "org-admin", collapsed, onToggle, mobil
           />
         )}
         <div
-          className={`mentor-sidebar-item-content relative z-10 flex min-w-0 flex-1 items-center ${collapsed ? "justify-center" : ""} ${item.label === "Branch Management" && usesCompactDarkSidebar ? "gap-2" : "gap-3"}`}
+          className={`mentor-sidebar-item-content relative z-10 flex min-h-5 min-w-0 flex-1 items-center ${collapsed ? "justify-center" : "justify-start"} ${item.label === "Branch Management" && usesCompactDarkSidebar ? "gap-2" : "gap-3"}`}
         >
           <MenuIcon
             name={item.icon}
-            className={`${(usesCompactDarkSidebar || isSuperAdminSidebar) && collapsed ? "h-5 w-5" : "h-5 w-5"} shrink-0 ${active && !locked ? "text-[#133B5D]" : ""}`}
+            className={`block h-5 w-5 shrink-0 ${active && !locked ? "text-[#133B5D]" : ""}`}
           />
           {!collapsed && (
             <span
-              className={`whitespace-nowrap ${item.label === "Branch Management" && usesCompactDarkSidebar ? "text-[11px] tracking-[-0.02em]" : isSuperAdminSidebar ? "text-[14px]" : usesCompactDarkSidebar ? "text-[13px]" : "text-sm"} ${active && !locked ? "font-bold" : "font-semibold"}`}
+              className={`min-w-0 whitespace-nowrap leading-5 ${item.label === "Branch Management" && usesCompactDarkSidebar ? "text-[11px] tracking-[-0.02em]" : isSuperAdminSidebar ? "text-[14px]" : usesCompactDarkSidebar ? "text-[13px]" : "text-sm"} ${active && !locked ? "font-bold" : "font-semibold"}`}
             >
               {item.label}
             </span>
@@ -1403,6 +1404,7 @@ export default function Sidebar({ role = "org-admin", collapsed, onToggle, mobil
   return (
     <aside
       data-ui="dashboard-sidebar"
+      data-hr-sidebar={isHrSidebar ? "true" : undefined}
       data-collapsed={collapsed ? "true" : "false"}
       data-sidebar-design={usesMentorSidebar ? "mentor" : undefined}
       className={`relative z-40 flex min-h-0 flex-col overflow-hidden border-r backdrop-blur-xl transition-[width,padding,opacity,transform] duration-[250ms] ease-[cubic-bezier(0.16,1,0.3,1)] h-dvh max-h-dvh ${
@@ -1447,6 +1449,7 @@ export default function Sidebar({ role = "org-admin", collapsed, onToggle, mobil
         </Link>
         <button
           onClick={onToggle}
+          aria-expanded={!collapsed}
           className="sidebar-collapse absolute right-2 rounded-lg p-1.5 text-[#17324a] transition-colors hover:bg-slate-100 hover:text-[#0f55f7]"
           aria-label={mobile ? "Close navigation" : collapsed ? "Expand sidebar" : "Collapse sidebar"}
           title={collapsed ? "Expand sidebar" : "Collapse sidebar"}

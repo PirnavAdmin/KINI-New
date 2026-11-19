@@ -27,6 +27,11 @@ export function existingStudentEnrollments(profile, enrollments, batches = []) {
       courseName: item.courseName ?? item.course?.courseName ?? batch?.courseName ?? `Course #${courseId}`,
       batchName: item.batchName ?? item.batch?.batchName ?? batch?.batchName ?? `Batch #${batchId}`,
     });
+    else rows.set(key, {
+      ...rows.get(key),
+      ...(item.courseName || item.course?.courseName ? { courseName: item.courseName || item.course.courseName } : {}),
+      ...(item.batchName || item.batch?.batchName ? { batchName: item.batchName || item.batch.batchName } : {}),
+    });
   };
   if (enrollmentId(profile.courseId) || enrollmentId(profile.batchId)) add(profile);
   enrollments.forEach(add);
@@ -35,7 +40,7 @@ export function existingStudentEnrollments(profile, enrollments, batches = []) {
 
 /** Recheck before every write and confirm ambiguous POST results before retrying.
  * No endpoint in the current contract removes or replaces additional enrollments. */
-export async function saveStudentEdit({ studentId, initialEnrollments, values, api, onSave, onConfirmed, onRefresh }) {
+export async function saveStudentEdit({ studentId, initialEnrollments, values, api, onSave, onConfirmed, onRefresh, batches = [] }) {
   const initialPairs = new Set(initialEnrollments.map(pairOf));
   const initialCourses = new Set(initialEnrollments.map(row => enrollmentId(row.courseId)));
   const selectedPairs = new Set(values.enrollments.filter(row => row.existing).map(pairOf));
@@ -54,7 +59,7 @@ export async function saveStudentEdit({ studentId, initialEnrollments, values, a
     const [profileResult, enrollmentResult] = await Promise.all([api.getById(studentId), api.getEnrollments(studentId)]);
     const profile = profileResult.data;
     if (enrollmentId(profile.studentId ?? profile.id) !== enrollmentId(studentId)) throw new Error("The student response does not match the student being edited.");
-    return { profile, enrollments: existingStudentEnrollments(profile, enrollmentResult.data) };
+    return { profile, enrollments: existingStudentEnrollments(profile, enrollmentResult.data, batches) };
   };
   let current;
   try { current = await readCurrent(); }
@@ -70,8 +75,9 @@ export async function saveStudentEdit({ studentId, initialEnrollments, values, a
     const details = profileFields(values);
     const original = profileFields(current.profile);
     if (Object.keys(details).some(key => details[key] !== original[key])) {
-      const courseId = enrollmentId(current.profile.courseId);
-      const batchId = enrollmentId(current.profile.batchId);
+      const batchId = enrollmentId(current.profile.batchId ?? current.profile.batch?.id ?? current.profile.batch?.batchId);
+      const courseId = enrollmentId(current.profile.courseId ?? current.profile.course?.id ?? current.profile.course?.courseId)
+        || current.enrollments.find(row => row.batchId === batchId)?.courseId;
       if (!courseId || !batchId) throw new Error("The primary assignment could not be verified. Student details were not updated.");
       await onSave({ ...details, courseId: Number(courseId), batchId: Number(batchId) }, studentId);
       changed = true;

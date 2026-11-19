@@ -20,6 +20,13 @@ beforeEach(() => {
 });
 
 describe("edit student enrollment safety", () => {
+  it('resolves missing course IDs from the batch when saving personal details', async () => {
+    delete profile.courseId;
+    enrollments = [{ batchId: 20 }];
+    await saveStudentEdit({ studentId: 7, initialEnrollments, values: values([], { firstName: 'Changed' }), api, onSave,
+      batches: [{ batchId: 20, courseId: 2 }] });
+    expect(onSave).toHaveBeenCalledWith(expect.objectContaining({ firstName: 'Changed', courseId: 2, batchId: 20 }), 7);
+  });
   it("merges primary and additional API assignments and deduplicates their IDs", () => {
     expect(existingStudentEnrollments(profile, [...enrollments, { courseId: 3, batchId: 30 }]).map(row => [row.courseId, row.batchId])).toEqual([["2", "20"], ["3", "30"]]);
   });

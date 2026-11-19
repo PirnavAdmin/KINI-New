@@ -3,9 +3,10 @@ import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/re
 import toast from 'react-hot-toast'
 import ProfilePage from '../../src/pages/profile/ProfilePage'
 import { canLoadImage, profilePhotoService } from '../../src/shared/services/profilePhotoService'
+import { employeeProfileService } from '../../src/shared/services/employeeProfileService'
 
 vi.mock('react-hot-toast', () => ({ default: { success: vi.fn(), error: vi.fn() } }))
-const authState = vi.hoisted(() => ({ user: { firstName: 'Nara', lastName: 'Nandan', role: 'Mentor' } }))
+const authState = vi.hoisted(() => ({ user: { firstName: 'Nara', lastName: 'Nandan', role: 'Mentor' }, updateUser: vi.fn() }))
 vi.mock('../../src/shared/hooks/useAuth', () => ({ useAuth: () => authState }))
 vi.mock('../../src/shared/components/EmployeeProfileWizard', () => ({ default: () => null }))
 vi.mock('../../src/features/mentor/components/MentorPageHeader', () => ({ default: ({ title }) => <h1>{title}</h1> }))
@@ -14,6 +15,7 @@ vi.mock('../../src/shared/services/employeeProfileService', () => ({
     getProfile: vi.fn(async () => ({ firstName: 'Nara', lastName: 'Nandan' })),
     getDepartments: vi.fn(async () => []),
     getDocumentTypes: vi.fn(async () => []),
+    updatePersonal: vi.fn(async () => ({})),
   },
 }))
 vi.mock('../../src/shared/services/profilePhotoService', async (importOriginal) => ({
@@ -34,6 +36,41 @@ beforeEach(() => {
   canLoadImage.mockImplementation(async (src) => src === NEW)
 })
 afterEach(cleanup)
+
+it('toggles each security password independently without changing its value', async () => {
+  render(<ProfilePage />)
+  fireEvent.click(await screen.findByRole('button', { name: 'Security', exact: true }))
+  const labels = ['Current password', 'New password', 'Confirm new password']
+  for (const label of labels) {
+    const input = screen.getByLabelText(label, { exact: true })
+    fireEvent.change(input, { target: { value: 'Example-password-123' } })
+    expect(input).toHaveAttribute('type', 'password')
+    fireEvent.click(screen.getByRole('button', { name: `Show ${label.toLowerCase()}` }))
+    expect(input).toHaveAttribute('type', 'text')
+    expect(input).toHaveValue('Example-password-123')
+    for (const other of labels.filter((item) => item !== label)) {
+      expect(screen.getByLabelText(other, { exact: true })).toHaveAttribute('type', 'password')
+    }
+    fireEvent.click(screen.getByRole('button', { name: `Hide ${label.toLowerCase()}` }))
+    expect(input).toHaveAttribute('type', 'password')
+  }
+})
+
+it('syncs the loaded employee name to the shared header session', async () => {
+  employeeProfileService.getProfile.mockResolvedValueOnce({ employeeId: 1, firstName: 'Updated', lastName: 'Mentor' })
+  render(<ProfilePage />)
+  await waitFor(() => expect(authState.updateUser).toHaveBeenCalledWith({ firstName: 'Updated', lastName: 'Mentor', fullName: 'Updated Mentor', name: 'Updated Mentor' }))
+})
+
+it('syncs a successfully saved name to the shared header session', async () => {
+  employeeProfileService.getProfile.mockResolvedValueOnce({ employeeId: 1, firstName: 'Nara', lastName: 'Nandan' })
+  render(<ProfilePage />)
+  fireEvent.click(await screen.findByRole('button', { name: 'Personal Info' }))
+  fireEvent.click(await screen.findByRole('button', { name: 'Edit profile' }))
+  fireEvent.change(screen.getByLabelText('First name'), { target: { value: 'Changed' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Save changes' }))
+  await waitFor(() => expect(authState.updateUser).toHaveBeenCalledWith({ firstName: 'Changed', lastName: 'Nandan', fullName: 'Changed Nandan', name: 'Changed Nandan' }))
+})
 
 const renderWithPhoto = async () => {
   const view = render(<ProfilePage />)

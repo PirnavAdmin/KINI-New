@@ -244,6 +244,9 @@ namespace TalentSphereAPI.Repositories
             existing.PdfUrl =
                 course.PdfUrl;
 
+            existing.IsPublic =
+                course.IsPublic;
+
             await _context.SaveChangesAsync();
 
             return true;

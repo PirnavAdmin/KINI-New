@@ -1,5 +1,6 @@
 import { personNameError } from "@shared/utils/personName";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { employeeJoiningDate, joiningDateError } from '@shared/utils/employeeJoiningDate';
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import OrgShowcaseHero from "@features/organization/components/showcase/OrgShowcaseHero";
 import { ORG_BANNERS } from "@features/organization/constants/orgBanners";
@@ -60,7 +61,8 @@ import usePermission from "@shared/hooks/usePermission";
 import { useProfilePhotos } from "@shared/hooks/useProfilePhoto";
 import { PROFILE_TYPE, toProfileId } from "@shared/services/profilePhotoService";
 
-const PAGE_SIZE_OPTIONS = [10, 25, 50];
+// Cards sit 4 per row: page sizes are whole rows (default 8 = two rows).
+const PAGE_SIZE_OPTIONS = [8, 16, 24, 48];
 const STATUS_OPTIONS = [
   { value: "", label: "All Status" },
   { value: "Active", label: "Active" },
@@ -346,6 +348,7 @@ const buildEmployeePayload = (form) => {
     role: ({ mentor: "Mentor", tutor: "Tutor", employee: "Employee", hr: "HR" })[normalizedRole] ?? form.role.trim(),
     status: form.status.trim().toLowerCase() === "inactive" ? "Inactive" : "Active",
     employeeType: form.employmentType,
+    ...(form.joiningDate !== undefined ? { joiningDate: employeeJoiningDate(form.joiningDate) } : {}),
   };
 };
 
@@ -370,7 +373,8 @@ export default function EmployeeManagement() {
   const [saving, setSaving] = useState(false);
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(PAGE_SIZE_OPTIONS[0]);
+  const employeeRequestRef = useRef(0);
   const [totalRecords, setTotalRecords] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [searchText, setSearchText] = useState("");
@@ -614,6 +618,7 @@ export default function EmployeeManagement() {
       pageNumber = page,
       size = pageSize,
     } = {}) {
+      const requestId = ++employeeRequestRef.current;
       setLoading(true);
       setErrorMessage("");
 
@@ -637,6 +642,7 @@ export default function EmployeeManagement() {
           hrModuleApi("leave").list({ Page: 1, Limit: 1000 }),
         ]);
 
+      if (requestId !== employeeRequestRef.current) return;
       const organizationBatches = batchesResult.status === "fulfilled"
         ? (batchesResult.value?.data ?? [])
         : [];
@@ -741,6 +747,7 @@ export default function EmployeeManagement() {
             }
           }),
         );
+        if (requestId !== employeeRequestRef.current) return;
         setEmployees(rowsWithBatches);
         setSelectedIds(new Set());
         const responseTotal = Number(
@@ -1003,6 +1010,7 @@ export default function EmployeeManagement() {
     if (!form.role.trim()) nextErrors.role = "Role is required";
     if (!form.employmentType.trim()) nextErrors.employmentType = "Employment type is required";
     if (!form.status.trim()) nextErrors.status = "Status is required";
+    if (joiningDateError(form.joiningDate)) nextErrors.joiningDate = joiningDateError(form.joiningDate);
 
     setFormErrors(nextErrors);
     return Object.keys(nextErrors).length === 0;
@@ -1204,7 +1212,7 @@ export default function EmployeeManagement() {
         ))}
       </section>
 
-      <Card className="overflow-hidden !rounded-2xl !border-[#E3EBF3] !p-0 shadow-[0_8px_24px_rgba(19,59,93,.06)] dark:!border-slate-700">
+      <Card className="!overflow-visible !rounded-2xl !border-[#E3EBF3] !p-0 shadow-[0_8px_24px_rgba(19,59,93,.06)] dark:!border-slate-700">
         <div className="employees-toolbar border-b border-[#EDF2F7] bg-white p-3 sm:p-4 lg:px-2.5 lg:py-2 dark:border-slate-700 dark:bg-slate-900">
           <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between xl:gap-2">
             {/* Tablet: search on its own row, the three selects split the next
@@ -1822,6 +1830,7 @@ export default function EmployeeManagement() {
               ]}
               error={formErrors.status}
             />
+            <Input label="Joining Date" aria-label="Joining Date" type="date" icon={CalendarCheck} value={form.joiningDate} onChange={event => { setForm(current => ({ ...current, joiningDate: event.target.value })); setFormErrors(current => ({ ...current, joiningDate: '' })); }} error={formErrors.joiningDate} />
           </div>
         )}
       </Modal>

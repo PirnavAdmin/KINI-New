@@ -43,6 +43,12 @@ it('does not turn invalid or expired scheduled dates into upcoming classes', () 
   expect(buildDashboardSchedule([null, scheduled({ startAt: 'invalid' }), scheduled({ startAt: '2020-01-01', endAt: '2020-01-02' })], now).upcomingClasses).toEqual([])
 })
 
+it('excludes expired classes even when the backend still marks them live', () => {
+  const expired = scheduled({ status: 'live', endAt: new Date(2030, 0, 2, 7).toISOString() })
+  expect(buildDashboardSchedule([expired], now)).toMatchObject({ upcomingClasses: [], liveSession: null })
+  expect(buildDashboardSchedule([scheduled({ status: 'live', startAt: '2020-01-01', endAt: null })], now).upcomingClasses).toEqual([])
+})
+
 it('reports 0% only for a successfully loaded empty organization', async () => {
   const api = services()
   expect(await loadDashboardLearning([], api)).toMatchObject({ completed: 0, inProgress: 0, notStarted: 0, overall: 0 })

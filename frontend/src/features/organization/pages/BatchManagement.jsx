@@ -41,7 +41,7 @@ import { DEFAULT_BATCH_CAPACITY } from "@shared/services/batchCapacityService";
 import { courseService } from "@shared/services/courseService";
 import { mentorService } from "@shared/services/mentorService";
 import { studentsApi } from "@/api/students";
-import { reconcileBatchRoster } from "@shared/utils/batchRoster";
+import { loadBatchRosterCounts } from "@shared/services/batchRosterService";
 import { useProfilePhotos } from "@shared/hooks/useProfilePhoto";
 import { toProfileId } from "@shared/services/profilePhotoService";
 import OrgShowcaseHero from "@features/organization/components/showcase/OrgShowcaseHero";
@@ -689,22 +689,10 @@ export default function BatchManagement({ createOnly = false, initialBatch = nul
   const loadRosterCounts = useCallback(async (rows) => {
     const requestId = rosterRequestRef.current + 1;
     rosterRequestRef.current = requestId;
-    const batchIds = [...new Set(rows
-      .map((batch) => batch?.batchId ?? batch?.id)
-      .filter((id) => id != null && String(id).trim() !== "")
-      .map(String))];
     setRosterLoading(true);
-    const [results, organizationResult] = await Promise.all([
-      Promise.allSettled(batchIds.map((batchId) => batchService.getStudents(batchId))),
-      studentsApi.list().then(response => response.data ?? []).catch(() => []),
-    ]);
+    const counts = await loadBatchRosterCounts(rows);
     if (requestId !== rosterRequestRef.current) return;
-    setRosterCounts(Object.fromEntries(batchIds.map((batchId, index) => [
-      batchId,
-      results[index].status === "fulfilled"
-        ? reconcileBatchRoster(rows.find(row => String(row.batchId ?? row.id) === batchId), results[index].value, organizationResult).length
-        : null,
-    ])));
+    setRosterCounts(counts);
     setRosterLoading(false);
   }, []);
 
@@ -888,8 +876,9 @@ export default function BatchManagement({ createOnly = false, initialBatch = nul
   useEffect(() => {
     if (!createOnly || initialBatchId == null || isDemoSession()) return;
     const controller = new AbortController();
-    setModalLoading(true);
-    setDetailError("");
+    queueMicrotask(() => {
+      if (!controller.signal.aborted) { setModalLoading(true); setDetailError(""); }
+    });
     batchService.getById(initialBatchId, { signal: controller.signal }).then(response => {
       if (controller.signal.aborted) return;
       const details = response?.data ?? response;

@@ -2,12 +2,10 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AlertCircle, ArrowLeft, BookOpen, CalendarDays, CheckCircle2, ChevronRight, ClipboardCheck, Clock3, Download, FileText, LoaderCircle, LockKeyhole, MessageCircle, PlayCircle, UserRound, UsersRound } from "lucide-react";
 import { courseService as studentCourseService } from "@/services/courseService";
-import { courseService as organizationCourseService } from "@shared/services/courseService";
-import tutorService from "@shared/services/tutorService";
 import toast from "react-hot-toast";
 import { triggerFileDownload } from "@shared/utils/download";
 import { courseMaterialService } from "@shared/services/courseMaterialService";
-import { studentClassService } from "@shared/services/studentClassService";
+import { liveClassService } from "@features/live-classes/services/liveClassService";
 import { getStudentJoinState, normalizeLiveClassList } from "@features/live-classes/utils/liveClassMappers";
 import { ROUTES } from "@shared/constants/routeConstants";
 import { createSectionAssessment } from "./utils/createSectionAssessment";
@@ -125,8 +123,8 @@ const normalizeEnrollment = (course = {}) => ({
   courseName: nameOf(course.courseName, course.courseTitle, course.title, course.name),
   batchId: pick(course.batchId, course.batch?.batchId, course.batch?.id),
   batchName: nameOf(course.batchName, course.batch?.batchName, course.batch?.name),
-  mentorId: pick(course.mentorId, course.tutorId, course.mentor?.mentorId, course.mentor?.id),
-  mentorName: nameOf(course.mentorName, course.tutorName, course.mentor?.mentorName, course.mentor?.name),
+  mentorId: pick(course.mentorId, course.tutorId, course.mentor?.mentorId, course.mentor?.id, course.batch?.mentorId, course.batch?.mentor?.mentorId, course.batch?.mentor?.id),
+  mentorName: nameOf(course.mentorName, course.assignedMentorName, course.tutorName, course.mentor?.mentorName, course.mentor?.name, course.batch?.mentorName, course.batch?.mentor?.name),
 });
 
 const cachedEnrollment = (courseId) => {
@@ -162,21 +160,6 @@ const normalizeSyllabus = (payload) => {
 }));
 };
 
-const loadPublishedModules = async (courseId) => {
-  const modules = rows(await tutorService.modules(courseId));
-  const completeModules = await Promise.all(modules.map(async (module) => {
-    const moduleId = pick(module.moduleId, module.id);
-    const hasTopics = rows(module.topics ?? module.subjects ?? module.sessions ?? module.lessons).length > 0;
-    if (!moduleId || hasTopics) return module;
-
-    try {
-      return { ...module, subjects: await tutorService.subjects(courseId, moduleId) };
-    } catch {
-      return module;
-    }
-  }));
-  return normalizeSyllabus({ modules: completeModules });
-};
 
 export default function StudentCoursePlayer() {
   const { courseId } = useParams();
@@ -189,6 +172,7 @@ export default function StudentCoursePlayer() {
   const [referenceTime, setReferenceTime] = useState(() => Date.now());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [syllabusUnavailable, setSyllabusUnavailable] = useState(false);
   const [, setRecordingProgressVersion] = useState(0);
 
   const load = useCallback(async () => {
@@ -209,29 +193,14 @@ export default function StudentCoursePlayer() {
       const selectedCourse = normalizeEnrollment(enrollment);
       setCourse(selectedCourse);
       setSelectedModule(0);
-      const [syllabusResult, classResult, materialResult] = await Promise.allSettled([
+      const [syllabusResult, classResult] = await Promise.allSettled([
         studentCourseService.getStudentSyllabus(),
-        studentClassService.list({ courseId, ...(selectedCourse.batchId ? { batchId: selectedCourse.batchId } : {}) }, { skipAuthRedirect: true }),
-        courseMaterialService.list(),
+        liveClassService.list({ courseId, ...(selectedCourse.batchId ? { batchId: selectedCourse.batchId } : {}) }),
       ]);
       let apiSyllabus = syllabusResult.status === "fulfilled" ? normalizeSyllabus(syllabusResult.value) : [];
-      // The student syllabus endpoint is not course-specific in older API versions.
-      // Fall back to the published organization syllabus for this enrolled course.
-      if (!apiSyllabus.length) {
-        try {
-          apiSyllabus = normalizeSyllabus(await organizationCourseService.getSyllabus(courseId));
-        } catch {
-          apiSyllabus = [];
-        }
-      }
-      if (!apiSyllabus.length) {
-        try {
-          apiSyllabus = await loadPublishedModules(courseId);
-        } catch {
-          apiSyllabus = normalizeSyllabus(selectedCourse);
-        }
-      }
-      const apiClasses = classResult.status === "fulfilled" ? normalizeLiveClassList(rows(classResult.value)).filter((item) => !item.courseId || String(item.courseId) === String(courseId)) : [];
+      if (!apiSyllabus.length) apiSyllabus = normalizeSyllabus(selectedCourse);
+      setSyllabusUnavailable(syllabusResult.status === "rejected" && !apiSyllabus.length);
+      const apiClasses = classResult.status === "fulfilled" ? normalizeLiveClassList(rows(classResult.value)).filter((item) => String(item.courseId) === String(courseId) && (!selectedCourse.batchId || String(item.batchId) === String(selectedCourse.batchId))) : [];
       const isDevOps = /dev\s*ops/i.test(selectedCourse.courseName);
       const resolvedSyllabus = apiSyllabus.length ? apiSyllabus : isDevOps ? DEVOPS_SYLLABUS : [];
       const resolvedClasses = apiClasses.length ? apiClasses : isDevOps ? devopsDemoClasses() : [];
@@ -245,7 +214,8 @@ export default function StudentCoursePlayer() {
       setSyllabus(resolvedSyllabus);
       setClasses(resolvedClasses);
       setSelectedModule(matchingModuleIndex(resolvedSyllabus, matchingClass));
-      if (materialResult.status === "fulfilled") setMaterials(rows(materialResult.value).filter((item) => String(item.courseId ?? item.id) === String(courseId)));
+      const resourceUrl = pick(selectedCourse.pdfUrl, selectedCourse.coursePdfUrl, selectedCourse.resourceUrl, selectedCourse.fileUrl);
+      setMaterials(resourceUrl ? [{ courseId, coursePdf: true, resourceUrl, title: selectedCourse.pdfFileName || `${selectedCourse.courseName} material` }] : []);
     } catch (requestError) {
       setCourse(null);
       setError(requestError?.message === "not-enrolled" ? "You do not have access to this course." : "Unable to load this course workspace. Please try again.");
@@ -286,7 +256,7 @@ export default function StudentCoursePlayer() {
   // Opens the embedded Jitsi classroom. Previously this opened the raw link in
   // a new tab AND immediately posted a "Present" attendance record from the
   // click itself; attendance now starts only when Jitsi reports the student
-  // inside the conference (videoConferenceJoined → /api/jitsi-attendance/join).
+  // inside the conference (videoConferenceJoined â†’ /api/jitsi-attendance/join).
   const openClassroom = (classItem) => {
     const classId = classItem?.id ?? classItem?.classId ?? classItem?.liveClassId;
     if (!classId) return;
@@ -303,18 +273,24 @@ export default function StudentCoursePlayer() {
       const blob = await courseMaterialService.file(material);
       const filename = material.pdfFileName ?? material.fileName ?? material.title ?? "Course material";
       triggerFileDownload(blob, /\.pdf$/i.test(filename) ? filename : filename + ".pdf");
+      toast.success("Course material downloaded successfully.");
     } catch {
       toast.error("Unable to download this file. Please try again or contact your mentor.");
     }
   };
   const downloadMentorGuide = async () => {
-    const { jsPDF } = await import("jspdf");
-    const pdf = new jsPDF();
-    pdf.setFont("helvetica", "bold"); pdf.setFontSize(20); pdf.text("DevOps Course Study Guide", 18, 22);
-    pdf.setFont("helvetica", "normal"); pdf.setFontSize(11); pdf.text(`Mentor: ${mentorName || "Praveen Sai"}`, 18, 32);
-    let y = 45;
-    DEVOPS_SYLLABUS.forEach((section, index) => { pdf.setFont("helvetica", "bold"); pdf.text(`Section ${index + 1}: ${section.name}`, 18, y); y += 7; pdf.setFont("helvetica", "normal"); section.topics.forEach((topic) => { pdf.text(`- ${topic.name}`, 24, y); y += 6; }); y += 4; });
-    pdf.save("DevOps-Mentor-Study-Guide.pdf");
+    try {
+      const { jsPDF } = await import("jspdf");
+      const pdf = new jsPDF();
+      pdf.setFont("helvetica", "bold"); pdf.setFontSize(20); pdf.text("DevOps Course Study Guide", 18, 22);
+      pdf.setFont("helvetica", "normal"); pdf.setFontSize(11); pdf.text(`Mentor: ${mentorName || "Praveen Sai"}`, 18, 32);
+      let y = 45;
+      DEVOPS_SYLLABUS.forEach((section, index) => { pdf.setFont("helvetica", "bold"); pdf.text(`Section ${index + 1}: ${section.name}`, 18, y); y += 7; pdf.setFont("helvetica", "normal"); section.topics.forEach((topic) => { pdf.text(`- ${topic.name}`, 24, y); y += 6; }); y += 4; });
+      await pdf.save("DevOps-Mentor-Study-Guide.pdf", { returnPromise: true });
+      toast.success("Study guide downloaded successfully.");
+    } catch {
+      toast.error("Unable to download the study guide. Please try again.");
+    }
   };
   const completeRecording = () => {
     if (!recordingProgressKey) return;
@@ -334,9 +310,10 @@ export default function StudentCoursePlayer() {
   if (error) return <div className="grid min-h-dvh place-items-center bg-slate-50 p-5"><div className="text-center"><AlertCircle className="mx-auto h-10 w-10 text-amber-500" /><h1 className="mt-3 text-xl font-bold">{error}</h1><button onClick={load} className="mt-4 rounded-lg bg-blue-600 px-4 py-2 text-sm font-bold text-white">Retry</button></div></div>;
 
   return <div className="min-h-dvh bg-[#eef3f9] text-slate-900">
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white shadow-sm"><div className="mx-auto flex h-16 max-w-[1680px] items-center gap-4 px-5"><button onClick={() => navigate("/student/courses")} className="inline-flex items-center gap-2 text-sm font-bold text-slate-600"><ArrowLeft className="h-4 w-4" />My courses</button><div className="h-7 w-px bg-slate-200" /><div className="min-w-0"><h1 className="truncate text-base font-black">{course.courseName}</h1><p className="text-[11px] font-semibold text-slate-500">Batch: {course.batchName || "Not assigned"} · Mentor: {mentorName || "Not assigned"}</p></div><button onClick={() => navigate("/student/courses")} className="ml-auto text-xs font-extrabold text-blue-700">Exit course</button></div></header>
+    {syllabusUnavailable && <div role="alert" className="border-b border-amber-200 bg-amber-50 px-5 py-3 text-sm text-amber-900">The student syllabus API is unavailable for this course. Your administrator needs to enable or publish the student syllabus.</div>}
+    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white shadow-sm"><div className="mx-auto flex h-16 max-w-[1680px] items-center gap-4 px-5"><button onClick={() => navigate("/student/courses")} className="inline-flex items-center gap-2 text-sm font-bold text-slate-600"><ArrowLeft className="h-4 w-4" />My courses</button><div className="h-7 w-px bg-slate-200" /><div className="min-w-0"><h1 className="truncate text-base font-black">{course.courseName}</h1><p className="text-[11px] font-semibold text-slate-500">Batch: {course.batchName || "Not assigned"} Â· Mentor: {mentorName || "Details unavailable"}</p></div><button onClick={() => navigate("/student/courses")} className="ml-auto text-xs font-extrabold text-blue-700">Exit course</button></div></header>
     <main className="mx-auto grid max-w-[1680px] gap-4 p-4 lg:grid-cols-[330px_minmax(0,1fr)]">
-      <aside className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:sticky lg:top-20 lg:h-[calc(100dvh-6rem)]"><div className="border-b bg-gradient-to-br from-blue-50 to-cyan-50 p-5"><p className="text-[10px] font-black uppercase tracking-[.18em] text-blue-600">Complete course index</p><h2 className="mt-2 text-xl font-black">{course.courseName} Syllabus</h2><p className="mt-1 text-xs text-slate-500">{syllabus.length ? `${syllabus.length} sections · ${syllabus.reduce((total, item) => total + item.topics.length, 0)} topics` : "Syllabus not published yet"}</p>{liveModuleIndex >= 0 && <p className="mt-2 text-[10px] font-bold text-rose-600">Showing the section for the current live class</p>}</div><div className="max-h-[calc(100dvh-12rem)] overflow-y-auto p-3">{syllabus.length ? syllabus.map((module, index) => { const isDisplayed = displayedModuleIndex === index; return <button key={module.id} onClick={() => liveModuleIndex < 0 && setSelectedModule(index)} disabled={liveModuleIndex >= 0 && !isDisplayed} title={liveModuleIndex >= 0 && !isDisplayed ? "Other sections are available after the current live class" : undefined} className={`mb-2 w-full rounded-xl p-3 text-left transition ${isDisplayed ? "bg-blue-600 text-white shadow-md" : "border border-transparent hover:border-slate-200 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"}`}><span className="flex items-start gap-3"><span className={`grid h-7 w-7 shrink-0 place-items-center rounded-lg text-xs font-black ${isDisplayed ? "bg-white/20" : "bg-blue-50 text-blue-700"}`}>{index + 1}</span><span className="min-w-0 flex-1"><small className={isDisplayed ? "font-bold uppercase text-blue-100" : "font-bold uppercase text-blue-600"}>Section {index + 1}</small><b className="block text-sm">{module.name}</b></span><ChevronRight className={`mt-1 h-4 w-4 shrink-0 transition ${isDisplayed ? "rotate-90" : ""}`} /></span><span className={`mt-3 block space-y-1 border-t pt-2 ${isDisplayed ? "border-white/20" : "border-slate-100"}`}>{module.topics.map((topic, topicIndex) => <span key={topic.id} className={`block truncate pl-10 text-[11px] ${isDisplayed ? "text-blue-100" : "text-slate-500"}`}>{topicIndex + 1}. {topic.name}</span>)}</span></button>; }) : <div className="px-3 py-10 text-center"><BookOpen className="mx-auto h-8 w-8 text-slate-300" /><p className="mt-3 text-sm font-bold">Syllabus not published</p><p className="mt-1 text-xs text-slate-500">Published modules will appear here like a book index.</p></div>}</div></aside>
+      <aside className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm lg:sticky lg:top-20 lg:h-[calc(100dvh-6rem)]"><div className="border-b bg-gradient-to-br from-blue-50 to-cyan-50 p-5"><p className="text-[10px] font-black uppercase tracking-[.18em] text-blue-600">Complete course index</p><h2 className="mt-2 text-xl font-black">{course.courseName} Syllabus</h2><p className="mt-1 text-xs text-slate-500">{syllabus.length ? `${syllabus.length} sections Â· ${syllabus.reduce((total, item) => total + item.topics.length, 0)} topics` : "Syllabus not published yet"}</p>{liveModuleIndex >= 0 && <p className="mt-2 text-[10px] font-bold text-rose-600">Showing the section for the current live class</p>}</div><div className="max-h-[calc(100dvh-12rem)] overflow-y-auto p-3">{syllabus.length ? syllabus.map((module, index) => { const isDisplayed = displayedModuleIndex === index; return <button key={module.id} onClick={() => liveModuleIndex < 0 && setSelectedModule(index)} disabled={liveModuleIndex >= 0 && !isDisplayed} title={liveModuleIndex >= 0 && !isDisplayed ? "Other sections are available after the current live class" : undefined} className={`mb-2 w-full rounded-xl p-3 text-left transition ${isDisplayed ? "bg-blue-600 text-white shadow-md" : "border border-transparent hover:border-slate-200 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60"}`}><span className="flex items-start gap-3"><span className={`grid h-7 w-7 shrink-0 place-items-center rounded-lg text-xs font-black ${isDisplayed ? "bg-white/20" : "bg-blue-50 text-blue-700"}`}>{index + 1}</span><span className="min-w-0 flex-1"><small className={isDisplayed ? "font-bold uppercase text-blue-100" : "font-bold uppercase text-blue-600"}>Section {index + 1}</small><b className="block text-sm">{module.name}</b></span><ChevronRight className={`mt-1 h-4 w-4 shrink-0 transition ${isDisplayed ? "rotate-90" : ""}`} /></span><span className={`mt-3 block space-y-1 border-t pt-2 ${isDisplayed ? "border-white/20" : "border-slate-100"}`}>{module.topics.map((topic, topicIndex) => <span key={topic.id} className={`block truncate pl-10 text-[11px] ${isDisplayed ? "text-blue-100" : "text-slate-500"}`}>{topicIndex + 1}. {topic.name}</span>)}</span></button>; }) : <div className="px-3 py-10 text-center"><BookOpen className="mx-auto h-8 w-8 text-slate-300" /><p className="mt-3 text-sm font-bold">Syllabus not published</p><p className="mt-1 text-xs text-slate-500">Published modules will appear here like a book index.</p></div>}</div></aside>
       <div className="min-w-0 space-y-4 [&_button:disabled]:hidden">
         <section className="scp-hero" aria-label={`${course.courseName} course overview`}>
           <div className="scp-hero__copy">
@@ -344,7 +321,7 @@ export default function StudentCoursePlayer() {
             <h2 className="scp-hero__title">{course.courseName}</h2>
             <dl className="scp-hero__stats">
               <div><dt><UsersRound aria-hidden="true" />Batch</dt><dd>{course.batchName || "Not assigned"}</dd></div>
-              <div><dt><UserRound aria-hidden="true" />Mentor</dt><dd>{mentorName || "Not assigned"}</dd></div>
+              <div><dt><UserRound aria-hidden="true" />Mentor</dt><dd>{mentorName || "Details unavailable"}</dd></div>
               <div><dt><Clock3 aria-hidden="true" />Progress</dt><dd>{coursePercent}% complete</dd></div>
               <div><dt><BookOpen aria-hidden="true" />Sections</dt><dd>{syllabus.length ? `${syllabus.length} sections` : "Not published"}</dd></div>
             </dl>
@@ -352,8 +329,8 @@ export default function StudentCoursePlayer() {
           <img className="scp-hero__art" src={ORG_BANNERS.courseDetails.src} alt="" aria-hidden="true" draggable={false} decoding="async" />
         </section>
         {featuredClass && !liveClass && meetingUrl && <div className="flex justify-end"><button onClick={joinClass} className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-black text-white shadow-sm hover:bg-blue-700"><PlayCircle className="h-4 w-4" />Open Live Classroom</button></div>}
-        {featuredClass ? <section className={`rounded-2xl border bg-white p-5 shadow-sm ${liveClass ? "border-rose-200" : "border-blue-200"}`}><div className="flex flex-wrap items-start justify-between gap-3"><div><p className={`text-[11px] font-black uppercase tracking-widest ${liveClass ? "text-rose-600" : "text-blue-600"}`}>{liveClass ? "Current live class" : "Next scheduled class"}</p><h2 className="mt-1 text-2xl font-black">{pick(featuredClass.title, featuredClass.className, featuredClass.topicName, "Scheduled class")}</h2><p className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-xs font-semibold text-slate-500"><span className="inline-flex items-center gap-1.5"><CalendarDays className="h-4 w-4 text-blue-600" />{liveClass ? "Started" : "Starts"}: {dateTime(featuredClass.startAt)}</span>{liveClass && featuredClass.endAt && <span className="inline-flex items-center gap-1.5"><Clock3 className="h-4 w-4 text-rose-500" />Ends: {dateTime(featuredClass.endAt)}</span>}<span className="inline-flex items-center gap-1.5"><UserRound className="h-4 w-4 text-blue-600" />{mentorName || "Mentor not assigned"}</span></p></div><span className={`whitespace-nowrap rounded-full px-3 py-2 text-xs font-black tabular-nums ${liveClass ? "bg-rose-50 text-rose-700" : "bg-blue-50 text-blue-700"}`}>{liveClass ? `● LIVE · Ends in ${featuredCountdown}` : `Starts in ${featuredCountdown}`}</span></div><div className="mt-4 flex flex-wrap gap-2"><button disabled={!liveClass} onClick={joinClass} className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-black text-white disabled:cursor-not-allowed disabled:opacity-45"><PlayCircle className="h-4 w-4" />{liveClass ? "Join Live Class" : "Available when live"}</button>{mentorName && <button onClick={openChat} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-black"><MessageCircle className="h-4 w-4" />Chat with Mentor</button>}</div></section> : <section className="rounded-2xl border border-dashed border-slate-300 bg-white p-6"><Clock3 className="h-6 w-6 text-slate-400" /><h2 className="mt-2 font-black">No classes scheduled yet</h2><p className="mt-1 text-xs text-slate-500">Today’s live class and tomorrow’s countdown will appear here after the mentor schedules them.</p></section>}
-        <section className="rounded-2xl border border-slate-200 bg-white shadow-sm"><div className="border-b border-slate-100 p-5"><p className="text-[10px] font-black uppercase tracking-widest text-blue-600">{liveModuleIndex >= 0 ? "Live class syllabus" : "Syllabus"} · Section {activeModule ? displayedModuleIndex + 1 : "—"}</p><h2 className="mt-1 text-xl font-black">{activeModule?.name || "Topic syllabus"}</h2>{activeModule?.description && <p className="mt-1 text-sm text-slate-500">{activeModule.description}</p>}</div><div className="divide-y divide-slate-100">{activeModule?.topics.length ? activeModule.topics.map((topic, index) => <article key={topic.id} className={`flex gap-4 p-5 ${liveClass && String(topic.name).toLowerCase() === String(pick(liveClass.title, liveClass.className, liveClass.topicName)).toLowerCase() ? "bg-blue-50/70" : ""}`}><span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-blue-50 text-xs font-black text-blue-700">{index + 1}</span><div><h3 className="text-sm font-black">{topic.name}</h3>{topic.description && <p className="mt-1 text-xs leading-5 text-slate-500">{topic.description}</p>}</div></article>) : <div className="p-10 text-center text-sm font-medium text-slate-500">{syllabus.length ? "Topics have not been published for this section." : "The DevOps syllabus will appear here when it is published by the organization."}</div>}</div></section>
+        {featuredClass ? <section className={`rounded-2xl border bg-white p-5 shadow-sm ${liveClass ? "border-rose-200" : "border-blue-200"}`}><div className="flex flex-wrap items-start justify-between gap-3"><div><p className={`text-[11px] font-black uppercase tracking-widest ${liveClass ? "text-rose-600" : "text-blue-600"}`}>{liveClass ? "Current live class" : "Next scheduled class"}</p><h2 className="mt-1 text-2xl font-black">{pick(featuredClass.title, featuredClass.className, featuredClass.topicName, "Scheduled class")}</h2><p className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-xs font-semibold text-slate-500"><span className="inline-flex items-center gap-1.5"><CalendarDays className="h-4 w-4 text-blue-600" />{liveClass ? "Started" : "Starts"}: {dateTime(featuredClass.startAt)}</span>{liveClass && featuredClass.endAt && <span className="inline-flex items-center gap-1.5"><Clock3 className="h-4 w-4 text-rose-500" />Ends: {dateTime(featuredClass.endAt)}</span>}<span className="inline-flex items-center gap-1.5"><UserRound className="h-4 w-4 text-blue-600" />{mentorName || "Mentor not assigned"}</span></p></div><span className={`whitespace-nowrap rounded-full px-3 py-2 text-xs font-black tabular-nums ${liveClass ? "bg-rose-50 text-rose-700" : "bg-blue-50 text-blue-700"}`}>{liveClass ? `â— LIVE Â· Ends in ${featuredCountdown}` : `Starts in ${featuredCountdown}`}</span></div><div className="mt-4 flex flex-wrap gap-2"><button disabled={!liveClass} onClick={joinClass} className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2.5 text-xs font-black text-white disabled:cursor-not-allowed disabled:opacity-45"><PlayCircle className="h-4 w-4" />{liveClass ? "Join Live Class" : "Available when live"}</button>{mentorName && <button onClick={openChat} className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-black"><MessageCircle className="h-4 w-4" />Chat with Mentor</button>}</div></section> : <section className="rounded-2xl border border-dashed border-slate-300 bg-white p-6"><Clock3 className="h-6 w-6 text-slate-400" /><h2 className="mt-2 font-black">No classes scheduled yet</h2><p className="mt-1 text-xs text-slate-500">Todayâ€™s live class and tomorrowâ€™s countdown will appear here after the mentor schedules them.</p></section>}
+        <section className="rounded-2xl border border-slate-200 bg-white shadow-sm"><div className="border-b border-slate-100 p-5"><p className="text-[10px] font-black uppercase tracking-widest text-blue-600">{liveModuleIndex >= 0 ? "Live class syllabus" : "Syllabus"} Â· Section {activeModule ? displayedModuleIndex + 1 : "â€”"}</p><h2 className="mt-1 text-xl font-black">{activeModule?.name || "Topic syllabus"}</h2>{activeModule?.description && <p className="mt-1 text-sm text-slate-500">{activeModule.description}</p>}</div><div className="divide-y divide-slate-100">{activeModule?.topics.length ? activeModule.topics.map((topic, index) => <article key={topic.id} className={`flex gap-4 p-5 ${liveClass && String(topic.name).toLowerCase() === String(pick(liveClass.title, liveClass.className, liveClass.topicName)).toLowerCase() ? "bg-blue-50/70" : ""}`}><span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-blue-50 text-xs font-black text-blue-700">{index + 1}</span><div><h3 className="text-sm font-black">{topic.name}</h3>{topic.description && <p className="mt-1 text-xs leading-5 text-slate-500">{topic.description}</p>}</div></article>) : <div className="p-10 text-center text-sm font-medium text-slate-500">{syllabus.length ? "Topics have not been published for this section." : "The course syllabus will appear here when it is available to your account."}</div>}</div></section>
         {recordings.length > 0 && <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-2"><ClipboardCheck className="h-5 w-5 text-violet-600" /><h2 className="text-sm font-black">Class Completion & Assessment</h2></div>
           <p className="mt-1 text-xs text-slate-500">Complete each step to unlock the next learning activity.</p>

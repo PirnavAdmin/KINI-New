@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { AlertCircle, ArrowRight, Check, CheckCircle2, Eye, EyeOff, KeyRound, LockKeyhole } from "lucide-react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import RecoveryShell from "../components/RecoveryShell";
 import { ROUTES } from "@shared/constants/routeConstants";
 import { demoPaymentApi, isDemoPaymentMode } from "@shared/services/demoPaymentApi";
+import { accountActivationApi } from "@shared/services/guestEnrollmentApi";
 
 const PASSWORD_RULES = [
   { label: "8+ characters", test: (value) => value.length >= 8 },
@@ -18,13 +19,15 @@ const INPUT_CLASS = "h-12 w-full rounded-xl border border-slate-300 bg-white pl-
 /**
  * Activation link target from the "Your Kini EduHub Account Is Approved"
  * email: the student sets their password once with a single-use, expiring
- * token. Only the Demo Payment Mode backend issues these tokens today.
+ * token. Live activation uses the guest backend contract; demo mode retains
+ * its separate development-only account store.
  */
 export default function ActivateAccount() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token") ?? "";
   // checking | valid | invalid | unsupported | done
-  const [state, setState] = useState(() => (!isDemoPaymentMode ? "unsupported" : token ? "checking" : "invalid"));
+  const [state, setState] = useState(() => (token ? "checking" : "invalid"));
   const [account, setAccount] = useState(null);
   const [error, setError] = useState("");
   const [password, setPassword] = useState("");
@@ -35,7 +38,7 @@ export default function ActivateAccount() {
   useEffect(() => {
     if (state !== "checking") return undefined;
     let active = true;
-    demoPaymentApi.inspectActivation(token)
+    (isDemoPaymentMode ? demoPaymentApi : accountActivationApi).inspectActivation(token)
       .then((info) => {
         if (!active) return;
         setAccount(info);
@@ -61,8 +64,9 @@ export default function ActivateAccount() {
     setLoading(true);
     setError("");
     try {
-      await demoPaymentApi.activateAccount(token, password);
+      await (isDemoPaymentMode ? demoPaymentApi : accountActivationApi).activateAccount(token, password);
       setState("done");
+      if (!isDemoPaymentMode) navigate(ROUTES.AUTH.LOGIN, { replace: true });
     } catch (requestError) {
       setError(requestError.message);
     } finally {

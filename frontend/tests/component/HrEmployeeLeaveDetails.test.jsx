@@ -54,10 +54,12 @@ it('loads selected profile, complete scoped history, counts and real balance', a
 
 it('navigates only through the employee name, using employeeId instead of leaveId', async () => {
   render(<MemoryRouter initialEntries={['/employee/hr-leave']}><Routes><Route path="/employee/hr-leave" element={<HrApiModule module="leave" />} /><Route path="/employee/hr-leave/employee/:employeeId" element={<EmployeeLeaveDetails />} /></Routes></MemoryRouter>)
-  const names = await screen.findAllByRole('button', { name: 'Selected Employee' }, { timeout: 5000 })
+  const names = await screen.findAllByRole('button', { name: /^Selected Employee/ }, { timeout: 5000 })
   fireEvent.click(screen.getAllByRole('checkbox', { name: 'Select row' })[0])
   expect(screen.queryByText('Employee ID: employee-9')).not.toBeInTheDocument()
-  fireEvent.click(names[0]); await loaded()
+  const selectedName = names.find(button => button.closest('tr')?.textContent.includes('Reason 41'))
+  expect(selectedName).toBeDefined()
+  fireEvent.click(selectedName); await loaded()
   expect(screen.getByText('Employee ID: employee-9')).toBeInTheDocument()
 })
 

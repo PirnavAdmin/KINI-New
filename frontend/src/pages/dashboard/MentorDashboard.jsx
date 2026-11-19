@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import MentorBanner from "@features/mentor/components/MentorBanner";
+import MentorAnnouncements from "@features/mentor/components/MentorAnnouncements";
 import { MENTOR_BANNERS } from "@features/mentor/constants/mentorBanners";
 import { useNavigate } from "react-router-dom";
 import {
@@ -606,7 +607,7 @@ export default function MentorDashboard() {
           ? explicitToday
           : classifiedClasses.today;
         const upcoming = Array.isArray(explicitUpcoming) && explicitUpcoming.length
-          ? explicitUpcoming
+          ? selectDashboardClasses(explicitUpcoming).upcoming
           : classifiedClasses.upcoming;
         const pending = Array.isArray(explicitPending) && explicitPending.length
           ? explicitPending
@@ -832,7 +833,7 @@ export default function MentorDashboard() {
       }[key],
     );
   const openClassScheduler = () =>
-    navigate(`${ROUTES.MENTOR.CALENDAR}?create=true`);
+    navigate(`${ROUTES.MENTOR.CALENDAR}?create=true&returnTo=${encodeURIComponent(ROUTES.MENTOR.DASHBOARD)}`);
   const openStudentProfile = (studentId) =>
     navigate(ROUTES.MENTOR.STUDENT_WORKSPACE.replace(":studentId", studentId));
   const openProgressCategory = (risk) =>
@@ -892,7 +893,7 @@ export default function MentorDashboard() {
               <button
                 type="button"
                 data-leave-action="true"
-                onClick={() => navigate(ROUTES.MENTOR.LEAVE, { state: { openAdd: true } })}
+                onClick={() => navigate(ROUTES.MENTOR.LEAVE, { state: { openAdd: true, returnTo: ROUTES.MENTOR.DASHBOARD } })}
                 className="mentor-hero-btn mentor-hero-btn--soft"
               >
                 <ClipboardCheck aria-hidden="true" />
@@ -1029,6 +1030,8 @@ export default function MentorDashboard() {
             </article>
           </div>
         </section>
+
+        <MentorAnnouncements />
 
         <article className={`${panel} mentor-attention-panel`}>
           <SectionHeader icon={TriangleAlert} tone="red" title="Needs attention" subtitle="Items requiring action today" />

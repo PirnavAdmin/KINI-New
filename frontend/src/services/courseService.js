@@ -2,6 +2,9 @@ import apiClient from "@shared/services/apiClient";
 import { getApiErrorMessage, getListPayload, getPayload } from "@shared/services/apiServices";
 import { ENROLLED_COURSES } from "@shared/data/studentMockData";
 import { API_ENDPOINTS } from "@/api/endpoints";
+import { getUserProfile, resolveUserId } from "@/services/profileService";
+import { studentsApi } from "@/api/students";
+import { batchService } from "@shared/services/batchService";
 
 const COURSE_PROGRESS_KEY = "studentCourseProgress";
 
@@ -93,6 +96,39 @@ export const getStudentCourseRows = (response) => {
   throw new Error("The course service returned an unrecognized response.");
 };
 
+// Enrollment responses can omit mentor fields. The student's own batch roster
+// supplies the assignment; never look up a mentor from another course.
+const withBatchMentors = async (rows) => {
+  const requests = new Map();
+  let mentorOptions;
+  return Promise.all(rows.map(async (row) => {
+    const batchId = row.batchId ?? row.batch?.batchId ?? row.batch?.id;
+    const existingName = row.mentorName || row.assignedMentorName || row.tutorName || row.mentor?.name || row.batch?.mentorName;
+    if (!batchId || existingName) return normalizeCourse(row);
+    if (!requests.has(String(batchId))) requests.set(String(batchId), (async () => {
+      const [roster] = await Promise.allSettled([batchService.getStudents(batchId)]);
+      const sources = [roster].filter((result) => result.status === 'fulfilled').map((result) => result.value?.data ?? result.value ?? {});
+      return Object.assign({}, ...sources.map((source) => Object.fromEntries(Object.entries(source).filter(([, value]) => value != null && value !== ''))));
+    })());
+    const batch = await requests.get(String(batchId));
+    if (!batch) return normalizeCourse(row);
+    const merged = {
+      ...row,
+      mentorId: row.mentorId || batch.mentorId || batch.tutorId || batch.mentor?.mentorId || batch.mentor?.id,
+      mentorName: row.mentorName || batch.mentorName || batch.assignedMentorName || batch.trainerName || batch.tutorName || batch.mentor?.mentorName || batch.mentor?.name || batch.mentor?.fullName,
+      mentorEmail: row.mentorEmail || batch.mentorEmail || batch.mentor?.email,
+    };
+    if (!merged.mentorName && merged.mentorId) {
+      // A batch may supply only MentorId. Resolve that exact ID, never the
+      // first mentor or a mentor selected by a matching course name.
+      mentorOptions ??= apiClient.get(API_ENDPOINTS.liveClassDropdowns.mentors, { skipAuthRedirect: true }).then(getListPayload).catch(() => []);
+      const mentor = (await mentorOptions).find((item) => String(item.mentorId ?? item.id ?? item.value) === String(merged.mentorId));
+      if (mentor) merged.mentorName = mentor.mentorName || mentor.fullName || mentor.name || mentor.label || [mentor.firstName, mentor.lastName].filter(Boolean).join(' ');
+    }
+    return normalizeCourse(merged);
+  }));
+};
+
 export const courseService = {
   async getCourses() {
     const response = await apiClient.get("/api/v1/courses");
@@ -103,7 +139,25 @@ export const courseService = {
     const response = await apiClient.get(API_ENDPOINTS.student.courses, {
       skipAuthRedirect: true,
     });
-    return getStudentCourseRows(response).map(normalizeCourse);
+    const rows = getStudentCourseRows(response);
+    if (rows.length) return withBatchMentors(rows);
+
+    // Some accounts are assigned through the organization student record,
+    // before the token-scoped course list has been populated. Resolve only
+    // this session's student ID; an Auth user ID is a different identifier.
+    let session = {};
+    try { session = JSON.parse(localStorage.getItem("user") || "{}"); } catch { /* no session */ }
+    const userId = resolveUserId(session);
+    let profile = {};
+    if (userId) {
+      try { profile = (await getUserProfile(userId)).raw ?? {}; } catch { /* use explicit session student ID */ }
+    }
+    const studentId = profile.studentId ?? profile.student?.studentId ?? session.studentId ?? session.StudentId ?? session.student?.studentId;
+    if (!studentId) return [];
+    // Read batch enrollments rather than the organization administration
+    // endpoint, which is not the student portal's assignment resource.
+    const result = await studentsApi.getEnrollments(studentId);
+    return withBatchMentors(result.data);
   },
 
   async getStudentSyllabus() {

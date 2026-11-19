@@ -134,7 +134,23 @@ export const tutorService = {
   createCredentials: (tutorId) => apiClient.post(`${BASE}/${id(tutorId)}/credentials`).then(getPayload),
   sendCredentials: (tutorId) => apiClient.post(`${BASE}/${id(tutorId)}/send-credentials`).then(getPayload),
   assign: async (assignment) => {
-    const response = await apiClient.post("/api/v1/organization/tutor-assignments", assignment);
+    const { mentorId, ...legacyAssignment } = assignment;
+    let response;
+    try {
+      response = await apiClient.post("/api/v1/organization/tutor-assignments", legacyAssignment);
+    } catch (error) {
+      if (![404, 405].includes(error?.response?.status) || mentorId == null) throw error;
+      const batch = await batchService.getById(assignment.batchId, { raw: true });
+      const courseId = batch.courseId ?? batch.course?.courseId ?? batch.course?.id;
+      if (String(courseId) !== String(assignment.courseId)) throw new Error('The selected batch does not belong to this course. Please select it again.', { cause: error });
+      if (!Number.isInteger(Number(mentorId)) || Number(mentorId) <= 0) throw new Error('A valid linked mentor profile is required for assignment.', { cause: error });
+      await batchService.update(assignment.batchId, { ...batch, mentorId });
+      const saved = await batchService.getById(assignment.batchId, { raw: true });
+      if (String(saved.mentorId ?? saved.mentor?.mentorId ?? saved.mentor?.id) !== String(mentorId)) {
+        throw new Error('The mentor assignment could not be confirmed. Refresh the batch before retrying.', { cause: error });
+      }
+      return saved;
+    }
     if (response.data?.success === false) {
       throw Object.assign(new Error(response.data.message || 'Unable to assign this mentor.'), { response });
     }

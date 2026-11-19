@@ -14,7 +14,7 @@ export default function AssessmentCertificate() {
   const results = location.state
 
   const certificateData = {
-    studentName: 'Srinivas Kumar',
+    studentName: 'Demo Student',
     assessmentTitle: results?.assessment?.title || 'Assessment',
     completionDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
     certificateId: `CERT-${id}-${Date.now().toString(36).toUpperCase()}`,

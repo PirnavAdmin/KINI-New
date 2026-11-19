@@ -1,0 +1,74 @@
+/* HR Announcements page — responsive composition. Scoped to this page via
+   HRPage's className (hrl-module--announcements). Breakpoints use the CSS
+   viewport width, so Chrome zoom is handled naturally: at 75% zoom a
+   1920px screen is a 2560px CSS viewport and a 1366px screen is ~1821px.
+   No zoom/scale tricks. */
+
+[data-dashboard-role] .hrl-module--announcements { min-width: 0; max-width: 100%; }
+[data-dashboard-role] .hrl-module--announcements :is(.hrl-filters, .hrl-table-card, .hrp-kpis) { min-width: 0; }
+
+/* Table: readable column widths; actions on one line; scroll only when narrow */
+[data-dashboard-role] .hrl-module--announcements .hrl-table { min-width: 940px; table-layout: auto; }
+[data-dashboard-role] .hrl-module--announcements .hrl-actions-cell { width: 1%; }
+[data-dashboard-role] .hrl-module--announcements .hrl-actions { flex-wrap: nowrap; }
+[data-dashboard-role] .hrl-module--announcements .hrl-status { white-space: nowrap; }
+[data-dashboard-role] .hrl-module--announcements .hrl-pager__pages { margin-left: auto; }
+
+/* ≥1100px: filters in one row — search is the widest, the four fields share
+   the rest, Reset/Search keep their natural width. */
+@media (min-width: 1100px) {
+  [data-dashboard-role] .hrl-module--announcements .hrl-filters__row { flex-wrap: nowrap; gap: var(--hr-gap, 10px); }
+  [data-dashboard-role] .hrl-module--announcements .hrl-search { flex: 2.2 1 220px; max-width: none; min-width: 200px; width: 0; }
+  [data-dashboard-role] .hrl-module--announcements .hrl-field { flex: 1 1 120px; min-width: 0; }
+  [data-dashboard-role] .hrl-module--announcements .hrl-filters__buttons { flex: 0 0 auto; gap: 8px; margin-left: 0; }
+  [data-dashboard-role] .hrl-module--announcements .hrl-filters__buttons .hrl-btn { min-width: 0; padding: 0 16px; }
+  [data-dashboard-role] .hrl-module--announcements :is(.hrl-search input, .hrl-field input, .hrl-field select, .hrl-btn) { height: var(--hr-control-height, 40px); }
+  [data-dashboard-role] .hrl-module--announcements .hrl-table { min-width: 0; }
+}
+
+/* ≥1400px (100% zoom on 1440px+ screens, every 75% zoom case above 1050px):
+   all six summary cards in one row, equal widths. Overrides the shared
+   ≤1280px three-column rule only on this page. */
+@media (min-width: 1400px) {
+  html body [data-dashboard-role] .hrl-module--announcements .hrp-kpis { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+
+/* 1100–1399px: two even rows of three cards. */
+@media (min-width: 1100px) and (max-width: 1399.98px) {
+  html body [data-dashboard-role] .hrl-module--announcements .hrp-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* 761–1099px (tablets, small laptops): search on its own line, the four
+   fields two per row, buttons together. */
+@media (min-width: 761px) and (max-width: 1099.98px) {
+  [data-dashboard-role] .hrl-module--announcements .hrl-search { flex: 1 1 100%; max-width: none; }
+  [data-dashboard-role] .hrl-module--announcements .hrl-field { flex: 1 1 calc(50% - var(--hr-gap, 12px)); min-width: 0; }
+  [data-dashboard-role] .hrl-module--announcements .hrl-filters__buttons { margin-left: auto; }
+}
+
+/* Very wide CSS viewports (e.g. 75% zoom on a 1920px screen): keep the hero
+   from stretching taller than the content needs. */
+@media (min-width: 1800px) {
+  [data-dashboard-role] .hrl-module--announcements .hrp-hero { min-height: 0; }
+}
+
+/* Long titles wrap inside the Title column (first data cell, with or without
+   the selection checkbox) instead of pushing the actions off-screen. */
+[data-dashboard-role] .hrl-module--announcements .hrl-table :is(td.hrl-check + td, tr > td:first-child:not(.hrl-check)) {
+  min-width: 150px;
+  max-width: 320px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+}
+
+/* 1100–1599px (100% zoom on 1280–1536px screens): tighter cells and action
+   buttons so all seven columns and Details / Edit / Delete fit without
+   scrolling. */
+@media (min-width: 1100px) and (max-width: 1599.98px) {
+  [data-dashboard-role] .hrl-module--announcements .hrl-table td { padding: var(--hr-table-cell-padding, 8px 6px); }
+  [data-dashboard-role] .hrl-module--announcements .hrl-table th { padding: var(--hr-table-head-padding, 10px 3px 8px); }
+  [data-dashboard-role] .hrl-module--announcements .hrl-th { padding: 0 7px; }
+  [data-dashboard-role] .hrl-module--announcements .hrl-actions { gap: 4px; }
+  [data-dashboard-role] .hrl-module--announcements .hrl-act { min-width: 0; padding: 0 9px; }
+}

@@ -1,0 +1,115 @@
+/* HR "Leave Details" dialog. */
+.hld { border-radius: 22px; border: 0; box-shadow: 0 30px 80px -20px rgba(11, 31, 54, .45); }
+
+.hld__hero {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+  overflow: hidden;
+  margin: 1rem 1rem 0;
+  border-radius: 16px;
+  background: linear-gradient(90deg, #0b2447 0%, #133b5d 60%, #1b4d78 100%);
+  padding: 1rem 4.5rem 1rem 1.25rem;
+  min-height: 4.75rem;
+}
+.hld__swoosh { position: absolute; inset: 0 0 0 auto; z-index: -1; width: 58%; height: 100%; }
+.hld__hero-icon {
+  display: grid;
+  place-items: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  flex: none;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .14);
+  color: #fff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, .25);
+}
+.hld__hero-icon svg { width: 1.6rem; height: 1.6rem; }
+.hld__title { margin: 0; font-size: 1.6rem; font-weight: 800; letter-spacing: -.01em; color: #fff; }
+.hld__close {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 999px;
+  background: #fff;
+  color: #0f2a4a;
+  box-shadow: 0 4px 14px rgba(15, 42, 74, .18);
+  cursor: pointer;
+}
+.hld__close svg { width: 1.35rem; height: 1.35rem; }
+.hld__close:hover { background: #f3f7fc; }
+.hld__close:focus-visible { outline: 2px solid #f39924; outline-offset: 2px; }
+
+.hld__body { padding: 1rem !important; }
+.hld__grid { display: grid; gap: 1rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+.hld__card { overflow: hidden; border: 1px solid #e7edf5; border-radius: 16px; background: #fff; }
+.hld__card-head {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  border-bottom: 1px solid #e7edf5;
+  background: #f4f7fb;
+  padding: .875rem 1.25rem;
+}
+.hld__card-head h3 { margin: 0; font-size: 1.1rem; font-weight: 800; color: #0f2a4a; }
+.hld__card-icon {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 10px;
+  background: #e3ecf8;
+  color: #133b5d;
+}
+.hld__card-icon svg { width: 1.2rem; height: 1.2rem; }
+
+.hld__rows { margin: 0; padding: .375rem 1.25rem .75rem; }
+.hld__row {
+  display: grid;
+  grid-template-columns: minmax(7.5rem, 42%) minmax(0, 1fr);
+  align-items: center;
+  gap: .75rem;
+  min-height: 2.9rem;
+  border-bottom: 1px solid #eef2f7;
+  padding: .45rem 0;
+}
+.hld__row:last-child { border-bottom: 0; }
+.hld__row dt { font-size: .925rem; color: #4b5f78; }
+.hld__row dd { margin: 0; min-width: 0; overflow-wrap: anywhere; font-size: .95rem; font-weight: 600; color: #0f2a4a; }
+.hld__row dd.is-empty { font-weight: 500; color: #94a3b8; }
+
+.hld__mail { display: inline-flex; align-items: center; gap: .45rem; color: #1d4ed8; text-decoration: underline; text-underline-offset: 2px; }
+.hld__mail svg { width: 1.05rem; height: 1.05rem; flex: none; }
+
+.hld__pill { display: inline-flex; align-items: center; border-radius: 999px; padding: .2rem .8rem; font-size: .875rem; font-weight: 700; }
+.hld__pill.is-caps { text-transform: uppercase; letter-spacing: .02em; }
+.hld__pill.is-red { background: #fde2e2; color: #c81e1e; }
+.hld__pill.is-blue { background: #e3edff; color: #2f6fe4; }
+.hld__pill.is-green { background: #dcf5e8; color: #0f8a55; }
+.hld__pill.is-amber { background: #fdefc8; color: #a15c07; }
+.hld__pill.is-slate { background: #e9eef5; color: #334a66; }
+
+@media (max-width: 760px) {
+  .hld__grid { grid-template-columns: minmax(0, 1fr); }
+  .hld__hero { margin: .75rem .75rem 0; padding-right: 4rem; }
+  .hld__title { font-size: 1.3rem; }
+  .hld__swoosh { width: 75%; }
+}
+
+.dark .hld__card { border-color: #334155; background: #0f172a; }
+.dark .hld__card-head { border-color: #334155; background: #1e293b; }
+.dark .hld__card-head h3, .dark .hld__row dd { color: #f1f5f9; }
+.dark .hld__card-icon { background: #1e3a5f; color: #bfdbfe; }
+.dark .hld__row { border-color: #1e293b; }
+.dark .hld__row dt { color: #94a3b8; }
+.dark .hld__mail { color: #93c5fd; }
+.dark .hld__swoosh path:first-child { fill: #1e293b; }

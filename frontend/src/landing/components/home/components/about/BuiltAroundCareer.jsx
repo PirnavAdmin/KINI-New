@@ -120,7 +120,7 @@ export default function BuiltAroundCareer() {
           className="mt-8 text-center"
         >
           <Link
-            to="/upskill-program"
+            to="/programs"
             className="inline-flex items-center gap-2 rounded-full bg-secondary-500 text-primary-700 border border-secondary-500 px-6 py-3 text-sm font-semibold shadow-lg transition-all duration-300 hover:bg-secondary-600 hover:shadow-xl focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-secondary-500"
           >
             Explore Programs →

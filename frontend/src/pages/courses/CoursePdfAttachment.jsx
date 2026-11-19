@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { courseService } from "@/shared/services/courseService";
+import toast from "react-hot-toast";
 
 export default function CoursePdfAttachment({ courseId }) {
   const [url, setUrl] = useState("");
@@ -21,7 +22,7 @@ export default function CoursePdfAttachment({ courseId }) {
     <strong className="text-sm">Course Syllabus PDF</strong>
     {url ? <>
       <a href={url} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-blue-600">View PDF</a>
-      <a href={url} download="course-syllabus.pdf" className="text-sm font-semibold text-blue-600">Download PDF</a>
+      <a href={url} download="course-syllabus.pdf" onClick={() => toast.success("Course syllabus download started successfully.")} className="text-sm font-semibold text-blue-600">Download PDF</a>
     </> : <button type="button" disabled={busy} onClick={load} className="text-sm font-semibold text-blue-600 disabled:opacity-50">{busy ? "Loading PDF…" : "View / Download PDF"}</button>}
     {error && <p role="alert" className="w-full text-sm text-red-600">{error}</p>}
   </div>;

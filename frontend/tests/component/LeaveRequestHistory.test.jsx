@@ -1,6 +1,6 @@
-import { beforeAll, afterAll, beforeEach, expect, it, vi } from 'vitest';
+import { beforeAll, afterAll, beforeEach, afterEach, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, waitFor, cleanup } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import EmployeeLeaveRequests from '../../src/features/employee/pages/EmployeeLeaveRequests';
 import leaveRequestService from '../../src/shared/services/leaveRequestService';
 
@@ -13,11 +13,28 @@ afterAll(() => { HTMLElement.prototype.scrollTo = originalScrollTo; });
 
 const show = (openAdd = false) => render(<MemoryRouter initialEntries={[{ pathname: '/mentor/leave', state: { openAdd } }]}><EmployeeLeaveRequests audience="mentor" /></MemoryRouter>);
 const fill = () => {
-  fireEvent.change(screen.getByLabelText('Start Date'), { target: { value: '2026-10-01' } });
-  fireEvent.change(screen.getByLabelText('End Date'), { target: { value: '2026-10-02' } });
-  fireEvent.change(screen.getByLabelText('Reason'), { target: { value: 'Family commitment' } });
+  fireEvent.change(screen.getByLabelText(/^Start Date/), { target: { value: '2026-10-01' } });
+  fireEvent.change(screen.getByLabelText(/^End Date/), { target: { value: '2026-10-02' } });
+  fireEvent.change(screen.getByLabelText(/^Reason/), { target: { value: 'Family commitment' } });
 };
-beforeEach(() => { cleanup(); vi.clearAllMocks(); leaveRequestService.mine.mockResolvedValue([]); });
+afterEach(() => vi.useRealTimers());
+beforeEach(() => { vi.useFakeTimers({ toFake: ['Date'] }); vi.setSystemTime(new Date(2026, 8, 1)); cleanup(); vi.clearAllMocks(); leaveRequestService.mine.mockResolvedValue([]); });
+
+function ReturnLocation() { return <p data-testid="return-location">{useLocation().pathname}</p>; }
+it('returns to Mentor Dashboard on cancellation of a dashboard-launched leave request', async () => {
+  render(<MemoryRouter initialEntries={[{ pathname: '/mentor/leave', state: { openAdd: true, returnTo: '/mentor/dashboard' } }]}><EmployeeLeaveRequests audience="mentor" /><ReturnLocation /></MemoryRouter>);
+  fireEvent.click(await screen.findByRole('button', { name: 'Cancel' }));
+  await waitFor(() => expect(screen.getByTestId('return-location')).toHaveTextContent('/mentor/dashboard'));
+});
+
+it('returns to Mentor Dashboard after submitting a dashboard-launched leave request', async () => {
+  leaveRequestService.create.mockResolvedValue({ leaveRequestId: 42 });
+  render(<MemoryRouter initialEntries={[{ pathname: '/mentor/leave', state: { openAdd: true, returnTo: '/mentor/dashboard' } }]}><EmployeeLeaveRequests audience="mentor" /><ReturnLocation /></MemoryRouter>);
+  await screen.findByLabelText(/^Reason/);
+  fill();
+  fireEvent.submit(document.getElementById('employee-leave-request-form'));
+  await waitFor(() => expect(screen.getByTestId('return-location')).toHaveTextContent('/mentor/dashboard'));
+});
 
 it('opens history by default and refetches saved requests after submission and remount', async () => {
   let stored = [];
@@ -31,16 +48,18 @@ it('opens history by default and refetches saved requests after submission and r
   expect(screen.queryByLabelText('Reason')).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'New Leave Request' }));
   fill();
-  fireEvent.click(screen.getByRole('button', { name: 'Send to HR review' }));
+  fireEvent.click(screen.getByRole('button', { name: /Send to HR Review/i }));
   await screen.findByText('Request #41');
+  expect(screen.queryByRole('checkbox')).toBeNull();
   expect(leaveRequestService.create).toHaveBeenCalledExactlyOnceWith({ leaveType: 'Casual', startDate: '2026-10-01', endDate: '2026-10-02', reason: 'Family commitment' });
-  expect(screen.getByText('Family commitment', { selector: 'span' })).toBeInTheDocument();
+  expect(screen.getByText('Family commitment')).toBeInTheDocument();
   view.unmount();
   stored[0].status = 'Rejected';
   stored[0].rejectionReason = 'Please choose another date';
   show();
   await screen.findByText('Request #41');
   expect(screen.getByText('rejected', { exact: true })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'View request 41' }));
   expect(screen.getByText(/Please choose another date/)).toBeInTheDocument();
 });
 
@@ -48,14 +67,14 @@ it('retains the form on server failure and blocks duplicate submissions', async 
   let reject;
   leaveRequestService.create.mockImplementation(() => new Promise((_, fail) => { reject = fail; }));
   show(true);
-  await screen.findByLabelText('Reason');
+  await screen.findByLabelText(/^Reason/);
   fill();
   fireEvent.submit(document.getElementById('employee-leave-request-form'));
   fireEvent.submit(document.getElementById('employee-leave-request-form'));
   expect(leaveRequestService.create).toHaveBeenCalledTimes(1);
   reject(new Error('Network unavailable'));
   await screen.findByRole('alert');
-  expect(screen.getByLabelText('Reason')).toHaveValue('Family commitment');
+  expect(screen.getByLabelText(/^Reason/)).toHaveValue('Family commitment');
   expect(screen.queryByText(/submitted successfully/)).not.toBeInTheDocument();
 });
 
@@ -73,9 +92,9 @@ it('does not retry a forbidden history and rejects reversed dates before POST', 
   show(true);
   await screen.findByText(/You do not have access/);
   expect(screen.queryByRole('button', { name: 'Retry' })).not.toBeInTheDocument();
-  expect(screen.getByRole('button', { name: 'Refresh' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Refresh leave requests' })).toBeDisabled();
   fill();
-  fireEvent.change(screen.getByLabelText('End Date'), { target: { value: '2026-09-01' } });
+  fireEvent.change(screen.getByLabelText(/^End Date/), { target: { value: '2026-09-01' } });
   fireEvent.submit(document.getElementById('employee-leave-request-form'));
   await waitFor(() => expect(screen.getByText('End date cannot be before the start date.')).toBeInTheDocument());
   expect(leaveRequestService.create).not.toHaveBeenCalled();

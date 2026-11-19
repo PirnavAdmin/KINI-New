@@ -6,12 +6,13 @@ export default function AssistantHeader({
   onToggleInsights,
   onClearChat,
   onClose,
+  allowInsights = false,
 }) {
   return (
     <header className="flex shrink-0 items-start justify-between gap-4 border-b border-slate-200/80 bg-white/78 px-4 py-3 backdrop-blur-xl dark:border-slate-800/80 dark:bg-slate-950/78 sm:px-5 sm:py-3">
       <div className="min-w-0">
         <div className="flex items-center gap-2.5">
-          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#085FA7] to-[#5CA347] text-white shadow-[0_12px_28px_rgba(8,95,167,0.22)]">
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-gradient-to-br from-[#143A5B] to-[#FF981B] text-white shadow-[0_12px_28px_rgba(8,95,167,0.22)]">
             <Sparkles className="h-4.5 w-4.5" />
           </div>
           <div className="min-w-0">
@@ -24,10 +25,6 @@ export default function AssistantHeader({
               </span>
             </div>
             <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                Live backend connected
-              </span>
               <span className="rounded-full bg-slate-100 px-2.5 py-1 font-medium dark:bg-slate-900">
                 {messageCountLabel}
               </span>
@@ -46,7 +43,7 @@ export default function AssistantHeader({
         >
           <Trash2 className="h-4 w-4" />
         </button>
-        <button
+        {allowInsights && <button
           type="button"
           onClick={onToggleInsights}
           aria-label={insightsOpen ? "Collapse insights" : "Expand insights"}
@@ -54,7 +51,7 @@ export default function AssistantHeader({
           title={insightsOpen ? "Collapse insights" : "Expand insights"}
         >
           {insightsOpen ? <PanelRightClose className="h-4 w-4" /> : <PanelRightOpen className="h-4 w-4" />}
-        </button>
+        </button>}
         <button
           type="button"
           onClick={onClose}

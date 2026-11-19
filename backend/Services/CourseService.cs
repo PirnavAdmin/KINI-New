@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using TalentSphereAPI.DTOs.Common;
 using TalentSphereAPI.DTOs.Course;
 using TalentSphereAPI.Enums;
@@ -175,7 +175,12 @@ namespace TalentSphereAPI.Services
                     Price =
                         dto.Price,
 
-                    Status = true
+                    // The form's Active / Draft choice (Active when not sent).
+                    Status = dto.Status ?? true,
+
+                    // Listed on the public catalogue; Draft (Status = false)
+                    // courses stay hidden because the catalogue requires Status.
+                    IsPublic = true
                 };
 
             await _repository
@@ -290,6 +295,11 @@ namespace TalentSphereAPI.Services
 
             course.Status =
                 dto.Status;
+
+            // An Active course is shown on the public catalogue (courses
+            // created before this rule were saved hidden).
+            if (dto.Status)
+                course.IsPublic = true;
 
             var result =
      await _repository
@@ -458,6 +468,9 @@ namespace TalentSphereAPI.Services
 
                 PdfUrl =
                     c.PdfUrl,
+
+                PosterUrl =
+                    c.PosterUrl,
 
                 TotalPurchases = 0,
 

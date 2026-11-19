@@ -106,6 +106,7 @@ function NavDropdown({ label, to, children, linkClass, isDark }) {
             <NavLink
               key={child.to}
               to={child.to}
+              tabIndex={open ? undefined : -1}
               onClick={() => setOpen(false)}
               className={({ isActive }) =>
                 `block px-4 py-2.5 text-[14px] transition-colors ${
@@ -129,6 +130,14 @@ export default function Navbar() {
   const [hasOpenedRegister, setHasOpenedRegister] = useState(false);
 
   const { isDark } = useThemeContext();
+
+  useEffect(() => {
+    const closeMenu = event => {
+      if (event.key === 'Escape') { setMenuOpen(false); setMobileProgramsOpen(false); }
+    };
+    window.addEventListener('keydown', closeMenu);
+    return () => window.removeEventListener('keydown', closeMenu);
+  }, []);
 
   const openRegister = useCallback(() => {
     setHasOpenedRegister(true);

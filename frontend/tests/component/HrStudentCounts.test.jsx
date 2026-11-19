@@ -19,7 +19,7 @@ it('accounts for the remaining student in a 14 / 8 / 5 roster', () => {
 
 it('reads all pages even when the server caps page size and deduplicates students', async () => {
   const api = { list: vi.fn().mockResolvedValueOnce({ items: roster.slice(0, 10), totalCount: 14 }).mockResolvedValueOnce({ items: roster.slice(9), totalCount: 14 }) }
-  expect(await loadHrStudentRoster(api, { Status: 'Active' })).toEqual(roster)
+  expect(await loadHrStudentRoster(api, { Status: 'Active' })).toEqual(roster.map(row => ({ ...row, status: row.status === 'Pending approval' ? 'Pending' : row.status })))
   expect(api.list.mock.calls[1][0]).toMatchObject({ PageNumber: 2, Status: 'Active' })
 })
 

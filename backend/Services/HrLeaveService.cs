@@ -385,9 +385,22 @@ namespace TalentSphereAPI.Services
                             leaveId);
 
 
-            return row == null
-                ? null
-                : ToResponse(row);
+            if (row == null)
+                return null;
+
+            var response = ToResponse(row);
+            try
+            {
+                response.Attachments = await LeaveAttachmentService.ForLeaveAsync(
+                    _context, OrganizationId, leaveId);
+            }
+            catch (MySqlConnector.MySqlException ex)
+                when (ex.ErrorCode == MySqlConnector.MySqlErrorCode.NoSuchTable)
+            {
+                // Database not migrated yet (20261118100000_AddLeaveRequestAttachments):
+                // keep leave details working, just without documents.
+            }
+            return response;
         }
 
 

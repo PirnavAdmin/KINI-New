@@ -87,6 +87,11 @@ namespace TalentSphereAPI.Models
         // Existing courses remain private until explicitly approved.
         public bool IsPublic { get; set; } = false;
 
+        // Public URL path of the course poster image, e.g.
+        // /uploads/course-posters/12_<guid>.jpg (served from wwwroot). Null = no poster.
+        [MaxLength(500)]
+        public string? PosterUrl { get; set; }
+
         // Archived courses must never appear in the public catalogue.
         public bool IsArchived { get; set; } = false;
     }

@@ -205,7 +205,7 @@ html body .mv17 .mv17-topic p { margin: 4px 0 0; color: var(--k-text) !important
 
 /* ── Course icon tile ─────────────────────────────────────────────────── */
 .mv17-course-icon { display: inline-grid; flex-shrink: 0; place-items: center; border-radius: 12px; color: #ffffff; }
-.mv17-course-icon svg { width: 55%; height: 55%; stroke-width: 2.4; }
+.mv17-course-icon svg { width: 55%; height: 55%; stroke-width: 2.4; color: inherit; stroke: currentColor; }
 html body .mv17-course-icon b { color: inherit !important; -webkit-text-fill-color: currentColor !important; font-family: Arial, sans-serif; font-size: 13px; font-weight: 800; letter-spacing: -0.02em; }
 .mv17-course-icon--sm { width: 44px; height: 44px; }
 .mv17-course-icon--md { width: 52px; height: 52px; }
@@ -219,6 +219,8 @@ html body .mv17-course-icon--lg b { font-size: 17px; }
 .mv17-course-icon--data { background: linear-gradient(145deg, #6c4de6, #3b82f6); }
 .mv17-course-icon--ai { background: linear-gradient(145deg, #8b3dde, #5b21b6); }
 .mv17-course-icon--generic { background: linear-gradient(145deg, #1d4a73, #0f2a4a); }
+html body .mentor-courses-page.mv17 .mv17-course-icon :is(svg, b) { color: inherit !important; -webkit-text-fill-color: currentColor !important; }
+html body .mentor-courses-page.mv17 .mv17-course-list__items > button[aria-current="true"] .mv17-course-icon { outline: 2px solid #3b82f6; outline-offset: 3px; }
 
 /* ── My Courses ───────────────────────────────────────────────────────── */
 html body .mv17 .mv17-course-list { padding: 18px 14px 14px; }

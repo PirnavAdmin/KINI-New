@@ -2,7 +2,7 @@ import { hrField, hrList, hrModuleApi, unwrapHrData } from './hrApi'
 import { HR_API_CONTRACT } from './hrApiContract'
 
 // `id` belongs to the employee directory record here, never to a leave row.
-const directoryIds = employee => ['employeeId', 'id', 'employeeCode', 'employeeNumber', 'code'].map(key => hrField(employee, key)).filter(value => value != null && value !== '').map(String)
+const directoryIds = employee => ['employeeRecordId', 'employeeId', 'id', 'employeeCode', 'employeeNumber', 'code'].map(key => hrField(employee, key)).filter(value => value != null && value !== '').map(String)
 const recordEmployeeIds = row => [hrField(row, 'employeeId'), hrField(row, 'employeeCode'), hrField(row, 'employeeNumber'),
   ...directoryIds(hrField(row, 'employee') ?? {})].filter(value => value != null && value !== '').map(String)
 

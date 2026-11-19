@@ -1,6 +1,6 @@
 /* HR › Training Batches (v21) */
 html body [data-dashboard-role] .hrb-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 12px; padding: 10px; border: 1px solid #e6edf6; border-radius: 16px; background: #fff; }
-html body [data-dashboard-role] .hrb-filters select { height: var(--hr-control-height, 42px); min-width: var(--hr-batch-filter-min-width, 170px); padding: 0 12px; border: 1px solid #dfe6ef; border-radius: 10px; background-color: #fff; color: #0f2a4a; font-size: 14px; font-weight: 600; }
+html body [data-dashboard-role] .hrb-filters select { height: var(--hr-control-height, 42px); min-width: min(100%, 170px); max-width: 100%; padding: 0 32px 0 12px; border: 1px solid #dfe6ef; border-radius: 10px; background-color: #fff; color: #0f2a4a; font-size: 14px; font-weight: 600; }
 html body [data-dashboard-role] .hrb-search { position: relative; flex: 1 1 280px; }
 html body [data-dashboard-role] .hrb-search > svg { position: absolute; left: 14px; top: 50%; width: 17px; height: 17px; transform: translateY(-50%); color: #3b5270; }
 html body [data-dashboard-role] .hrb-search input { width: 100%; height: var(--hr-control-height, 42px); padding: 0 36px 0 40px; border: 1px solid #dfe6ef; border-radius: 10px; background: #fff; color: #0f2a4a; font-size: 14px; outline: none; }
@@ -77,9 +77,10 @@ html.dark body [data-dashboard-role] :is(.hrb-card, .hrb-filters) { background: 
   html body [data-dashboard-role] .hrb-page .hrp-kpi__label { font-size: 13px; }
 
   /* Filters: one row, search takes the slack */
-  html body [data-dashboard-role] .hrb-filters { display: grid; gap: 8px; grid-template-columns: minmax(0, 1fr) repeat(3, 122px) 192px auto; }
-  html body [data-dashboard-role] .hrb-filters select,
-  html body [data-dashboard-role] .hrb-date select { width: 100%; min-width: 0; }
+  html body [data-dashboard-role] .hrb-filters { display: flex; flex-wrap: wrap; gap: 8px; }
+  html body [data-dashboard-role] .hrb-filters > select { width: auto; min-width: 170px; flex: 1 0 auto; padding-right: 32px; }
+  html body [data-dashboard-role] .hrb-date { flex: 0 0 220px; }
+  html body [data-dashboard-role] .hrb-date select { width: 100%; min-width: 220px; padding-right: 32px; }
   html body [data-dashboard-role] .hrb-search,
   html body [data-dashboard-role] .hrb-date { min-width: 0; }
   html body [data-dashboard-role] .hrb-search input { padding-right: 30px; }

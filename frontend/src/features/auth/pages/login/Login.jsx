@@ -59,7 +59,7 @@ export default function Login({
   const [showIntro, setShowIntro] = useState(() => !location.state?.enrollmentReturnTo);
  
   // ── Override props based on registered role from registration flow ──
-  const isStudentLoginRoute = location.pathname === "/login";
+  const isStudentLoginRoute = ["/login", "/Auth/login"].includes(location.pathname);
   const registeredRole = location.state?.registeredRole;
   const roleConfig = !isStudentLoginRoute && registeredRole ? REGISTERED_ROLE_CONFIG[registeredRole] : null;
   const effectiveForcedRole = isStudentLoginRoute ? "student" : (roleConfig?.forcedRole || forcedRole);

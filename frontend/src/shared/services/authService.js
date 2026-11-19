@@ -102,6 +102,31 @@ export const assertOtpVerified = (payload) => {
   return result;
 };
 
+export const assertPasswordResetAccepted = (payload) => {
+  const layers = [];
+  let value = payload;
+  for (let i = 0; i < 4 && value != null; i += 1) {
+    layers.push(value);
+    value = typeof value === "object" ? value.data : null;
+  }
+  const messages = layers.flatMap((r) => [
+    typeof r === "string" ? r : String(r?.message || r?.Message || r?.error?.message || (typeof r?.error === "string" ? r.error : "") || r?.title || ""),
+    ...Object.entries(r?.errors || {}).map(([field, errors]) => `${field}: ${Array.isArray(errors) ? errors.join(" ") : errors}`),
+  ]);
+  const failurePattern = /\b(invalid|expired|incorrect|failed|failure|error|unable|used)\b|\bnot\s+(found|verified|updated|changed|reset|successful)\b/i;
+  const rejected = layers.some((r) => r === false || r?.success === false || r?.Success === false || r?.isSuccess === false
+    || Boolean(r?.error) || (r?.errors && Object.keys(r.errors).length > 0))
+    || messages.some((m) => failurePattern.test(m));
+  const confirmed = layers.some((r) => r === true || r?.success === true || r?.Success === true || r?.isSuccess === true)
+    || messages.some((m) => /\bpassword\b.*\b(updated|changed|reset)\b.*\bsuccess(?:ful|fully)?\b|\bpassword\b.*\bsuccessfully\s+(updated|changed|reset)\b/i.test(m));
+  if (rejected || !confirmed) {
+    const error = new Error(messages.find((m) => failurePattern.test(m)) || "The server did not confirm the password update. Please try again.");
+    error.code = "PASSWORD_RESET_REJECTED";
+    throw error;
+  }
+  return payload;
+};
+
 export const authService = {
   register: async (payload) => {
     const response = await apiClient.post(API_ENDPOINTS.auth.register, payload);
@@ -251,8 +276,19 @@ export const authService = {
       confirmPassword: payload?.confirmPassword,
     };
     if (payload?.verificationToken) request.verificationToken = payload.verificationToken;
-    const response = await apiClient.post(API_ENDPOINTS.auth.resetPassword, request);
-    return assertApiSuccess(extractData(response), "Unable to reset password.");
+    const response = await apiClient.post(API_ENDPOINTS.auth.resetPassword, request, { skipAuthRedirect: true });
+    return assertPasswordResetAccepted(response.data);
+  },
+  // Two-screen recovery exchanges the OTP at verification. Never replay it.
+  // Requires the backend DTO/handler change in PASSWORD_RESET_TOKEN_CONTRACT.md.
+  resetVerifiedPassword: async ({ identifier, resetToken, newPassword, confirmPassword }) => {
+    if (typeof resetToken !== "string" || !resetToken.trim()) {
+      throw new Error("Password reset authorization is missing. Please restart password reset.");
+    }
+    const response = await apiClient.post(API_ENDPOINTS.auth.resetPassword, {
+      identifier: String(identifier || "").trim().toLowerCase(), resetToken, newPassword, confirmPassword,
+    }, { skipAuth: true, skipAuthRedirect: true });
+    return assertPasswordResetAccepted(response.data);
   },
   changePassword: async (payload) => {
     const { userId, ...request } = payload || {};

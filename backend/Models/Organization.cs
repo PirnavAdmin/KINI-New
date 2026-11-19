@@ -1,4 +1,4 @@
-﻿namespace TalentSphereAPI.Models
+namespace TalentSphereAPI.Models
 {
     public class Organization
     {
@@ -22,6 +22,14 @@
 
         public DateTime CreatedDate { get; set; }
             = DateTime.UtcNow;
+
+        // Public URL path of the organization logo, e.g.
+        // /uploads/organization-logos/1_<guid>.png (served from wwwroot). Null = no logo.
+        [System.ComponentModel.DataAnnotations.MaxLength(500)]
+        public string? LogoUrl { get; set; }
+
+        // UPI settings for public enrollment live in OrganizationPaymentSettings.
+        public OrganizationPaymentSetting? PaymentSetting { get; set; }
 
         // ==============================
         // Existing relationships

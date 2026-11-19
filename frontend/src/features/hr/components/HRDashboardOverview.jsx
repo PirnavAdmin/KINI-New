@@ -174,7 +174,7 @@ function Attendance({ history }) {
                   </linearGradient>
                 </defs>
                 <CartesianGrid stroke="#e8eef6" />
-                <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#475569' }} tickLine={false} axisLine={{ stroke: '#cbd5e1' }} interval={range > 14 ? 'preserveStartEnd' : 0} minTickGap={6} />
+                <XAxis dataKey="label" tick={{ fontSize: 11, fill: '#475569' }} tickLine={false} axisLine={{ stroke: '#cbd5e1' }} interval="preserveStartEnd" minTickGap={20} />
                 <YAxis allowDecimals={false} tick={{ fontSize: 11, fill: '#475569' }} tickLine={false} axisLine={{ stroke: '#cbd5e1' }} />
                 <Tooltip content={<AttendanceTooltip />} />
                 <Area dataKey="present" stroke="none" fill="url(#hx-present-fill)" isAnimationActive={false} legendType="none" tooltipType="none" />
@@ -365,7 +365,7 @@ function TrainingPanel({ tabs, data }) {
       <div className="hx-tabs" role="tablist" aria-label="Training">
         {tabs.map((item) => (
           <button key={item.key} type="button" role="tab" aria-selected={item.key === currentTab.key} onClick={() => setTab(item.key)}>
-            {item.key === currentTab.key && <item.icon aria-hidden="true" />}{item.title}
+            <item.icon aria-hidden="true" />{item.title}
           </button>
         ))}
       </div>
@@ -518,9 +518,10 @@ export default function HRDashboardOverview({ employees = [], attendance = [], d
       {actions.length > 0 && (
         <section className="hx-quick" aria-label="Quick actions">
           <h2><Zap aria-hidden="true" />Quick Actions</h2>
-          <div>
+          {/* --hx-quick-count: one column per visible action on wide screens (hr-dashboard.css) */}
+          <div style={{ '--hx-quick-count': actions.length }}>
             {actions.map(({ label, to, create, icon: Icon, tone }) => (
-              <Link key={label} to={to} state={create ? { openAdd: true } : undefined} className={`is-${tone}`}>
+              <Link key={label} to={to} state={create ? { openAdd: true, returnTo: E.HR_DASHBOARD } : undefined} className={`is-${tone}`}>
                 <Icon aria-hidden="true" />{label}
               </Link>
             ))}

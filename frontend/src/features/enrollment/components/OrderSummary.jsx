@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from "framer-motion";
-import { FiLock, FiArrowRight, FiShield, FiMail, FiLayers, FiLoader, FiCheckCircle, FiFileText, FiAlertTriangle } from "react-icons/fi";
+import { FiArrowRight, FiShield, FiMail, FiLayers, FiLoader, FiCheckCircle, FiFileText, FiAlertTriangle } from "react-icons/fi";
 import { useThemeContext } from "@shared/context/ThemeContext";
 import { BRAND } from "../theme";
 
@@ -45,6 +45,10 @@ const OrderSummary = ({
   // [{ id, name, price }] — when more than one course is bought together, each
   // is listed with its price instead of the single-course preview.
   lines = [],
+  // The UPI checkout puts its own actions in the main column.
+  showCta = true,
+  showNextSteps = true,
+  children = null,
 }) => {
   const { isDark } = useThemeContext();
   const reduceMotion = useReducedMotion();
@@ -142,6 +146,7 @@ const OrderSummary = ({
         )}
 
         {/* What happens next */}
+        {showNextSteps && (
         <ul className="space-y-3 rounded-xl px-4 py-4" style={{ backgroundColor: theme.panel }} aria-label="What happens after payment">
           {nextSteps(organizationName, demoMode).map(({ icon: Icon, text }) => (
             <li key={text} className="flex items-center gap-3 text-sm" style={{ color: theme.textSecondary }}>
@@ -150,8 +155,12 @@ const OrderSummary = ({
             </li>
           ))}
         </ul>
+        )}
+
+        {children}
 
         {/* CTA */}
+        {showCta && <>
         <button
           type="button"
           onClick={onSubmit}
@@ -173,7 +182,6 @@ const OrderSummary = ({
             </>
           ) : (
             <>
-              <FiLock aria-hidden="true" className="h-4 w-4" />
               <span>{ctaLabel}</span>
               <FiArrowRight aria-hidden="true" className="h-4 w-4" />
             </>
@@ -184,6 +192,7 @@ const OrderSummary = ({
         )}
 
         <p className="text-center text-xs leading-relaxed" style={{ color: theme.textMuted }}>{footnote}</p>
+        </>}
       </div>
     </motion.aside>
   );

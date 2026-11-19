@@ -12,6 +12,10 @@ import { courseService } from "@/services/courseService";
 import { paymentApi, readStoredOrganizationId } from "@shared/services/apiServices";
 import { isPaymentVerified, openRazorpayCheckout, PaymentError } from "@shared/services/razorpayCheckout";
 import { DEMO_LABEL, demoPaymentApi, isDemoPaymentMode } from "@shared/services/demoPaymentApi";
+import { isUpiPaymentMode } from "@shared/services/upiPaymentService";
+import useUpiCheckout, { readUpiDraft } from "../hooks/useUpiCheckout";
+import UpiPaymentStep from "../components/upi/UpiPaymentStep";
+import { UpiApprovedAside, UpiApprovedPanel, UpiPaymentDetailsCard, UpiSubmittedPanel } from "../components/upi/UpiStatusPanels";
 import { PAYMENT_METHODS } from "@shared/data/mockData";
 import {
   batchFieldName,
@@ -41,9 +45,12 @@ import { batchService } from "@shared/services/batchService";
 import apiClient from "@shared/services/apiClient";
 import { API_ENDPOINTS } from "@/api/endpoints";
 import { BRAND } from "../theme";
+import { guestStatusLink, readGuestStatusRecords } from "../utils/guestStatusLink";
 
 
-const STUDENT_FIELDS = ["firstName", "lastName", "email", "phone", "pincode", "state", "qualification", "experience"];
+const UPI_APPROVED_STEPS = ["Details", "Payment", "Verification", "Approval", "Access"].map((label, index) => ({ id: index + 1, label }));
+
+const STUDENT_FIELDS = ["firstName", "lastName", "email", "phone", "pincode", "state", "qualification", "experience", "agreeTerms"];
 
 const normalizeCourse = (raw) => {
   if (!raw) return null;
@@ -62,6 +69,8 @@ const normalizeCourse = (raw) => {
  * (or the single ?courseId=), else the saved draft. Duplicates are dropped.
  */
 const resolveCourses = (idParams, cartItems) => {
+  const linked = readGuestStatusRecords();
+  if (linked) return linked.map((r) => normalizeCourse({ id: r.courseId, name: r.courseName, price: r.price }));
   const draft = readEnrollmentDraft();
   const draftCourses = draft?.courses?.length ? draft.courses : (draft?.course ? [draft.course] : []);
   const ids = [...new Set(idParams.map(String))];
@@ -221,7 +230,16 @@ const EnrollmentPage = () => {
     return !idParams.length || sameIds([...new Set(idParams)], receiptIds) ? draft.receipt : null;
   });
 
-  const [step, setStep] = useState(savedReceipt ? 3 : location.state?.resumeEnrollment && readEnrollmentDraft()?.step === "payment" ? 2 : 1);
+  // UPI checkout resumes from the draft: the status screen once every payment
+  // is submitted, the payment step once an enrollment exists.
+  const [upiResume] = useState(() => {
+    if (!isUpiPaymentMode || !purchasable) return null;
+    const upi = readUpiDraft(selectedCourses);
+    if (upi?.phase === "status") return "status";
+    return upi?.records?.some((record) => record.enrollmentId) && readEnrollmentDraft()?.step === "payment" ? "payment" : null;
+  });
+  const [step, setStep] = useState(savedReceipt || upiResume === "status" ? 3
+    : (location.state?.resumeEnrollment || upiResume === "payment") && readEnrollmentDraft()?.step === "payment" ? 2 : 1);
   const [paymentMethod, setPaymentMethod] = useState("upi");
   const [isProcessing, setIsProcessing] = useState(false);
   const [showSuccess, setShowSuccess] = useState(Boolean(savedReceipt));
@@ -334,6 +352,7 @@ const EnrollmentPage = () => {
       state: saved.state ?? "",
       qualification: saved.qualification ?? "",
       experience: saved.experience ?? "",
+      agreeTerms: saved.agreeTerms === true,
       ...batchDefaults,
     };
     // Computed once: later profile updates are merged by the effect below.
@@ -366,8 +385,8 @@ const EnrollmentPage = () => {
 
   // Keep entered details in the draft so a refresh or failed payment keeps them.
   useEffect(() => {
-    if (!purchasable || savedReceipt) return undefined;
-    const restoredPaymentStep = location.state?.resumeEnrollment === true
+    if (!purchasable || savedReceipt || upiResume === "status") return undefined;
+    const restoredPaymentStep = (location.state?.resumeEnrollment === true || upiResume === "payment")
       && readEnrollmentDraft()?.step === "payment";
     updateEnrollmentDraft({ courses: selectedCourses, course: undefined, step: restoredPaymentStep ? "payment" : "details" });
     const subscription = watch((values) => {
@@ -376,7 +395,7 @@ const EnrollmentPage = () => {
       updateEnrollmentDraft({ student });
     });
     return () => subscription.unsubscribe();
-  }, [watch, purchasable, savedReceipt, selectedCourses, location.state]);
+  }, [watch, purchasable, savedReceipt, selectedCourses, location.state, upiResume]);
 
   // The batch <select> has no options until batches load, so the browser drops
   // a restored value; re-apply it once it is a valid option for this course.
@@ -434,6 +453,57 @@ const EnrollmentPage = () => {
     setStep(3);
     setShowSuccess(true);
   }, [removeFromCart, selectedCourses]);
+
+  // ── UPI checkout ──
+  const getUpiStudent = useCallback(() => collectCheckout().student, [collectCheckout]);
+  const getUpiBatch = useCallback((courseId) => getValues(batchFieldName(courseId)), [getValues]);
+  const onUpiSubmitted = useCallback((records) => {
+    records.forEach((record) => removeFromCart(record.courseId, { silent: true }));
+    updateEnrollmentDraft({ step: "upi-status" });
+    setStep(3);
+    toast.success("Payment details submitted for verification");
+  }, [removeFromCart]);
+  const upi = useUpiCheckout({
+    enabled: isUpiPaymentMode && purchasable,
+    courses: selectedCourses,
+    getStudent: getUpiStudent,
+    onAllSubmitted: onUpiSubmitted,
+    guest: !isStudentAccount,
+    getBatchId: getUpiBatch,
+  });
+  const upiStarted = upi.records.some((record) => record.enrollmentId);
+  // A pending UPI enrollment may already show in the student's course list;
+  // that is this checkout resuming, not a second purchase.
+  const blockedAsEnrolled = alreadyEnrolled && !(isUpiPaymentMode && upiStarted);
+  const { phase: upiPhase, creating: upiCreating, createError: upiCreateError, start: startUpi } = upi;
+
+  useEffect(() => {
+    if (!isUpiPaymentMode || step !== 2 || blockedAsEnrolled) return;
+    if (upiPhase === "idle" && !upiCreating && !upiCreateError) startUpi();
+  }, [step, isStudentAccount, blockedAsEnrolled, upiPhase, upiCreating, upiCreateError, startUpi]);
+
+  const upiTotal = upi.records.every((record) => Number(record.amount) > 0)
+    ? upi.records.reduce((sum, record) => sum + Number(record.amount), 0)
+    : coursePrice;
+  const upiStage = upi.status.stage;
+  const upiApproved = isUpiPaymentMode && step === 3 && upiStage === "approved";
+  const privateStatusLink = guestStatusLink(upi.records);
+
+  useEffect(() => {
+    if (isUpiPaymentMode && step === 3 && upiPhase === "paying" && upiStage === "awaiting-payment") setStep(2);
+  }, [step, upiPhase, upiStage]);
+
+  useEffect(() => {
+    if (!upiApproved || !upi.status.accountReady || !upi.records.some((r) => r.guestAccessToken)) return undefined;
+    // Readiness must come from the backend after approval and password setup.
+    const timer = window.setTimeout(() => navigate(ROUTES.AUTH.LOGIN, { replace: true }), 4000);
+    return () => window.clearTimeout(timer);
+  }, [upiApproved, upi.status.accountReady, upi.records, navigate]);
+
+  const leaveUpi = (route) => {
+    clearEnrollmentDraft();
+    navigate(route);
+  };
 
   const methodLabel = [
     PAYMENT_METHODS.find((method) => method.id === paymentMethod)?.label ?? paymentMethod,
@@ -669,7 +739,7 @@ const EnrollmentPage = () => {
     : handlePay;
   // OrderSummary appends the payable amount, so step 2 reads "Pay ₹25,000".
   // The retry case is explained by the payment-error notice above the methods.
-  const ctaLabel = step === 1 ? "Continue to Checkout" : "Pay";
+  const ctaLabel = step === 1 ? "Continue to Payment" : "Pay";
   const isCtaDisabled = step === 1 ? !detailsReady : (alreadyEnrolled || demoServer === "checking" || demoServer === "unavailable");
 
   return (
@@ -725,7 +795,18 @@ const EnrollmentPage = () => {
         <NoCourseSelected isDark={isDark} />
       ) : (
         <main className="relative mx-auto w-full max-w-7xl flex-1 px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
-          <CheckoutHeader currentStep={step} demoMode={isDemoPaymentMode} />
+          {upiApproved ? (
+            <CheckoutHeader
+              currentStep={5}
+              steps={UPI_APPROVED_STEPS}
+              title="Enrollment"
+              accentTitle="Approved!"
+              subtitle={isStudentAccount || upi.status.accountReady ? "Payment complete. Your enrollment is approved." : "Enrollment approved. Check your email to set your password."}
+              showTrust={false}
+            />
+          ) : (
+            <CheckoutHeader currentStep={step} demoMode={isDemoPaymentMode} />
+          )}
 
           <div className="mt-3 lg:mt-4">
             <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_380px] gap-4 lg:gap-5">
@@ -753,13 +834,88 @@ const EnrollmentPage = () => {
                         batchesLoading={batchesLoading}
                         couponAmount={coursePrice}
                         canValidateCoupon
+                        showCoupon={!isUpiPaymentMode}
                       />
                     </motion.div>
                   )}
                 </AnimatePresence>
 
                 <AnimatePresence mode="wait">
-                  {step === 2 && (
+                  {isUpiPaymentMode && step === 2 && (
+                    <motion.div
+                      key={`upi-pay-${upi.current?.enrollmentId ?? "new"}`}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      className="space-y-3"
+                    >
+                      {blockedAsEnrolled ? (
+                        <Notice
+                          isDark={isDark}
+                          tone="warning"
+                          icon={FiAlertTriangle}
+                          title={multiCourse ? `You're already enrolled in: ${alreadyEnrolledIds.join(", ")}` : "You're already enrolled in this course"}
+                          action={<Link to={ROUTES.STUDENT.COURSES} className="font-semibold underline underline-offset-2">Go to My Courses</Link>}
+                        >
+                          {multiCourse ? "Go back to your cart and untick these courses — there's no need to pay for them again." : "There's no need to pay again."}
+                        </Notice>
+                      ) : (
+                        <UpiPaymentStep
+                          key={upi.current?.enrollmentId ?? "pending"}
+                          courseLabel={upi.current?.courseName || selectedCourse.name}
+                          progressLabel={upi.records.length > 1 && upi.currentIndex >= 0 ? `Course ${upi.currentIndex + 1} of ${upi.records.length} · ${upi.current.courseName}` : ""}
+                          info={upi.info}
+                          loading={upi.creating || upi.infoLoading || (!upi.current && !upi.createError)}
+                          loadError={upi.createError || upi.infoError}
+                          onRetry={upi.createError ? upi.start : upi.loadInfo}
+                          submitting={upi.submitting}
+                          submitError={upi.submitError}
+                          rejectionNotice={upi.current?.rejection ?? ""}
+                          onSubmit={upi.submit}
+                          onBack={() => setStep(1)}
+                        />
+                      )}
+                    </motion.div>
+                  )}
+                  {isUpiPaymentMode && step === 3 && (
+                    <motion.div
+                      key={`upi-status-${upiApproved ? "approved" : "pending"}`}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                    >
+                      {upiApproved ? (
+                        <UpiApprovedPanel
+                          approvedAt={upi.focusState?.enrollment?.approvedAt}
+                          accountReady={isStudentAccount || upi.status.accountReady}
+                          primaryLabel={isStudentAccount ? "Go to My Courses" : "Go to Student Login"}
+                          onPrimary={() => leaveUpi(isStudentAccount ? ROUTES.STUDENT.COURSES : ROUTES.AUTH.LOGIN)}
+                          onHome={() => leaveUpi(ROUTES.PUBLIC.HOME)}
+                        />
+                      ) : (
+                        <UpiSubmittedPanel
+                          stage={upiStage}
+                          record={{
+                            createdAt: upi.focusState?.enrollment?.createdAt || upi.focusRecord?.createdAt,
+                            submittedAt: upi.focusState?.payment?.submittedAt || upi.focusRecord?.submittedAt,
+                            verifiedAt: upi.focusState?.payment?.verifiedAt || upi.focusState?.enrollment?.verifiedAt,
+                            approvedAt: upi.focusState?.enrollment?.approvedAt,
+                          }}
+                          rejectionReason={upi.focusState?.rejectionReason}
+                          refreshing={upi.status.refreshing}
+                          lastChecked={upi.status.lastChecked}
+                          statusError={upi.status.error}
+                          onRefresh={upi.refreshStatus}
+                          onResubmit={() => { upi.resubmitRejected(); setStep(2); }}
+                          onHome={() => navigate(ROUTES.PUBLIC.HOME)}
+                        />
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <AnimatePresence mode="wait">
+                  {!isUpiPaymentMode && step === 2 && (
                     <motion.div
                       key="step2"
                       initial={{ opacity: 0, y: 20 }}
@@ -823,19 +979,39 @@ const EnrollmentPage = () => {
                     demoMode={isDemoPaymentMode}
                     disabledHint={step === 1 ? "Complete the required details and accept the terms to continue." : ""}
                     courseThumbnail={selectedCourse.thumbnail}
-                    originalPrice={coursePrice}
+                    originalPrice={isUpiPaymentMode && step > 1 ? upiTotal : coursePrice}
                     discountAmount={0}
-                    finalPrice={coursePrice}
-                    couponDiscount={couponDiscount}
+                    finalPrice={isUpiPaymentMode && step > 1 ? upiTotal : coursePrice}
+                    couponDiscount={isUpiPaymentMode ? 0 : couponDiscount}
                     isLoading={isProcessing}
                     isDisabled={isCtaDisabled}
                     ctaLabel={ctaLabel}
                     footnote={isDemoPaymentMode ? "By enrolling you agree to our Terms of Service. Demo mode: no payment provider is contacted and no money is charged." : undefined}
                     onSubmit={handleCtaClick}
                     lines={selectedCourses}
+                    showCta={!(isUpiPaymentMode && step > 1)}
+                    showNextSteps={!(isUpiPaymentMode && step === 3)}
                   />
 
-                  {step === 2 && (
+                  {privateStatusLink && step > 1 && (
+                    <section className="rounded-xl p-4 text-sm" style={{ backgroundColor: t(isDark).card, border: `1px solid ${t(isDark).border}` }}>
+                      <p className="font-semibold">Keep your private status link</p>
+                      <p className="mt-1" style={{ color: t(isDark).textMuted }}>Use this link to reopen your enrollment without signing in. Anyone with the link can access this application; keep it private.</p>
+                      <a href={privateStatusLink} referrerPolicy="no-referrer" className="mt-2 inline-block font-semibold underline">Open private enrollment status</a>
+                      <button type="button" className="ml-3 font-semibold underline" onClick={() => navigator.clipboard.writeText(privateStatusLink).then(() => toast.success("Private status link copied")).catch(() => toast.error("Unable to copy. Save the private status link above."))}>Copy link</button>
+                    </section>
+                  )}
+
+                  {isUpiPaymentMode && step === 3 && (upiApproved ? <UpiApprovedAside /> : (
+                    <UpiPaymentDetailsCard
+                      stage={upiStage}
+                      utrNumber={upi.focusState?.payment?.utrNumber || upi.focusRecord?.utrNumber}
+                      submittedAt={upi.focusState?.payment?.submittedAt || upi.focusRecord?.submittedAt}
+                      method={upi.focusState?.payment?.method || "UPI"}
+                    />
+                  ))}
+
+                  {step === 2 && !isUpiPaymentMode && (
                     <div className="flex gap-3">
                       <button
                         onClick={() => setStep(1)}

@@ -33,7 +33,13 @@ export default function WelcomeIntro({ onComplete }) {
       aria-label="Welcome to Kini Edx Hub"
     >
       <div className="absolute inset-0 opacity-45 [background-image:radial-gradient(circle_at_center,rgba(103,232,249,.75)_1px,transparent_1.5px)] [background-size:64px_64px]" />
-      <motion.div className="absolute h-[52vmin] w-[82vmin] rounded-[50%] border-[3px] border-blue-500/65 shadow-[0_0_22px_#2563eb,0_0_65px_rgba(37,99,235,.6)]" animate={{ rotate: [0, 360] }} transition={{ duration: 18, repeat: Infinity, ease: "linear" }} />
+      <div aria-hidden="true" className="pointer-events-none absolute left-[35%] top-[55%] h-[min(62vmin,80vw)] w-[min(62vmin,80vw)] -translate-x-1/2 -translate-y-1/2">
+        <motion.div
+          className="absolute inset-0 rounded-full border-[3px] border-blue-500/65 shadow-[0_0_22px_#2563eb,0_0_65px_rgba(37,99,235,.6)]"
+          animate={{ scale: [1, 1.06, 1], opacity: [0.65, 1, 0.65] }}
+          transition={{ duration: 2.4, repeat: Infinity, ease: "easeInOut" }}
+        />
+      </div>
       <div className="absolute left-[8%] top-[12%] rounded-2xl border border-white/15 bg-white/10 p-4 text-violet-200 shadow-xl backdrop-blur-md"><GraduationCap size={34} /></div>
       <motion.div className="absolute right-[12%] top-[18%] text-cyan-300" animate={{ scale: [0.7, 1.3, 0.7], rotate: [0, 18, 0] }} transition={{ duration: 2.2, repeat: Infinity }}><Sparkles size={32} fill="currentColor" /></motion.div>
 

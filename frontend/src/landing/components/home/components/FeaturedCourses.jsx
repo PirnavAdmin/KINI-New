@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { AlertCircle, CheckCircle2, Clock, RotateCcw, Search, Tag, X } from "lucide-react";
 import { useThemeContext } from "@landing-shared/context/ThemeContext";
@@ -9,17 +9,11 @@ import { fadeUp, staggerContainer } from "@landing-shared/hooks/useScrollAnimati
 import Section from "@landing-shared/components/ui/Section";
 import SectionHeader from "@landing-shared/components/ui/SectionHeader";
 import { courseCatalogErrorMessage, getPublicCourses } from "@landing-shared/services/courseCatalogService";
+import { coursePosterUrl } from "@/pages/courses/coursePosterUtils";
 
-const PAGE_SIZE = 10;
+const ALL_PAGE_SIZE = 100; // backend maximum per page
 const SEARCH_DEBOUNCE_MS = 350;
 const DESCRIPTION_FALLBACK = "Live, mentor-led sessions with hands-on projects. Enroll to get the full curriculum.";
-
-// ─── Badge styles (keyed by course level) ────────────────────────────────────
-const BADGE_TONE = {
-  beginner: "bg-primary-50 text-primary-600 dark:bg-primary-500/10 dark:text-primary-300",
-  advanced: "bg-secondary-50 text-secondary-600 dark:bg-secondary-500/10 dark:text-secondary-300",
-};
-const DEFAULT_BADGE_TONE = "bg-ink-900/5 text-ink-900/60 dark:bg-white/10 dark:text-white/70";
 
 // Same card gradients the static programs used, cycled so neighbours differ.
 const GRADIENTS = [
@@ -44,6 +38,7 @@ const toCard = (course, index) => {
     id: course.courseId,
     title,
     letter: title.charAt(0).toUpperCase(),
+    poster: coursePosterUrl(course.posterUrl),
     desc: course.description?.trim() || DESCRIPTION_FALLBACK,
     duration: course.duration || "Duration to be announced",
     level: course.level || "",
@@ -72,6 +67,41 @@ const toCard = (course, index) => {
   };
 };
 
+// ─── Poster area ─────────────────────────────────────────────────────────────
+// The organization's uploaded poster, or the letter tile on the card gradient
+// when there is none (or the image fails to load). Same height either way.
+function CoursePosterMedia({ course }) {
+  const [failed, setFailed] = useState(null);
+  const showPoster = course.poster && failed !== course.poster;
+  return (
+    <div className={`relative h-[136px] w-full shrink-0 overflow-hidden rounded-t-[22px] ${showPoster ? "bg-ink-900/5" : `bg-gradient-to-br ${course.gradient}`}`}>
+      {showPoster ? (
+        <img
+          src={course.poster}
+          alt={`${course.title} course poster`}
+          loading="lazy"
+          decoding="async"
+          width={400}
+          height={136}
+          onError={() => setFailed(course.poster)}
+          className="h-full w-full object-cover"
+        />
+      ) : (
+        <div className="flex h-full w-full items-center justify-center" aria-hidden="true">
+          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/20 text-2xl font-bold text-white shadow-lg ring-4 ring-white/20">
+            {course.letter}
+          </div>
+        </div>
+      )}
+      {course.level && (
+        <span className="absolute right-3 top-3 rounded-pill bg-white/90 px-3 py-1 text-[11px] font-bold text-ink-900 shadow-sm ring-1 ring-white/60 backdrop-blur dark:bg-ink-900/85 dark:text-white">
+          {course.level}
+        </span>
+      )}
+    </div>
+  );
+}
+
 // ─── Course Card ─────────────────────────────────────────────────────────────
 function CourseCard({ course, isFlipped, onFlip, isDark }) {
   const navigate = useNavigate();
@@ -85,7 +115,7 @@ function CourseCard({ course, isFlipped, onFlip, isDark }) {
   };
 
   return (
-    <div className="relative h-[320px] w-full [perspective:1200px]">
+    <div className="relative h-[400px] w-full [perspective:1200px]">
       <div
         className="relative h-full w-full transition-transform duration-700 [transform-style:preserve-3d]"
         style={{ transform: isFlipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
@@ -100,25 +130,13 @@ function CourseCard({ course, isFlipped, onFlip, isDark }) {
           className={`absolute inset-0 h-full w-full rounded-3xl p-[2px] bg-gradient-to-br ${course.gradient} transition-all duration-300 shadow-card hover:shadow-card-lg hover:-translate-y-1.5 [backface-visibility:hidden]`}
         >
           <div
-            className={`flex h-full w-full flex-col rounded-[22px] p-5 text-left ${
+            className={`flex h-full w-full flex-col overflow-hidden rounded-[22px] text-left ${
               isDark ? "bg-ink-900" : "bg-white"
             }`}
           >
-            <div className="flex items-start justify-between gap-3">
-              <div
-                className={`flex h-11 w-11 items-center justify-center rounded-2xl shadow-lg ring-4 ring-white/20 bg-gradient-to-br ${course.gradient} text-base font-bold text-white shadow-sm`}
-                aria-hidden="true"
-              >
-                {course.letter}
-              </div>
-              {course.level && (
-                <span className={`rounded-pill px-3 py-1 text-[11px] font-bold ${BADGE_TONE[course.level.toLowerCase()] ?? DEFAULT_BADGE_TONE}`}>
-                  {course.level}
-                </span>
-              )}
-            </div>
-
-            <h3 className={`mt-3 line-clamp-2 font-display text-base font-bold leading-snug ${isDark ? "text-white" : "text-ink-900"}`}>
+            <CoursePosterMedia course={course} />
+            <div className="flex min-h-0 flex-1 flex-col px-5 pb-5 pt-3.5">
+            <h3 className={`line-clamp-2 font-display text-base font-bold leading-snug ${isDark ? "text-white" : "text-ink-900"}`}>
               {course.title}
             </h3>
             <p className={`mt-1.5 line-clamp-2 text-sm leading-relaxed ${isDark ? "text-white/50" : "text-ink-900/50"}`}>
@@ -146,6 +164,7 @@ function CourseCard({ course, isFlipped, onFlip, isDark }) {
               <span className="flex items-center gap-1 text-xs font-bold text-primary-500">
                 See details <RotateCcw className="h-3 w-3" aria-hidden="true" />
               </span>
+            </div>
             </div>
           </div>
         </button>
@@ -198,15 +217,14 @@ function CourseCard({ course, isFlipped, onFlip, isDark }) {
 function CourseCardSkeleton({ isDark }) {
   const bar = isDark ? "bg-white/10" : "bg-ink-900/[0.06]";
   return (
-    <div className={`h-[320px] w-full animate-pulse rounded-3xl border p-5 ${isDark ? "border-white/10 bg-white/[0.02]" : "border-ink-900/[0.06] bg-white shadow-sm"}`}>
-      <div className="flex items-start justify-between">
-        <div className={`h-11 w-11 rounded-2xl ${bar}`} />
-        <div className={`h-6 w-20 rounded-pill ${bar}`} />
-      </div>
+    <div className={`h-[400px] w-full animate-pulse overflow-hidden rounded-3xl border ${isDark ? "border-white/10 bg-white/[0.02]" : "border-ink-900/[0.06] bg-white shadow-sm"}`}>
+      <div className={`h-[136px] w-full ${bar}`} />
+      <div className="px-5">
       <div className={`mt-4 h-5 w-3/4 rounded ${bar}`} />
       <div className={`mt-3 h-4 w-full rounded ${bar}`} />
       <div className={`mt-2 h-4 w-2/3 rounded ${bar}`} />
       <div className={`mt-4 h-4 w-1/2 rounded ${bar}`} />
+      </div>
     </div>
   );
 }
@@ -224,7 +242,28 @@ function StatePanel({ isDark, children }) {
 }
 
 // ─── Main Component ──────────────────────────────────────────────────────────
-export default function FeaturedCourses() {
+// Loads the public catalogue: the first `limit` courses (server order), or
+// every page when no limit is given.
+async function loadCourses({ search, limit, signal }) {
+  if (limit) {
+    const result = await getPublicCourses({ search, page: 1, pageSize: limit, signal });
+    return result.courses.slice(0, limit);
+  }
+  const first = await getPublicCourses({ search, page: 1, pageSize: ALL_PAGE_SIZE, signal });
+  const courses = [...first.courses];
+  for (let page = 2; page <= first.totalPages; page += 1) {
+    const next = await getPublicCourses({ search, page, pageSize: ALL_PAGE_SIZE, signal });
+    courses.push(...next.courses);
+  }
+  return courses;
+}
+
+/**
+ * "Programs Built Around Outcomes" course grid.
+ * - limit: show only the first N courses plus a "View All Courses" link (home page).
+ * - no limit: every public course (the /programs page).
+ */
+export default function FeaturedCourses({ limit, eyebrow = "Career Programs" }) {
   const { isDark } = useThemeContext();
   const [flippedId, setFlippedId] = useState(null);
   const [search, setSearch] = useState("");
@@ -241,8 +280,8 @@ export default function FeaturedCourses() {
       setLoading(true);
       setError("");
       try {
-        const result = await getPublicCourses({ search, page: 1, pageSize: PAGE_SIZE, signal: controller.signal });
-        setCourses(result.courses.map(toCard));
+        const rows = await loadCourses({ search, limit, signal: controller.signal });
+        setCourses(rows.map(toCard));
       } catch (requestError) {
         if (controller.signal.aborted) return;
         const { config, response } = requestError ?? {};
@@ -263,7 +302,7 @@ export default function FeaturedCourses() {
       window.clearTimeout(timer);
       controller.abort();
     };
-  }, [search, reloadKey]);
+  }, [search, reloadKey, limit]);
 
   const handleSearchChange = (value) => {
     setSearch(value);
@@ -278,7 +317,7 @@ export default function FeaturedCourses() {
   return (
     <Section id="courses" className={isDark ? "bg-app-dark-gradient" : "bg-white"}>
       <SectionHeader
-        eyebrow="Career Programs"
+        eyebrow={eyebrow}
         heading={
           <>
             Programs Built Around{" "}
@@ -296,7 +335,7 @@ export default function FeaturedCourses() {
           Search programs
         </label>
         <div
-          className={`flex items-center gap-2 rounded-pill border px-4 py-2.5 transition-colors focus-within:border-primary-500/50 ${
+          className={`flex items-center gap-2 rounded-pill border px-4 py-2.5 transition-colors focus-within:border-primary-500/50 focus-within:ring-2 focus-within:ring-primary-500/20 ${
             isDark ? "border-white/10 bg-white/[0.03]" : "border-ink-900/[0.08] bg-white shadow-sm"
           }`}
         >
@@ -307,7 +346,7 @@ export default function FeaturedCourses() {
             value={search}
             onChange={(event) => handleSearchChange(event.target.value)}
             placeholder="Search programs by name or skill..."
-            className={`w-full bg-transparent text-sm outline-none ${
+            className={`min-w-0 w-full border-0! bg-transparent text-sm outline-none! shadow-none! ring-0! ${
               isDark ? "text-white placeholder:text-white/30" : "text-ink-900 placeholder:text-ink-900/30"
             }`}
           />
@@ -330,7 +369,7 @@ export default function FeaturedCourses() {
       <div className="mt-10" aria-live="polite" aria-busy={loading}>
         {loading ? (
           <div role="status" className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 3 }).map((_, index) => <CourseCardSkeleton key={index} isDark={isDark} />)}
+            {Array.from({ length: limit ? Math.min(limit, 6) : 3 }).map((_, index) => <CourseCardSkeleton key={index} isDark={isDark} />)}
             <span className="sr-only">Loading programs…</span>
           </div>
         ) : error ? (
@@ -382,6 +421,17 @@ export default function FeaturedCourses() {
           </motion.div>
         )}
       </div>
+
+      {limit && !loading && !error && (
+        <div className="mt-10 flex justify-center">
+          <Link
+            to="/programs"
+            className="inline-flex items-center gap-2 rounded-pill bg-[#FF981B] px-7 py-3 text-sm font-bold text-white shadow-[0_10px_24px_-8px_rgba(255,152,27,0.7)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#f08a0c] hover:shadow-[0_14px_28px_-8px_rgba(255,152,27,0.8)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#FF981B] focus-visible:ring-offset-2"
+          >
+            View All Courses <span aria-hidden="true">→</span>
+          </Link>
+        </div>
+      )}
     </Section>
   );
 }

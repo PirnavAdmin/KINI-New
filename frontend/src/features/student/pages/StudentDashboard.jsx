@@ -15,6 +15,8 @@ import { resolveStudentClasses } from '@features/student/utils/resolveStudentCla
 import useClassRefresh from '@features/student/hooks/useClassRefresh'
 import { getStudentJoinState, normalizeLiveClassList } from '@features/live-classes/utils/liveClassMappers'
 import { useStudentClassScope } from '@features/student/hooks/useStudentClassScope'
+import { useStudentEnrollments } from '@features/student/hooks/useStudentEnrollments'
+import { groupEnrollmentsByCourse } from '@features/student/utils/studentEnrollments'
 import { readLocalScheduledClasses } from '@shared/services/localScheduleStore'
 import toast from 'react-hot-toast'
 import { getApiErrorMessage, paymentApi } from '@shared/services/apiServices'
@@ -40,7 +42,10 @@ export default function StudentDashboard() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const classScope = useStudentClassScope()
-  const firstName = user?.firstName || user?.name?.split(' ')?.[0] || 'Srinivas'
+  const enrollmentState = useStudentEnrollments()
+  const enrolledCourseRows = useMemo(() => groupEnrollmentsByCourse(enrollmentState.enrollments), [enrollmentState.enrollments])
+  const primaryCourse = enrolledCourseRows[0]
+  const firstName = user?.firstName || user?.name?.split(' ')?.[0] || 'Student'
   const studentId = user?.studentId ?? user?.StudentId ?? user?.student?.studentId ?? user?.student?.id ?? resolveUserId(user)
   const isDemoSession = Boolean(user?.isDemo || localStorage.getItem('isDemo') === 'true' || String(user?.email || '').includes('demo'))
   const [dashboardData, setDashboardData] = useState(() => ({ progress: null, results: [], activity: [], attendance: [], enrollment: null, liveClasses: [], payments: [], assessments: [], loading: Boolean(studentId), paymentError: '', assessmentError: '' }))
@@ -122,7 +127,7 @@ export default function StudentDashboard() {
         payments: paymentResult.status === 'fulfilled' ? rowsFrom(paymentResult.value) : [],
         assessments: assessmentResult.status === 'fulfilled' ? rowsFrom(assessmentResult.value) : [],
         paymentError: paymentResult.status === 'rejected' ? getApiErrorMessage(paymentResult.reason, 'Payment information is unavailable.') : '',
-        assessmentError: assessmentResult.status === 'rejected' ? getApiErrorMessage(assessmentResult.reason, 'Quiz status is unavailable.') : '',
+        assessmentError: assessmentResult.status === 'rejected' ? getApiErrorMessage(assessmentResult.reason, 'Assessment status is unavailable.') : '',
         loading: false,
         loadedAt: new Date().toISOString(),
       })
@@ -133,9 +138,9 @@ export default function StudentDashboard() {
 
   const student = dashboardData.enrollment?.student
   const batch = dashboardData.enrollment?.batch
-  const courseId = student?.courseId ?? student?.course?.courseId ?? student?.course?.id ?? batch?.courseId ?? batch?.course?.courseId ?? batch?.course?.id ?? user?.courseId ?? user?.course?.id
-  const courseName = student?.courseName ?? student?.course?.courseName ?? student?.course?.name ?? batch?.courseName ?? batch?.course?.courseName ?? batch?.course?.name ?? user?.courseName ?? user?.course?.name ?? 'Assigned course'
-  const mentorName = batch?.mentorName ?? batch?.mentor?.mentorName ?? batch?.mentor?.name ?? student?.mentorName ?? 'Not assigned'
+  const courseId = primaryCourse?.courseId
+  const courseName = enrollmentState.loading ? 'Loading courses...' : enrollmentState.status === 'error' ? 'Course information unavailable' : primaryCourse?.courseName || (primaryCourse ? 'Assigned course' : 'No courses assigned')
+  const mentorName = primaryCourse?.mentorName || batch?.mentorName || batch?.mentor?.mentorName || batch?.mentor?.name || student?.mentorName || 'Not assigned'
   // Only classes from this student's own enrollments (the live-class
   // endpoints take no student filter). The demo session uses its local data.
   const scopedLiveClasses = isDemoSession ? dashboardData.liveClasses : dashboardData.liveClasses.filter((item) => classScope.allows(item))
@@ -161,7 +166,7 @@ export default function StudentDashboard() {
   const localPercent = Number(getStoredCoursePercentages()[String(courseId)] || 0)
   const apiProgress = Number(dashboardData.progress?.overallProgress ?? dashboardData.progress?.progressPercentage ?? dashboardData.progress?.percentage ?? 0) || 0
   const overallProgress = Math.round(Math.max(apiProgress, localPercent, getStudentAccessProgress()))
-  const enrolledCourses = Number(dashboardData.progress?.enrolledCourses ?? dashboardData.progress?.courseCount ?? 1) || 1
+  const enrolledCourses = enrolledCourseRows.length
   const completedLessons = Number(dashboardData.progress?.completedLessons ?? readStoredListLength(`course-progress-${courseId}-completed`)) || 0
   const attendanceSummary = useMemo(() => {
     const percentageFromProfile = Number(student?.attendance)
@@ -215,12 +220,12 @@ export default function StudentDashboard() {
   const pendingPayments = dashboardData.payments.filter((payment) => !isPaidPayment(payment))
   const pendingAmount = pendingPayments.reduce((sum, payment) => sum + (Number(payment.dueAmount ?? payment.balanceAmount ?? payment.pendingAmount ?? payment.amount ?? payment.totalAmount ?? 0) || 0), 0)
   const stats = [
-    { label: 'Enrolled Courses', value: String(enrolledCourses), note: courseName, icon: GraduationCap, path: ROUTES.STUDENT.COURSES, tone: 'purple' },
+    { label: 'Enrolled Courses', value: enrollmentState.loading ? '...' : enrollmentState.status === 'error' ? 'Unavailable' : String(enrolledCourses), note: courseName, icon: GraduationCap, path: ROUTES.STUDENT.COURSES, tone: 'purple' },
     { label: 'Completed Lessons', value: dashboardData.loading ? '...' : String(completedLessons), note: completedLessons ? 'From course progress' : 'No lessons completed yet', icon: CheckCircle2, path: ROUTES.STUDENT.COURSES, tone: 'green' },
     { label: 'Attendance', value: dashboardData.loading ? '...' : `${attendanceSummary.percentage}%`, note: dashboardData.loading ? 'Loading attendance summary' : attendanceSummary.percentage ? attendanceSummary.note : 'Attend your upcoming classes', icon: CalendarCheck, path: ROUTES.STUDENT.ATTENDANCE, tone: 'blue' },
     { label: 'Learning Streak', value: dashboardData.loading ? '...' : `${learningStreak} ${learningStreak === 1 ? 'day' : 'days'}`, note: learningStreak ? 'Keep it going today' : 'Start a learning streak today', icon: Flame, path: coursePath, tone: 'orange' },
     { label: 'Pending Payment', value: dashboardData.loading ? '...' : dashboardData.paymentError ? 'Unavailable' : formatRupees(pendingAmount), note: dashboardData.paymentError || (pendingPayments.length ? `${pendingPayments.length} pending ${pendingPayments.length === 1 ? 'payment' : 'payments'}` : dashboardData.payments.length ? 'All payments completed' : 'No payment records'), icon: IndianRupee, path: ROUTES.STUDENT.PAYMENTS, tone: 'amber' },
-    { label: 'Quiz Status', value: dashboardData.loading ? '...' : dashboardData.assessmentError ? 'Unavailable' : `${pendingQuizzes.length} pending`, note: dashboardData.assessmentError || (dashboardData.assessments.length ? `${completedQuizzes.length} completed` : 'No quizzes available'), icon: ClipboardCheck, path: ROUTES.STUDENT.ASSESSMENTS, tone: 'sky' },
+    { label: 'Assessments', value: dashboardData.loading ? '...' : dashboardData.assessmentError ? 'Unavailable' : `${pendingQuizzes.length} pending`, note: dashboardData.assessmentError || (dashboardData.assessments.length ? `${completedQuizzes.length} completed` : 'No assessments available'), icon: ClipboardCheck, path: ROUTES.STUDENT.ASSESSMENTS, tone: 'sky' },
   ]
 
   const greeting = useMemo(() => {
@@ -254,7 +259,7 @@ export default function StudentDashboard() {
     overallProgress === 0
       ? { key: 'start', title: 'Start your first lesson', text: 'Begin with your assigned course and take the first step towards your learning goals.', action: 'Continue Learning', onClick: () => navigate(coursePath), icon: Target }
       : overallProgress < 100 && { key: 'continue', title: 'Continue your course', text: `You are ${overallProgress}% through ${courseName}. Pick up where you left off.`, action: 'Continue Learning', onClick: () => navigate(coursePath), icon: Target },
-    pendingQuizzes.length > 0 && { key: 'quiz', title: pendingQuizzes.length === 1 ? 'Take your pending quiz' : `Take your ${pendingQuizzes.length} pending quizzes`, text: 'Check your understanding and track your progress.', action: 'Open Assessments', onClick: () => navigate(ROUTES.STUDENT.ASSESSMENTS), icon: ClipboardCheck },
+    pendingQuizzes.length > 0 && { key: 'quiz', title: pendingQuizzes.length === 1 ? 'Take your pending assessment' : `Take your ${pendingQuizzes.length} pending assessments`, text: 'Check your understanding and track your progress.', action: 'Open Assessments', onClick: () => navigate(ROUTES.STUDENT.ASSESSMENTS), icon: ClipboardCheck },
     nextLiveClass && !getStudentJoinState(nextLiveClass).canJoin && { key: 'class', title: 'Get ready for your next class', text: `${nextLiveClass.title || courseName} · ${nextLiveClass.dateLabel} · ${nextLiveClass.timeLabel}`, action: 'View Schedule', onClick: () => navigate(ROUTES.STUDENT.CLASS_SCHEDULE), icon: CalendarDays },
     pendingPayments.length > 0 && { key: 'payment', title: 'Complete your pending payment', text: `${formatRupees(pendingAmount)} is pending on your account.`, action: 'View Payments', onClick: () => navigate(ROUTES.STUDENT.PAYMENTS), icon: IndianRupee },
   ].filter(Boolean)
@@ -272,6 +277,10 @@ export default function StudentDashboard() {
       </div>
     </header>
 
+    {enrollmentState.status === 'error' && <div role="alert" className="my-3 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">
+      <span>{getApiErrorMessage(enrollmentState.error, 'Unable to load your assigned courses.')}{enrollmentState.error?.response?.status ? ` (HTTP ${enrollmentState.error.response.status})` : ''}</span>
+      <button type="button" onClick={enrollmentState.reload} className="rounded-lg border border-amber-300 bg-white px-3 py-2 font-semibold">Retry courses</button>
+    </div>}
     <section className="sd14-stats" aria-label="Learning summary">
       {stats.map(({ label, value, note, icon, path, tone }) => (
         <KPI key={label} label={label} value={value} description={note} icon={icon} accent={tone} loading={value === '...'} onClick={() => navigate(path)} />

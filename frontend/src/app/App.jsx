@@ -6,6 +6,7 @@ import ErrorBoundary from "@shared/components/ErrorBoundary";
 const ChatBot = lazy(() => import("@shared/components/ChatBot"));
 
 const AUTH_PATH_PREFIXES = [
+  "/Auth/login",
   "/login",
   "/register",
   "/signup",

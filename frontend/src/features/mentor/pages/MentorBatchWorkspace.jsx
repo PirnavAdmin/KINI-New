@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import { useAuth } from "@shared/hooks/useAuth";
 import { batchService } from "@shared/services/batchService";
-import { getMentorDashboardStudents } from "@shared/services/mentorService";
+import { getMentorDashboardBatches, getMentorDashboardStudents } from "@shared/services/mentorService";
 import assessmentService from "@/services/assessmentService";
 import { liveClassService } from "@features/live-classes/services/liveClassService";
 import { canJoinLiveClass, normalizeLiveClass } from "@features/live-classes/utils/liveClassMappers";
@@ -84,9 +84,10 @@ export default function MentorBatchWorkspace() {
     const identity = getMentorSessionIdentity(user);
     const mentorIdentity = identity.employeeId ?? identity.mentorId ?? identity.userId;
     const [batchesResult, studentsResult, dashboardStudentsResult, assessmentsResult, liveClassesResult] = await Promise.allSettled([
-      batchService.getMentorBatches(mentorIdentity).then((response) =>
-        response?.batches?.find((item) => String(item.batchId) === String(batchId)) ?? null,
-      ),
+      getMentorDashboardBatches().catch(() => batchService.getMentorBatches(mentorIdentity)).then((response) => {
+        const root = response?.batches ?? response?.items ?? response?.records ?? response?.data ?? response;
+        return (Array.isArray(root) ? root : []).find((item) => String(item.batchId ?? item.id ?? item.BatchId) === String(batchId)) ?? null;
+      }),
       batchService.getStudents(batchId),
       getMentorDashboardStudents(),
       assessmentService.getAssessments(),
@@ -147,7 +148,7 @@ export default function MentorBatchWorkspace() {
         startDate: response.startDate ?? current?.startDate ?? batchFromList?.startDate,
         endDate: response.endDate ?? current?.endDate ?? batchFromList?.endDate,
         capacity: Number(response.capacity ?? current?.capacity ?? batchFromList?.capacity ?? 0),
-        enrolledStudents: Number(response.enrolledStudents ?? current?.enrolledStudents ?? rows.length),
+        enrolledStudents: Number(batchFromList?.studentCount ?? batchFromList?.studentsCount ?? batchFromList?.enrolledStudents ?? response.enrolledStudents ?? rows.length),
         availableSeats: Number(response.availableSeats ?? current?.availableSeats ?? Math.max(0, Number(response.capacity ?? current?.capacity ?? batchFromList?.capacity ?? 0) - rows.length)),
       }));
       setBatchError("");
@@ -165,12 +166,19 @@ export default function MentorBatchWorkspace() {
   const showProgress = students.some((student) => student.progress != null);
   // Schedule & Classes pagination. The page is clamped here rather than in an
   // effect, so a shrinking class list can never leave it past the last page.
-  const classPageCount = Math.max(1, Math.ceil(liveClasses.length / classPageSize));
+  const visibleLiveClasses = params.get('status') === 'live'
+    ? liveClasses.filter(item => normalizeLiveClass(item).status === 'live')
+    : liveClasses;
+  const classPageCount = Math.max(1, Math.ceil(visibleLiveClasses.length / classPageSize));
   const currentClassPage = Math.min(classPage, classPageCount);
   const classStart = (currentClassPage - 1) * classPageSize;
-  const pagedLiveClasses = liveClasses.slice(classStart, classStart + classPageSize);
+  const pagedLiveClasses = visibleLiveClasses.slice(classStart, classStart + classPageSize);
   const occupancy = batch?.capacity > 0 ? Math.round((Number(batch.enrolledStudents || 0) / Number(batch.capacity)) * 100) : 0;
   const setTab = (tab) => setParams({ tab }, { replace: true });
+  const selectMetric = (tab) => {
+    setClassPage(1);
+    setParams(tab === 'live-classes' ? { tab, status: 'live' } : { tab }, { replace: true });
+  };
   const shareBatch = async () => {
     try { await navigator.clipboard.writeText(window.location.href); toast.success("Batch link copied"); }
     catch { toast.error("Unable to copy the link"); }
@@ -191,7 +199,7 @@ export default function MentorBatchWorkspace() {
 
   return <main className="mv17 min-h-full p-3 sm:p-4"><div className="mx-auto max-w-[1500px] space-y-3.5">
     <WorkspaceHeader batch={{ ...batch, status: String(batch.status || "").toLowerCase() }} onBack={() => navigate("/mentor/batches")} onExport={exportRoster} onShare={shareBatch} onGenerateReport={() => navigate("/mentor/reports")} />
-    <BatchMetrics batch={{ ...batch, liveClasses: liveClasses.length }} assessmentsCount={assessments.length} onSelect={setTab} />
+    <BatchMetrics batch={{ ...batch, liveClasses: liveClasses.filter(item => normalizeLiveClass(item).status === 'live').length }} assessmentsCount={assessments.length} onSelect={selectMetric} />
     <WorkspaceTabs tabs={tabs.map((tab) => tab.id === "assessments" ? { ...tab, label: `Assessments (${assessments.length})` } : tab)} activeTab={activeTab} onChange={setTab} />
     {activeTab === "overview" && <section className="grid gap-4 lg:grid-cols-[1.45fr_.75fr]">
       <article className="mv17-card mv17-binfo">
@@ -220,7 +228,7 @@ export default function MentorBatchWorkspace() {
     </section>}
     {activeTab === "students" && <section className="rounded-xl border bg-white"><div className="flex flex-wrap items-center justify-between gap-3 border-b p-4"><div><h2 className="text-sm font-bold">Students ({batch.enrolledStudents})</h2><p className="text-xs text-slate-500">Students enrolled in this batch only</p></div><label className="flex h-9 items-center gap-2 rounded-lg border px-3"><Search className="h-4 w-4 text-slate-400" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search students..." aria-label="Search students" className="w-64 max-w-[60vw] border-0 bg-transparent p-0 text-sm outline-none ring-0 focus:border-0 focus:outline-none focus:ring-0" /></label></div>{studentsError ? <div className="p-8 text-center"><p className="text-sm text-rose-600">{studentsError}</p><button onClick={loadWorkspace} className="mt-3 text-sm font-semibold text-blue-600">Retry</button></div> : filteredStudents.length ? <div className="overflow-x-auto"><table className="w-full min-w-[640px] text-left text-sm"><thead className="bg-slate-50 text-xs text-slate-500"><tr>{["Student", "Attendance", "Assessments", ...(showProgress ? ["Progress"] : []), "Status", "Action"].map((title) => <th key={title} className="px-4 py-3 font-semibold">{title}</th>)}</tr></thead><tbody>{filteredStudents.map((student) => <tr key={student.studentId} className="border-t"><td className="px-4 py-3"><div className="flex items-center gap-3"><ProfileImage profileType={PROFILE_TYPE.STUDENT} profileId={student.studentId} name={student.name} size="sm" className="text-xs" fallbackClassName="bg-blue-50 text-blue-700" /><div className="min-w-0"><p className="truncate font-semibold text-slate-900">{student.name}</p><p className="text-xs text-slate-500">{student.studentCode ? `Student ID: ${student.studentCode}` : "Student"}</p></div></div></td><td className="px-4 py-3">{student.attendance}%</td><td className="px-4 py-3">{assessments.length ? `${student.assessmentsCleared} / ${assessments.length}` : student.assessmentsCleared}</td>{showProgress && <td className="px-4 py-3">{student.progress == null ? "—" : `${student.progress}%`}</td>}<td className="px-4 py-3">{student.status}</td><td className="px-4 py-3"><button onClick={() => navigate(`/mentor/batches/${batchId}/students/${student.studentId}`)} className="font-semibold text-blue-600">View</button></td></tr>)}</tbody></table></div> : <div className="p-10 text-center text-sm text-slate-500"><Users className="mx-auto mb-2 h-7 w-7" />No students enrolled in this batch.</div>}</section>}
     {activeTab === "assessments" && <section className="overflow-hidden rounded-xl border bg-white"><div className="flex flex-wrap items-center justify-between gap-3 border-b p-4"><div><h2 className="text-sm font-bold">Batch assessments</h2><p className="text-xs text-slate-500">Quizzes, tests, and all assessments created for this batch</p></div><span className="rounded-full bg-blue-50 px-2.5 py-1 text-xs font-bold text-blue-700">{assessments.length} total</span></div>{assessmentsError ? <div className="p-8 text-center"><p className="text-sm text-rose-600">{assessmentsError}</p><button onClick={loadWorkspace} className="mt-3 text-sm font-semibold text-blue-600">Retry</button></div> : assessments.length ? <div className="overflow-x-auto"><table className="w-full min-w-[720px] text-left text-sm"><thead className="bg-slate-50 text-xs text-slate-500"><tr>{["Assessment", "Type", "Date", "Duration", "Marks", "Status"].map((title) => <th key={title} className="px-4 py-3 font-semibold">{title}</th>)}</tr></thead><tbody>{assessments.map((assessment) => <tr key={assessment.id} className="border-t transition hover:bg-slate-50"><td className="px-4 py-3 font-semibold text-slate-900">{assessment.title}</td><td className="px-4 py-3">{assessment.assessmentType ?? assessment.type ?? "Assessment"}</td><td className="px-4 py-3">{date(assessment.startDate ?? assessment.date ?? assessment.scheduledDate)}</td><td className="px-4 py-3">{Number(assessment.duration ?? assessment.durationMinutes ?? 0)} min</td><td className="px-4 py-3">{Number(assessment.totalMarks ?? assessment.total ?? 0)} / {Number(assessment.passingMarks ?? assessment.passMarks ?? assessment.pass ?? 0)}</td><td className="px-4 py-3"><span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">{assessment.status ?? "Draft"}</span></td></tr>)}</tbody></table></div> : <div className="p-10 text-center text-sm text-slate-500"><ListChecks className="mx-auto mb-2 h-7 w-7" />No assessments have been created for this batch yet.</div>}</section>}
-    {activeTab === "live-classes" && <section className="mv15 mentor-workspace-classes overflow-hidden rounded-xl border bg-white text-sm text-slate-500">{liveClasses.length ? <><div className="px-6 pt-4 pb-2 sm:px-10 sm:pt-8">{pagedLiveClasses.map((liveClass) => { const session = normalizeLiveClass(liveClass); return <div key={liveClass.liveClassId || liveClass.id} className="flex flex-wrap items-center justify-between gap-3 border-b px-5 py-4 text-left last:border-b-0"><div><p className="font-semibold text-slate-900">{liveClass.classTitle || "Untitled class"}</p><p className="mt-1 text-xs text-slate-500">{date(liveClass.scheduledDate)} · {liveClass.startTime || "—"} - {liveClass.endTime || "—"} · {liveClass.mentorName || batch.mentorName || "—"}</p></div><div className="flex items-center gap-3"><span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">{session.statusLabel}</span>{canJoinLiveClass(session) ? <a href={session.meetingUrl} target="_blank" rel="noreferrer" className="font-semibold text-blue-700 hover:underline">Join meeting</a> : session.status === "completed" && session.recordingUrl ? <a href={session.recordingUrl} target="_blank" rel="noreferrer" className="font-semibold text-blue-700 hover:underline">View recording</a> : null}</div></div>; })}</div><div className="border-t border-[#eef2f7]"><Pager label="classes" first={classStart + 1} last={classStart + pagedLiveClasses.length} total={liveClasses.length} page={currentClassPage} pageCount={classPageCount} onPage={setClassPage} pageSize={classPageSize} onPageSize={(size) => { setClassPageSize(size); setClassPage(1); }} sizes={[10, 20, 30]} /></div></> : <p className="p-10 text-center">No live classes are scheduled for this batch yet.</p>}</section>}
+    {activeTab === "live-classes" && <section className="mv15 mentor-workspace-classes overflow-hidden rounded-xl border bg-white text-sm text-slate-500">{visibleLiveClasses.length ? <><div className="px-6 pt-4 pb-2 sm:px-10 sm:pt-8">{pagedLiveClasses.map((liveClass) => { const session = normalizeLiveClass(liveClass); return <div key={liveClass.liveClassId || liveClass.id} className="flex flex-wrap items-center justify-between gap-3 border-b px-5 py-4 text-left last:border-b-0"><div><p className="font-semibold text-slate-900">{liveClass.classTitle || "Untitled class"}</p><p className="mt-1 text-xs text-slate-500">{date(liveClass.scheduledDate)} · {liveClass.startTime || "—"} - {liveClass.endTime || "—"} · {liveClass.mentorName || batch.mentorName || "—"}</p></div><div className="flex items-center gap-3"><span className="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-semibold text-slate-700">{session.statusLabel}</span>{canJoinLiveClass(session) ? <a href={session.meetingUrl} target="_blank" rel="noreferrer" className="font-semibold text-blue-700 hover:underline">Join meeting</a> : session.status === "completed" && session.recordingUrl ? <a href={session.recordingUrl} target="_blank" rel="noreferrer" className="font-semibold text-blue-700 hover:underline">View recording</a> : null}</div></div>; })}</div><div className="border-t border-[#eef2f7]"><Pager label="classes" first={classStart + 1} last={classStart + pagedLiveClasses.length} total={visibleLiveClasses.length} page={currentClassPage} pageCount={classPageCount} onPage={setClassPage} pageSize={classPageSize} onPageSize={(size) => { setClassPageSize(size); setClassPage(1); }} sizes={[10, 20, 30]} /></div></> : <p className="p-10 text-center">No sessions match this view. Select the Live Classes tab to view all scheduled and past sessions.</p>}</section>}
     {!["overview", "students", "assessments", "live-classes"].includes(activeTab) && <section className="rounded-xl border bg-white p-10 text-center text-sm text-slate-500">{activeTab === "attendance" ? "Attendance data unavailable." : "No resources available for this batch."}</section>}
   </div></main>;
 }

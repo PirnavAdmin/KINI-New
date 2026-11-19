@@ -5,13 +5,26 @@ import AssessmentsPage from '@/pages/assessments/AssessmentsPage';
 
 const mock = vi.hoisted(() => ({ state: {} }));
 vi.mock('@/hooks/useAssessments', () => ({ useAssessments: () => mock.state }));
-vi.mock('@/pages/assessments/CreateAssessment', () => ({ default: () => null }));
+vi.mock('@/pages/assessments/CreateAssessment', () => ({ default: ({ open, onClose, initialData, allowPdfImport }) => open ? <div role="dialog" aria-label="Assessment editor" data-mode={initialData ? 'edit' : 'create'} data-pdf-import={String(allowPdfImport)}><button onClick={onClose}>Close editor</button></div> : null }));
 vi.mock('@/pages/assessments/AssessmentResults', () => ({ default: () => null }));
 beforeEach(() => {
   mock.state = { assessments: [], batches: [], courses: [], audit: [], stats: {}, loading: false, error: '', refresh: vi.fn() };
 });
 afterEach(cleanup);
 const mount = () => render(<MemoryRouter><AssessmentsPage /></MemoryRouter>);
+
+it('opens a new mentor assessment from both the banner and empty state', () => {
+  render(<MemoryRouter initialEntries={['/mentor/assessments']}><AssessmentsPage /></MemoryRouter>);
+  const buttons = screen.getAllByRole('button', { name: 'Create Assessment' });
+  expect(buttons).toHaveLength(2);
+  for (const button of buttons) {
+    fireEvent.click(button);
+    expect(screen.getByRole('dialog', { name: 'Assessment editor' })).toHaveAttribute('data-mode', 'create');
+    expect(screen.getByRole('dialog', { name: 'Assessment editor' })).toHaveAttribute('data-pdf-import', 'true');
+    fireEvent.click(screen.getByRole('button', { name: 'Close editor' }));
+    expect(screen.queryByRole('dialog', { name: 'Assessment editor' })).not.toBeInTheDocument();
+  }
+});
 
 it('shows an empty row spanning every header after an empty response', () => {
   mount();

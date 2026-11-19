@@ -1,0 +1,8 @@
+/* The surrounding field supplies the border and keyboard focus indicator. */
+html body .enrollment-field-control,
+html body .enrollment-field-control:focus,
+html body .enrollment-field-control:focus-visible {
+  border: 0;
+  outline: none;
+  box-shadow: none;
+}

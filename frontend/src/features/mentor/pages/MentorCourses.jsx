@@ -84,6 +84,15 @@ export default function MentorCourses() {
   const navigate = useNavigate();
   const [classes, setClasses] = useState([]);
   const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+  useEffect(() => {
+    if (!menuOpen) return;
+    const close = event => { if (!menuRef.current?.contains(event.target)) setMenuOpen(false); };
+    const escape = event => { if (event.key === 'Escape') { setMenuOpen(false); menuRef.current?.querySelector('button')?.focus(); } };
+    document.addEventListener('pointerdown', close);
+    document.addEventListener('keydown', escape);
+    return () => { document.removeEventListener('pointerdown', close); document.removeEventListener('keydown', escape); };
+  }, [menuOpen]);
   const [downloadingId, setDownloadingId] = useState(null);
   const [pageOpenedAt] = useState(() => Date.now());
   const activeTab = TABS.some((tab) => tab.id === params.get("tab")) ? params.get("tab") : "overview";
@@ -264,9 +273,18 @@ export default function MentorCourses() {
       }
     } catch (error) {
       preview?.close();
-      toast.error(download
-        ? "Unable to download this file."
-        : error?.response?.status === 404 ? "This file is no longer available." : "Unable to open this file.");
+      let message = getApiErrorMessage(error, download ? "Unable to download this file." : "Unable to open this file.");
+      // Axios returns PDF request errors as blobs too; decode JSON error
+      // bodies so the actual server message is visible to the user.
+      if (error?.response?.data instanceof Blob) {
+        try {
+          const body = JSON.parse(await error.response.data.text());
+          message = body.message || body.detail || body.title || message;
+        } catch { /* Keep the request error when the body is not JSON. */ }
+      }
+      if (error?.response?.status === 404) message = "This course PDF is no longer available. Please upload it again.";
+      if (error?.response?.status === 403) message = "Your account does not have permission to download this course PDF.";
+      toast.error(message);
     } finally {
       if (download) setDownloadingId(null);
     }
@@ -314,7 +332,7 @@ export default function MentorCourses() {
               <p>{selected.duration}<span aria-hidden="true">|</span>Starts {formatDate(selected.startDate)}</p>
             </div>
             <span className={`mv17-status ${/inactive|closed|complete/i.test(selected.status) ? "mv17-status--gray" : "mv17-status--green"} mv17-status--auto`}><i />{selected.status}</span>
-            <div className="mv17-menu-wrap">
+            <div className="mv17-menu-wrap" ref={menuRef}>
               <button type="button" className="mv17-icon-btn" aria-label="More course actions" aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}><MoreVertical aria-hidden="true" /></button>
               {menuOpen && <div className="mv17-menu" role="menu">
                 <button type="button" role="menuitem" onClick={() => { setMenuOpen(false); changeTab("syllabus"); }}>View syllabus</button>

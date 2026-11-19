@@ -95,6 +95,9 @@
         public DateTime? ApprovedOn { get; set; }
 
         public string? RejectionReason { get; set; }
+
+        // Filled by GET /api/hr/leave/{leaveId}; empty in list responses.
+        public List<LeaveAttachmentDto> Attachments { get; set; } = new();
     }
 
 
@@ -172,5 +175,37 @@
     {
         public List<string> Items { get; set; }
             = new();
+    }
+}
+namespace TalentSphereAPI.DTOs.HR
+{
+    // ============================================================
+    // LEAVE ATTACHMENTS (supporting / medical documents)
+    // ============================================================
+
+    public class LeaveAttachmentDto
+    {
+        public int AttachmentId { get; set; }
+
+        public int LeaveId { get; set; }
+
+        public string FileName { get; set; } = string.Empty;
+
+        public string ContentType { get; set; } = string.Empty;
+
+        public long FileSize { get; set; }
+
+        public DateTime UploadedAt { get; set; }
+
+        // Authorized API paths (send the JWT); never a public file URL.
+        public string ViewUrl { get; set; } = string.Empty;
+
+        public string DownloadUrl { get; set; } = string.Empty;
+    }
+
+    public class UploadLeaveAttachmentDto
+    {
+        /// <summary>PDF, JPG, JPEG or PNG, up to 5 MB.</summary>
+        public IFormFile? File { get; set; }
     }
 }

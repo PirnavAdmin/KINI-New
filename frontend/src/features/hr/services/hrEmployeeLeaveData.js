@@ -1,11 +1,34 @@
 import { hrError, hrField, hrList, hrRequest, unwrapHrData } from './hrApi'
 import { completeCollection, resolveHrEmployee as resolveLeaveEmployee } from './hrEmployeeRecords'
+import { enrichEmployeeRecordIds } from './hrEmployeeRoster'
 export { resolveHrEmployee as resolveLeaveEmployee } from './hrEmployeeRecords'
 
 export const employeeLeavePath = id => `/employee/hr-leave/employee/${encodeURIComponent(id)}`
 export const leaveStatus = row => String(hrField(row, 'status') ?? '').trim().toLowerCase()
 export const pendingLeave = row => ['pending', 'pending approval', 'submitted', 'awaiting approval'].includes(leaveStatus(row))
 export const leaveId = row => hrField(row, 'leaveId', 'id')
+
+// Balance is independent of leave history: an employee with no requests can
+// still have an allocation, and a failing history read must not block it.
+export async function loadEmployeeLeaveBalance(identifier, { readEmployee = true, signal } = {}) {
+  const numericId = value => /^\d+$/.test(String(value ?? '').trim()) && Number(value) > 0 && Number(value) <= 2147483647
+  let id = identifier
+  let identifiers = new Set([String(identifier)])
+  if (!numericId(id)) {
+    if (!readEmployee) throw new Error('A numeric employee record ID is required to load this balance.')
+    const employees = await enrichEmployeeRecordIds(await completeCollection('employees', signal), signal)
+    const resolved = resolveLeaveEmployee(identifier, employees, [])
+    identifiers = resolved.identifiers
+    id = [hrField(resolved.employee, 'employeeRecordId'), hrField(resolved.employee, 'employeeId'), hrField(resolved.employee, 'id')].find(numericId)
+  }
+  if (!numericId(id)) throw new Error('The employee directory did not provide a valid record ID for this balance.')
+  identifiers.add(String(id))
+  const balance = await hrRequest('GET', '/api/hr/leave/balance/{employeeId}', { id, signal })
+  const returnedId = hrField(balance, 'employeeId')
+  if (returnedId != null && !identifiers.has(String(returnedId))) throw new Error('Leave balance belongs to a different employee.')
+  if (balance == null) throw new Error('No leave balance was returned for this employee.')
+  return balance
+}
 
 // Canonical history read shared by Employee Details and Leave Details. The
 // deployed employee-specific endpoint rejects public identifiers; the working

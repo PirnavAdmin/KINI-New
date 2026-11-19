@@ -28,6 +28,8 @@ it('loads employee names and server filter choices, saves a review and refreshes
   await waitFor(() => expect(within(employee).getByRole('option', { name: 'Test Employee' })).toBeInTheDocument())
   expect(within(screen.getByRole('combobox', { name: 'Role', exact: true })).getAllByRole('option').map(option => option.textContent)).toEqual(['All', 'HR', 'Mentor'])
   expect(within(screen.getByRole('combobox', { name: 'Performance Filter' })).getByRole('option', { name: 'Top performers' })).toHaveValue('Top')
+  fireEvent.change(screen.getByRole('combobox', { name: 'Performance Filter' }), { target: { value: 'Top' } })
+  await waitFor(() => expect(apiClient.request).toHaveBeenCalledWith(expect.objectContaining({ url: '/api/hr/performance', params: expect.objectContaining({ PerformanceFilter: 'Top' }) })))
   expect(screen.getByText('No performance reviews found')).toBeInTheDocument()
   fireEvent.click(screen.getByRole('button', { name: 'Add Review', exact: true }))
   expect(within(screen.getByLabelText(/Employee ID/)).getByRole('option', { name: '7', exact: true })).toBeInTheDocument()
@@ -42,7 +44,7 @@ it('loads employee names and server filter choices, saves a review and refreshes
   fireEvent.click(screen.getByRole('checkbox', { name: 'Select all rows' }))
   fireEvent.click(screen.getByRole('button', { name: 'Export selected' }))
   expect(exportCSV).toHaveBeenCalled()
-  expect(toast.success).toHaveBeenCalledWith('Performance exported successfully.')
+  expect(toast.success).toHaveBeenCalledWith('Exported 1 record.', expect.objectContaining({ position: 'top-right' }))
 })
 
 it('does not fabricate categories or employee options when lookups are unavailable', async () => {

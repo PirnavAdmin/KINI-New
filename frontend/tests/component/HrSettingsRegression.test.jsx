@@ -9,7 +9,7 @@ const updateUser = vi.hoisted(() => vi.fn())
 vi.mock('@shared/hooks/useAuth', () => ({ useAuth: () => ({ user: {}, updateStoredUser: updateUser }) }))
 vi.mock('@shared/hooks/usePermission', () => ({ default: () => ({ hasPermission: () => true, can: () => true, isLoading: false }) }))
 vi.mock('@shared/context/ThemeContext', () => ({ useTheme: () => ({ isDark: false, toggle: vi.fn() }) }))
-vi.mock('@features/hr/components/HRPage', () => ({ default: ({ children, className }) => <main className={className}>{children}</main> }))
+vi.mock('@features/hr/components/HRPage', () => ({ default: ({ children, className, hero }) => <main className={className}>{hero}{children}</main> }))
 afterEach(() => { cleanup(); vi.clearAllMocks() })
 it.each(['unauthorized', 'wrapped failure'])('keeps the password dialog open on %s and sends the entered current password', async kind => {
   apiClient.request.mockImplementation(async request => {
@@ -34,6 +34,25 @@ it.each(['unauthorized', 'wrapped failure'])('keeps the password dialog open on 
   expect(screen.getByLabelText('Current Password', { selector: 'input' })).toHaveValue('Incorrect1!')
 })
 const profile = { firstName: 'Sai', lastName: 'Purna', email: 'person@example.com', phone: '9944103404' }
+it('preserves the existing country code after saving when the refreshed profile omits it', async () => {
+  let saved = false
+  apiClient.request.mockImplementation(async request => {
+    if (request.method === 'PUT') { saved = true; return { status: 200, data: { ...profile, firstName: 'Updated' } } }
+    return { status: 200, data: saved ? { ...profile, firstName: 'Updated' } : { ...profile, countryCode: '1' } }
+  })
+  render(<MemoryRouter><HrApiSettings /></MemoryRouter>)
+  expect(await screen.findByText('+1')).toBeInTheDocument()
+  const crumbs = screen.getByRole('navigation', { name: 'Breadcrumb' })
+  expect(crumbs).toHaveTextContent('Settings')
+  expect(crumbs).not.toHaveTextContent('Organization')
+  fireEvent.click(screen.getByRole('button', { name: 'Edit Profile' }))
+  fireEvent.change(screen.getByLabelText('First Name'), { target: { value: 'Updated' } })
+  fireEvent.change(screen.getByLabelText('Country Code'), { target: { value: '91' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Save', exact: true }))
+  await waitFor(() => expect(updateUser).toHaveBeenCalledWith(expect.objectContaining({ firstName: 'Updated', countryCode: '91' })))
+  await waitFor(() => expect(screen.queryByText('Loading profile...')).not.toBeInTheDocument())
+  expect(screen.getByText('+91')).toBeInTheDocument()
+})
 it('rejects name digits while typing and limits the phone to ten digits', () => {
   const save = vi.fn()
   render(<HrApiForm title="Edit profile" operation="PUT /api/hr/settings/profile" values={profile} onSave={save} onClose={vi.fn()} />)

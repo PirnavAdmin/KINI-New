@@ -251,8 +251,8 @@ export default function EmployeeProfileWizard({
   };
 
   const downloadProfilePdf = () => {
+    try {
     const doc = new jsPDF({ unit: "mm", format: "a4" });
-    const labelFor = (key) => key.replace(/([A-Z])/g, " $1").replace(/^./, (letter) => letter.toUpperCase());
     let y = 18;
     const ensureSpace = (height = 8) => {
       if (y + height > 282) { doc.addPage(); y = 18; }
@@ -309,6 +309,10 @@ export default function EmployeeProfileWizard({
     });
 
     doc.save(`${name.replace(/\s+/g, "-").toLowerCase()}-profile.pdf`);
+    toast.success('Profile PDF download started.');
+    } catch {
+      toast.error('Unable to download the profile PDF. Please try again.');
+    }
   };
 
   const addFile = () => {

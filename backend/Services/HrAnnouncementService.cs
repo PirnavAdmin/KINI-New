@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using System.Security.Claims;
 using System.Text;
 using Microsoft.EntityFrameworkCore;
@@ -66,9 +66,19 @@ public class HrAnnouncementService : IHrAnnouncementService
         var total =
             await query.CountAsync();
 
+        // Live now: published, already started, not expired.
         var published =
             await query.CountAsync(x =>
                 x.Status == "PUBLISHED" &&
+                x.PublishDate <= now &&
+                (x.ExpiryDate == null ||
+                 x.ExpiryDate > now));
+
+        // Published with a future publish date (not visible to the audience yet).
+        var scheduled =
+            await query.CountAsync(x =>
+                x.Status == "PUBLISHED" &&
+                x.PublishDate > now &&
                 (x.ExpiryDate == null ||
                  x.ExpiryDate > now));
 
@@ -84,12 +94,14 @@ public class HrAnnouncementService : IHrAnnouncementService
         var recentlyPublished =
             await query.CountAsync(x =>
                 x.Status == "PUBLISHED" &&
-                x.PublishDate >= thirtyDaysAgo);
+                x.PublishDate >= thirtyDaysAgo &&
+                x.PublishDate <= now);
 
         return new HrAnnouncementSummaryDto
         {
             TotalAnnouncements = total,
             Published = published,
+            Scheduled = scheduled,
             Drafts = drafts,
             Expired = expired,
             RecentlyPublished = recentlyPublished
@@ -167,10 +179,10 @@ public class HrAnnouncementService : IHrAnnouncementService
                             status,
 
                         PublishDate =
-                            x.PublishDate,
+                            AsUtc(x.PublishDate),
 
                         ExpiryDate =
-                            x.ExpiryDate,
+                            AsUtc(x.ExpiryDate),
 
                         CreatedBy =
                             x.CreatedBy
@@ -451,7 +463,12 @@ public class HrAnnouncementService : IHrAnnouncementService
                     AllowedAudiences.ToList(),
 
                 Statuses =
-                    AllowedStatuses.ToList()
+                    AllowedStatuses.ToList(),
+
+                // For the list filter only: Scheduled and Expired are derived
+                // from the dates and cannot be saved as a status.
+                FilterStatuses =
+                    new List<string> { "PUBLISHED", "SCHEDULED", "DRAFT", "EXPIRED" }
             });
     }
 
@@ -577,7 +594,25 @@ public class HrAnnouncementService : IHrAnnouncementService
                     x.Audience == audience);
         }
 
-        if (!string.IsNullOrWhiteSpace(
+        var filterStatus =
+            filter.Status?.Trim().ToUpperInvariant();
+
+        // Derived statuses (not stored): filter by date.
+        if (filterStatus is "SCHEDULED" or "EXPIRED")
+        {
+            var now =
+                DateTime.UtcNow;
+
+            query = filterStatus == "SCHEDULED"
+                ? query.Where(x =>
+                    x.Status == "PUBLISHED" &&
+                    x.PublishDate > now &&
+                    (x.ExpiryDate == null || x.ExpiryDate > now))
+                : query.Where(x =>
+                    x.ExpiryDate.HasValue &&
+                    x.ExpiryDate <= now);
+        }
+        else if (!string.IsNullOrWhiteSpace(
                 filter.Status))
         {
             var status =
@@ -601,9 +636,11 @@ public class HrAnnouncementService : IHrAnnouncementService
                 var now =
                     DateTime.UtcNow;
 
+                // Published = live now (started and not expired).
                 query =
                     query.Where(x =>
                         x.Status == "PUBLISHED" &&
+                        x.PublishDate <= now &&
                         (x.ExpiryDate == null ||
                          x.ExpiryDate > now));
             }
@@ -722,8 +759,23 @@ public class HrAnnouncementService : IHrAnnouncementService
             return "EXPIRED";
         }
 
+        // Published but not started yet: the audience cannot see it.
+        if (announcement.Status == "PUBLISHED" &&
+            announcement.PublishDate > now)
+        {
+            return "SCHEDULED";
+        }
+
         return announcement.Status;
     }
+
+    // Dates are stored in UTC; mark them so JSON carries a "Z" and browsers
+    // do not read them as local time.
+    private static DateTime AsUtc(DateTime value) =>
+        DateTime.SpecifyKind(value, DateTimeKind.Utc);
+
+    private static DateTime? AsUtc(DateTime? value) =>
+        value.HasValue ? AsUtc(value.Value) : null;
 
 
     private static string?
@@ -799,10 +851,10 @@ public class HrAnnouncementService : IHrAnnouncementService
                     DateTime.UtcNow),
 
             PublishDate =
-                announcement.PublishDate,
+                AsUtc(announcement.PublishDate),
 
             ExpiryDate =
-                announcement.ExpiryDate,
+                AsUtc(announcement.ExpiryDate),
 
             CreatedBy =
                 announcement.CreatedBy

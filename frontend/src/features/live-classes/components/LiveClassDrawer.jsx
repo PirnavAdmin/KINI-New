@@ -46,6 +46,9 @@ export default function LiveClassDrawer({
   selectedPdf,
   selectedRecording,
   pendingAction,
+  attendanceRows = [],
+  attendanceLoading = false,
+  attendanceError = '',
 }) {
   useEffect(() => {
     if (!open) return undefined
@@ -169,6 +172,16 @@ export default function LiveClassDrawer({
                     <Field label="Students" value={String(record.studentsCount || 0)} icon={Users} />
                     <Field label="Attendance Rate" value={`${record.attendancePercentage || 0}%`} icon={ShieldCheck} />
                   </div>
+                  {attendanceLoading ? <p role="status" className="text-sm text-slate-500">Loading student attendance…</p>
+                    : attendanceError ? <p role="alert" className="text-sm text-red-600">{attendanceError}</p>
+                    : attendanceRows.length ? <div className="overflow-x-auto rounded-lg border border-slate-200 dark:border-slate-700">
+                      <table className="w-full text-left text-sm">
+                        <thead><tr><th className="px-3 py-2">Student</th><th className="px-3 py-2">Email</th><th className="px-3 py-2">Status</th></tr></thead>
+                        <tbody>{attendanceRows.map((row, index) => <tr key={row.studentId ?? row.id ?? index} className="border-t border-slate-100 dark:border-slate-800">
+                          <td className="px-3 py-2">{row.name}</td><td className="px-3 py-2">{row.email}</td><td className="px-3 py-2 capitalize">{row.status}</td>
+                        </tr>)}</tbody>
+                      </table>
+                    </div> : <p className="text-sm text-slate-500">No student attendance recorded for this class.</p>}
                   <TinyButton variant="secondary" icon={Eye} onClick={() => onAttendance(record)} className="h-9 px-3 text-xs">View / Edit Attendance</TinyButton>
                 </div>
               </Section>

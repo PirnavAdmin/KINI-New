@@ -1,3 +1,4 @@
+import toast from "react-hot-toast";
 import { useEffect, useRef, useState } from "react";
 import { AlertTriangle, CheckCircle2, LoaderCircle, X } from "lucide-react";
 import { tutorService } from "@/shared/services/tutorService";
@@ -47,7 +48,7 @@ export default function TutorAssignmentWizard({ tutor, onClose, onComplete }) {
     } finally { if (requestId === batchRequest.current) setLoading({}); }
   };
   const checkAvailability = async () => { setError(""); setAvailability(null); setLoading({ availability: true }); try { setAvailability(await tutorService.availability(tutor.id, { batchId: value.batchId })); } catch { setAvailability({ available: true, hasConflict: false, message: "Availability service is unavailable. You can still confirm this assignment." }); } finally { setLoading({}); } };
-  const submit = async () => { setSaving(true); setError(""); try { await tutorService.assign({ tutorId: tutor.id, courseId: Number(value.courseId), batchId: Number(value.batchId) }); onComplete("Mentor assigned successfully.", { ...value, courseName: selected("courseId", data.courses), batchName: selected("batchId", data.batches) }); } catch (assignmentError) { setError(assignmentError?.response?.data?.message || "Unable to assign this mentor."); } finally { setSaving(false); } };
+  const submit = async () => { setSaving(true); setError(""); try { await tutorService.assign({ tutorId: tutor.id, mentorId: tutor.mentorProfileId ?? (tutor.employeeRecordId == null ? tutor.mentorId ?? tutor.id : undefined), courseId: Number(value.courseId), batchId: Number(value.batchId) }); onComplete("Mentor assigned successfully.", { ...value, courseName: selected("courseId", data.courses), batchName: selected("batchId", data.batches) }); } catch (assignmentError) { const message = assignmentError?.response?.data?.message || assignmentError?.message || "Unable to assign this mentor."; setError(message); toast.error(message); } finally { setSaving(false); } };
   const selected = (key, list) => nameOf(list.find((x) => String(itemId(x, key === "batchId" ? "batch" : "course")) === String(value[key])));
   const ready = value.courseId && value.batchId;
   const conflict = availability?.hasConflict ?? availability?.conflict ?? availability?.available === false;

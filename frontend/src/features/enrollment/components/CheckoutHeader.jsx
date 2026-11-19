@@ -31,7 +31,17 @@ const trustItems = (demoMode) => [
   ...(demoMode ? [{ icon: FiAlertTriangle, text: "Demo mode — no real payment", tone: "warning" }] : []),
 ];
 
-const CheckoutHeader = ({ currentStep = 1, demoMode = false }) => {
+const DEFAULT_SUBTITLE = "Submit your details and UPI payment proof. Course access follows payment verification and enrollment approval by the institute.";
+
+const CheckoutHeader = ({
+  currentStep = 1,
+  demoMode = false,
+  steps: stepList = STEPS,
+  title = "Secure Your",
+  accentTitle = "Enrollment",
+  subtitle = DEFAULT_SUBTITLE,
+  showTrust = true,
+}) => {
   const navigate = useNavigate();
   const { isDark } = useThemeContext();
 
@@ -81,19 +91,18 @@ const CheckoutHeader = ({ currentStep = 1, demoMode = false }) => {
           className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight"
           style={{ fontFamily: "'Sora', sans-serif", color: isDark ? t(isDark).text : BRAND.primary }}
         >
-          Secure Your{" "}
-          <span style={{ color: BRAND.accent }}>Enrollment</span>
+          {title}{" "}
+          <span style={{ color: BRAND.accent }}>{accentTitle}</span>
         </h1>
         <p className="mt-3 text-sm sm:text-base max-w-2xl leading-relaxed" style={{ color: t(isDark).textSecondary }}>
-          You're one step away from unlocking instant access to all course materials,
-          live sessions, projects, and your learning dashboard.
+          {subtitle}
         </p>
       </div>
 
       {/* Progress indicator */}
       <div className="mt-5">
         <div className="flex items-center gap-0">
-          {STEPS.map((step, idx) => {
+          {stepList.map((step, idx) => {
             const isCompleted = step.id < currentStep;
             const isActive = step.id === currentStep;
 
@@ -127,7 +136,7 @@ const CheckoutHeader = ({ currentStep = 1, demoMode = false }) => {
                   </span>
                 </div>
 
-                {idx < STEPS.length - 1 && (
+                {idx < stepList.length - 1 && (
                   <div
                     className="h-[2px] flex-1 mx-3 sm:mx-4 min-w-[24px] sm:min-w-[48px] rounded-full transition-all duration-500"
                     style={{
@@ -146,7 +155,7 @@ const CheckoutHeader = ({ currentStep = 1, demoMode = false }) => {
       </div>
 
       {/* Trust strip */}
-      <motion.div
+      {showTrust && <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.3 }}
@@ -165,7 +174,7 @@ const CheckoutHeader = ({ currentStep = 1, demoMode = false }) => {
             <span className="text-xs font-medium" style={{ color: tone === "warning" ? "#8A4B00" : t(isDark).textSecondary }}>{text}</span>
           </div>
         ))}
-      </motion.div>
+      </motion.div>}
     </motion.header>
   );
 };

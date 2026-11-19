@@ -1,3 +1,8 @@
+import { isPendingApprovalStudent } from './studentApprovalStatus';
+
+export const occupiesBatchSeat = student => !isPendingApprovalStudent(student)
+  && !['rejected', 'declined', 'cancelled', 'canceled', 'archived'].includes(String(student.status ?? '').trim().toLowerCase());
+
 // Include primary assignments that have not yet reached StudentBatch, while
 // preserving additional enrollments in that endpoint. Count each student once.
 export function reconcileBatchRoster(batch, roster, organizationStudents = []) {
@@ -12,9 +17,11 @@ export function reconcileBatchRoster(batch, roster, organizationStudents = []) {
     return Boolean(batchName && name === batchName);
   });
   const seen = new Set();
+  const primaryById = new Map(organizationStudents.map(student => [String(student.studentId ?? student.id), student]));
   return [...enrolled, ...primary].filter(student => {
     const id = student.studentId ?? student.id;
-    if (id == null) return true;
+    if (!occupiesBatchSeat(primaryById.get(String(id)) ?? student)) return false;
+    if (id == null || String(id).trim() === '') return false;
     const key = String(id);
     if (seen.has(key)) return false;
     seen.add(key);

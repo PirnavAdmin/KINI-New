@@ -602,6 +602,51 @@ namespace TalentSphereAPI.Migrations
                     b.ToTable("Batches");
                 });
 
+            modelBuilder.Entity("TalentSphereAPI.Models.BatchAssignmentHistory", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("ActionByUserId")
+                        .HasColumnType("int")
+                        .HasColumnName("ActionBy");
+
+                    b.Property<string>("Actor")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int>("CourseEnrollmentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("NewBatchId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PreviousBatchId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Remarks")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ActionByUserId");
+
+                    b.HasIndex("NewBatchId");
+
+                    b.HasIndex("PreviousBatchId");
+
+                    b.HasIndex("CourseEnrollmentId", "CreatedAt");
+
+                    b.ToTable("BatchAssignmentHistory", (string)null);
+                });
+
             modelBuilder.Entity("TalentSphereAPI.Models.BatchModuleCompletion", b =>
                 {
                     b.Property<int>("BatchModuleCompletionId")
@@ -902,6 +947,10 @@ namespace TalentSphereAPI.Migrations
                         .HasMaxLength(500)
                         .HasColumnType("varchar(500)");
 
+                    b.Property<string>("PosterUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
                     b.Property<decimal>("Price")
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
@@ -916,6 +965,160 @@ namespace TalentSphereAPI.Migrations
                     b.HasIndex("OrganizationId", "CourseName");
 
                     b.ToTable("Courses");
+                });
+
+            modelBuilder.Entity("TalentSphereAPI.Models.CourseEnrollment", b =>
+                {
+                    b.Property<int>("CourseEnrollmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("CourseEnrollmentId"));
+
+                    b.Property<DateTime?>("AccessTokenExpiresAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("EnrollmentAccessKeyExpiresAt");
+
+                    b.Property<string>("AccessTokenHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)")
+                        .HasColumnName("EnrollmentAccessKeyHash");
+
+                    b.Property<string>("AccountStatus")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)")
+                        .HasDefaultValue("NotCreated");
+
+                    b.Property<string>("Address")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<int?>("BatchId")
+                        .HasColumnType("int")
+                        .HasColumnName("CurrentBatchId");
+
+                    b.Property<string>("ConcurrencyStamp")
+                        .IsConcurrencyToken()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<int>("CourseId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasMaxLength(254)
+                        .HasColumnType("varchar(254)");
+
+                    b.Property<string>("EnrollmentNumber")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("varchar(50)");
+
+                    b.Property<string>("EnrollmentStatus")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
+
+                    b.Property<decimal>("FeeAmount")
+                        .HasColumnType("decimal(18,2)")
+                        .HasColumnName("CourseFee");
+
+                    b.Property<string>("FullName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("HighestQualification")
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)")
+                        .HasColumnName("Qualification");
+
+                    b.Property<string>("IdempotencyKeyHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<string>("InstitutionName")
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)")
+                        .HasColumnName("CollegeName");
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PaymentReference")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasDefaultValue("");
+
+                    b.Property<string>("PaymentStatus")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)")
+                        .HasDefaultValue("NotSubmitted");
+
+                    b.Property<string>("Phone")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("varchar(20)")
+                        .HasColumnName("MobileNumber");
+
+                    b.Property<string>("RejectionReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<DateTime?>("ReviewedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("ReviewedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int?>("StudentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("TermsAcceptedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("CourseEnrollmentId");
+
+                    b.HasIndex("BatchId");
+
+                    b.HasIndex("CourseId");
+
+                    b.HasIndex("EnrollmentNumber")
+                        .IsUnique();
+
+                    b.HasIndex("IdempotencyKeyHash")
+                        .IsUnique();
+
+                    b.HasIndex("PaymentReference")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("OrganizationId", "EnrollmentStatus");
+
+                    b.HasIndex("StudentId", "EnrollmentStatus");
+
+                    b.HasIndex("OrganizationId", "CourseId", "Email");
+
+                    b.ToTable("CourseEnrollments", (string)null);
                 });
 
             modelBuilder.Entity("TalentSphereAPI.Models.CourseLesson", b =>
@@ -976,6 +1179,107 @@ namespace TalentSphereAPI.Migrations
                     b.HasIndex("CourseId");
 
                     b.ToTable("CourseModules");
+                });
+
+            modelBuilder.Entity("TalentSphereAPI.Models.CoursePayment", b =>
+                {
+                    b.Property<int>("CoursePaymentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("CoursePaymentId"));
+
+                    b.Property<decimal>("Amount")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("CourseEnrollmentId")
+                        .HasColumnType("int")
+                        .HasColumnName("EnrollmentId");
+
+                    b.Property<string>("IdempotencyKeyHash")
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<DateTime>("PaymentDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("PaymentMethod")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)")
+                        .HasDefaultValue("");
+
+                    b.Property<string>("RejectionReason")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<string>("ReviewNote")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)")
+                        .HasColumnName("Remarks");
+
+                    b.Property<DateTime?>("ReviewedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("VerifiedAt");
+
+                    b.Property<string>("ReviewedBy")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("ScreenshotContentType")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("ScreenshotSha256")
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<long?>("ScreenshotSizeBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ScreenshotStoragePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)")
+                        .HasColumnName("ScreenshotPath");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)")
+                        .HasColumnName("PaymentStatus");
+
+                    b.Property<DateTime>("SubmittedAt")
+                        .HasColumnType("datetime(6)")
+                        .HasColumnName("CreatedAt");
+
+                    b.Property<string>("UtrNumber")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)")
+                        .HasColumnName("UTRNumber");
+
+                    b.Property<int?>("VerifiedByUserId")
+                        .HasColumnType("int")
+                        .HasColumnName("VerifiedBy");
+
+                    b.HasKey("CoursePaymentId");
+
+                    b.HasIndex("IdempotencyKeyHash")
+                        .IsUnique();
+
+                    b.HasIndex("ScreenshotSha256");
+
+                    b.HasIndex("UtrNumber")
+                        .IsUnique();
+
+                    b.HasIndex("VerifiedByUserId");
+
+                    b.HasIndex("CourseEnrollmentId", "Status");
+
+                    b.ToTable("CoursePayments", (string)null);
                 });
 
             modelBuilder.Entity("TalentSphereAPI.Models.CourseTopic", b =>
@@ -1550,6 +1854,57 @@ namespace TalentSphereAPI.Migrations
                     b.ToTable("EmployeeSkills");
                 });
 
+            modelBuilder.Entity("TalentSphereAPI.Models.EnrollmentApprovalHistory", b =>
+                {
+                    b.Property<int>("EnrollmentApprovalHistoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasColumnName("Id");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("EnrollmentApprovalHistoryId"));
+
+                    b.Property<string>("Action")
+                        .IsRequired()
+                        .HasMaxLength(30)
+                        .HasColumnType("varchar(30)");
+
+                    b.Property<int?>("ActionByUserId")
+                        .HasColumnType("int")
+                        .HasColumnName("ActionBy");
+
+                    b.Property<string>("Actor")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int>("CourseEnrollmentId")
+                        .HasColumnType("int")
+                        .HasColumnName("EnrollmentId");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("FromStatus")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)")
+                        .HasColumnName("Remarks");
+
+                    b.Property<string>("ToStatus")
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.HasKey("EnrollmentApprovalHistoryId");
+
+                    b.HasIndex("ActionByUserId");
+
+                    b.HasIndex("CourseEnrollmentId", "CreatedAt");
+
+                    b.ToTable("EnrollmentApprovalHistory", (string)null);
+                });
+
             modelBuilder.Entity("TalentSphereAPI.Models.GetInTouch", b =>
                 {
                     b.Property<int>("Id")
@@ -2107,6 +2462,58 @@ namespace TalentSphereAPI.Migrations
                     b.ToTable("LeaveRequests");
                 });
 
+            modelBuilder.Entity("TalentSphereAPI.Models.LeaveRequestAttachment", b =>
+                {
+                    b.Property<int>("LeaveRequestAttachmentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("LeaveRequestAttachmentId"));
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<int>("LeaveRequestId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("OriginalFileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<string>("Sha256")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<long>("SizeBytes")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("StoragePath")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<DateTime>("UploadedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("UploadedByUserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("LeaveRequestAttachmentId");
+
+                    b.HasIndex("LeaveRequestId");
+
+                    b.HasIndex("OrganizationId", "LeaveRequestId");
+
+                    b.ToTable("LeaveRequestAttachments", (string)null);
+                });
+
             modelBuilder.Entity("TalentSphereAPI.Models.LiveClass", b =>
                 {
                     b.Property<int>("LiveClassId")
@@ -2370,6 +2777,10 @@ namespace TalentSphereAPI.Migrations
                         .IsRequired()
                         .HasColumnType("longtext");
 
+                    b.Property<string>("LogoUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
                     b.Property<string>("OrganizationName")
                         .IsRequired()
                         .HasColumnType("longtext");
@@ -2394,6 +2805,97 @@ namespace TalentSphereAPI.Migrations
                         .IsUnique();
 
                     b.ToTable("Organizations");
+                });
+
+            modelBuilder.Entity("TalentSphereAPI.Models.OrganizationPaymentSetting", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<int>("OrganizationId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PayeeName")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("varchar(200)");
+
+                    b.Property<string>("QrCodePath")
+                        .HasMaxLength(500)
+                        .HasColumnType("varchar(500)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("UpiId")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("varchar(150)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrganizationId")
+                        .IsUnique();
+
+                    b.ToTable("OrganizationPaymentSettings", (string)null);
+                });
+
+            modelBuilder.Entity("TalentSphereAPI.Models.PasswordSetupToken", b =>
+                {
+                    b.Property<int>("PasswordSetupTokenId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<int>("PasswordSetupTokenId"));
+
+                    b.Property<int?>("CourseEnrollmentId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Purpose")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("varchar(32)");
+
+                    b.Property<DateTime?>("RevokedAt")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("TokenHash")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<DateTime?>("UsedAt")
+                        .IsConcurrencyToken()
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("PasswordSetupTokenId");
+
+                    b.HasIndex("CourseEnrollmentId");
+
+                    b.HasIndex("TokenHash")
+                        .IsUnique();
+
+                    b.HasIndex("UserId", "UsedAt");
+
+                    b.ToTable("PasswordSetupTokens", (string)null);
                 });
 
             modelBuilder.Entity("TalentSphereAPI.Models.Payment", b =>
@@ -4324,6 +4826,33 @@ namespace TalentSphereAPI.Migrations
                     b.Navigation("Organization");
                 });
 
+            modelBuilder.Entity("TalentSphereAPI.Models.BatchAssignmentHistory", b =>
+                {
+                    b.HasOne("TalentSphereAPI.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("ActionByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TalentSphereAPI.Models.CourseEnrollment", "CourseEnrollment")
+                        .WithMany()
+                        .HasForeignKey("CourseEnrollmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TalentSphereAPI.Models.Batch", null)
+                        .WithMany()
+                        .HasForeignKey("NewBatchId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TalentSphereAPI.Models.Batch", null)
+                        .WithMany()
+                        .HasForeignKey("PreviousBatchId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("CourseEnrollment");
+                });
+
             modelBuilder.Entity("TalentSphereAPI.Models.BatchModuleCompletion", b =>
                 {
                     b.HasOne("TalentSphereAPI.Models.Batch", null)
@@ -4420,6 +4949,46 @@ namespace TalentSphereAPI.Migrations
                     b.Navigation("Organization");
                 });
 
+            modelBuilder.Entity("TalentSphereAPI.Models.CourseEnrollment", b =>
+                {
+                    b.HasOne("TalentSphereAPI.Models.Batch", "Batch")
+                        .WithMany()
+                        .HasForeignKey("BatchId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TalentSphereAPI.Models.Course", "Course")
+                        .WithMany()
+                        .HasForeignKey("CourseId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TalentSphereAPI.Models.Organization", "Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TalentSphereAPI.Models.Student", "Student")
+                        .WithMany()
+                        .HasForeignKey("StudentId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TalentSphereAPI.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Batch");
+
+                    b.Navigation("Course");
+
+                    b.Navigation("Organization");
+
+                    b.Navigation("Student");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("TalentSphereAPI.Models.CourseLesson", b =>
                 {
                     b.HasOne("TalentSphereAPI.Models.CourseTopic", "Topic")
@@ -4440,6 +5009,22 @@ namespace TalentSphereAPI.Migrations
                         .IsRequired();
 
                     b.Navigation("Course");
+                });
+
+            modelBuilder.Entity("TalentSphereAPI.Models.CoursePayment", b =>
+                {
+                    b.HasOne("TalentSphereAPI.Models.CourseEnrollment", "CourseEnrollment")
+                        .WithMany("Payments")
+                        .HasForeignKey("CourseEnrollmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TalentSphereAPI.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("VerifiedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("CourseEnrollment");
                 });
 
             modelBuilder.Entity("TalentSphereAPI.Models.CourseTopic", b =>
@@ -4590,6 +5175,22 @@ namespace TalentSphereAPI.Migrations
                     b.Navigation("EmployeeProfile");
                 });
 
+            modelBuilder.Entity("TalentSphereAPI.Models.EnrollmentApprovalHistory", b =>
+                {
+                    b.HasOne("TalentSphereAPI.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("ActionByUserId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("TalentSphereAPI.Models.CourseEnrollment", "CourseEnrollment")
+                        .WithMany("StatusHistory")
+                        .HasForeignKey("CourseEnrollmentId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CourseEnrollment");
+                });
+
             modelBuilder.Entity("TalentSphereAPI.Models.Goal", b =>
                 {
                     b.HasOne("Employee", "Owner")
@@ -4727,6 +5328,17 @@ namespace TalentSphereAPI.Migrations
                     b.Navigation("Organization");
                 });
 
+            modelBuilder.Entity("TalentSphereAPI.Models.LeaveRequestAttachment", b =>
+                {
+                    b.HasOne("TalentSphereAPI.Models.LeaveRequest", "LeaveRequest")
+                        .WithMany()
+                        .HasForeignKey("LeaveRequestId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("LeaveRequest");
+                });
+
             modelBuilder.Entity("TalentSphereAPI.Models.LiveClass", b =>
                 {
                     b.HasOne("TalentSphereAPI.Models.Batch", "Batch")
@@ -4795,6 +5407,35 @@ namespace TalentSphereAPI.Migrations
                     b.Navigation("Organization");
 
                     b.Navigation("Student");
+                });
+
+            modelBuilder.Entity("TalentSphereAPI.Models.OrganizationPaymentSetting", b =>
+                {
+                    b.HasOne("TalentSphereAPI.Models.Organization", "Organization")
+                        .WithOne("PaymentSetting")
+                        .HasForeignKey("TalentSphereAPI.Models.OrganizationPaymentSetting", "OrganizationId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Organization");
+                });
+
+            modelBuilder.Entity("TalentSphereAPI.Models.PasswordSetupToken", b =>
+                {
+                    b.HasOne("TalentSphereAPI.Models.CourseEnrollment", "CourseEnrollment")
+                        .WithMany()
+                        .HasForeignKey("CourseEnrollmentId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.HasOne("TalentSphereAPI.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("CourseEnrollment");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("TalentSphereAPI.Models.RoleCompetency", b =>
@@ -5063,6 +5704,13 @@ namespace TalentSphereAPI.Migrations
                     b.Navigation("Modules");
                 });
 
+            modelBuilder.Entity("TalentSphereAPI.Models.CourseEnrollment", b =>
+                {
+                    b.Navigation("Payments");
+
+                    b.Navigation("StatusHistory");
+                });
+
             modelBuilder.Entity("TalentSphereAPI.Models.CourseModule", b =>
                 {
                     b.Navigation("Topics");
@@ -5109,6 +5757,8 @@ namespace TalentSphereAPI.Migrations
                     b.Navigation("Mentors");
 
                     b.Navigation("Notifications");
+
+                    b.Navigation("PaymentSetting");
 
                     b.Navigation("Students");
 

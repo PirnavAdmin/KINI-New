@@ -16,12 +16,15 @@ namespace TalentSphereAPI.Validators
                 .Must(x =>
                     x.Equals("Email", StringComparison.OrdinalIgnoreCase) ||
                     x.Equals("Mobile", StringComparison.OrdinalIgnoreCase))
-                .WithMessage("OTP Type must be Email or Mobile.");
+                .WithMessage("OTP Type must be Email or Mobile.")
+                // OTP fields are only needed when no reset token (from verify-otp) is sent.
+                .When(x => string.IsNullOrWhiteSpace(x.ResetToken));
 
             RuleFor(x => x.Otp)
                 .NotEmpty()
                 .Length(6)
-                .WithMessage("OTP must be 6 digits.");
+                .WithMessage("OTP must be 6 digits.")
+                .When(x => string.IsNullOrWhiteSpace(x.ResetToken));
 
             RuleFor(x => x.NewPassword)
                 .NotEmpty()

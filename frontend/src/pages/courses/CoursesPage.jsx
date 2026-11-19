@@ -23,6 +23,7 @@ import useCourses from "@/hooks/useCourses";
 import { courseService } from "@/shared/services/courseService";
 import FilterSelect from "@shared/components/FilterSelect";
 import { ListTable, ListTableBody, ListTableCell, ListTableHead, ListTableHeaderCell, ListTableRow } from "@shared/components/ListTable";
+import { CoursePosterThumbnail } from './CoursePoster.jsx';
 import { LIST_TABLE_CARD_CLASS } from "@shared/components/listTableStyles";
 import KpiWaveCard from "@shared/components/KpiWaveCard";
 import useRouteAos from "@shared/hooks/useRouteAos";
@@ -86,15 +87,15 @@ export default function CoursesPage() {
   const hasModuleData = courses.some((course) => Number(course.totalModules) > 0);
   // Column widths follow the Batches table: compact columns are fixed and sized
   // to their pastel header label; Course (no width) takes the remaining space.
-  const courseHeaders = ["#", "Course", "Course Code", "Category", "Duration", "Fee", ...(hasModuleData ? ["Modules"] : []), "Batches", "Students", "Status", "Actions"];
+  const courseHeaders = ["#", "Poster", "Course", "Category", "Duration", "Fee", ...(hasModuleData ? ["Modules"] : []), "Batches", "Students", "Status", "Actions"];
   // Auto layout: columns are sized to their content, so Course gets the width
   // its name needs instead of what ~980px of fixed columns left (≈88px at
   // 1280px). Only the control columns carry a width (minimums in auto layout).
   const courseColumnWidths = [
     "32px", // select
     "36px", // #
+    "96px", // poster
     undefined, // course
-    undefined, // course code
     undefined, // category
     undefined, // duration
     undefined, // fee
@@ -368,6 +369,7 @@ export default function CoursesPage() {
                         />
                       </ListTableCell>
                       <ListTableCell compact className="text-[13px] font-medium text-[#5B78A0]">{firstIndex + index + 1}</ListTableCell>
+                      <ListTableCell className="px-2!"><CoursePosterThumbnail url={course.posterUrl} name={course.name} /></ListTableCell>
                       <ListTableCell className="px-2!">
                         <button
                           type="button"
@@ -382,9 +384,6 @@ export default function CoursesPage() {
                             </p>
                           </div>
                         </button>
-                      </ListTableCell>
-                      <ListTableCell truncate={false} className="px-2! font-mono text-[13px] font-medium text-[#345D86] dark:text-slate-300">
-                        {course.code || "—"}
                       </ListTableCell>
                       <ListTableCell className="px-2!">
                         <LevelBadge value={course.category} />

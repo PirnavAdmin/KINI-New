@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { act, cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
+import EmployeeDetails from '@features/hr/pages/EmployeeDetails'
 import HrApiModule from '@features/hr/components/HrApiModule'
 import apiClient from '@shared/services/apiClient'
 
@@ -27,7 +28,7 @@ beforeEach(() => {
 afterEach(cleanup)
 
 async function mount() {
-  render(<MemoryRouter><HrApiModule module="employees" /></MemoryRouter>)
+  render(<MemoryRouter initialEntries={['/employee/hr-employees']}><Routes><Route path="/employee/hr-employees" element={<HrApiModule module="employees" />} /><Route path="/employee/hr-employees/:employeeId" element={<EmployeeDetails />} /></Routes></MemoryRouter>)
   await screen.findByRole('button', { name: 'Test Mentor' })
 }
 
@@ -44,7 +45,7 @@ it.each([{ ...employee, status: 'ACTIVE' }, { ...employee, employeeId: 'EMP-042'
   expect(dropdown).toHaveValue('ACTIVE')
   expect([...dropdown.options].map(option => option.value)).toEqual(['', 'ACTIVE', 'ON_LEAVE', 'RESIGNED'])
   fireEvent.change(dropdown, { target: { value: 'ON_LEAVE' } })
-  fireEvent.click(screen.getByRole('button', { name: 'Save', exact: true }))
+  fireEvent.click(screen.getByRole('button', { name: /^Save(?: Changes)?$/, exact: true }))
   await waitFor(() => expect(apiClient.request).toHaveBeenCalledWith(expect.objectContaining({ method: 'PATCH', url: '/api/hr/employees/42/status', data: { status: 'ON_LEAVE' } })))
   await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument())
 })
@@ -58,17 +59,17 @@ it('shows the backend status error and keeps the selection available for retry',
   fireEvent.click(screen.getByRole('menuitem', { name: 'Change Status' }))
   const dropdown = within(screen.getByRole('dialog')).getByRole('combobox', { name: 'Status' })
   fireEvent.change(dropdown, { target: { value: 'ON_LEAVE' } })
-  fireEvent.click(screen.getByRole('button', { name: 'Save', exact: true }))
+  fireEvent.click(screen.getByRole('button', { name: /^Save(?: Changes)?$/, exact: true }))
   expect(await screen.findByRole('alert')).toHaveTextContent('Employee 42 was not found in this organization.')
   expect(dropdown).toHaveValue('ON_LEAVE')
-  expect(screen.getByRole('button', { name: 'Save', exact: true })).toBeEnabled()
+  expect(screen.getByRole('button', { name: /^Save(?: Changes)?$/, exact: true })).toBeEnabled()
 })
 
 it('keeps results, layout and search focus stable while successive searches are pending', async () => {
   await mount()
   const pending = []
   apiClient.request.mockImplementation(request => {
-    if (request.url === '/api/hr/employees' && request.params?.Search) {
+    if (request.url === '/api/hr/employees') {
       return new Promise(resolve => pending.push({ request, resolve }))
     }
     return Promise.resolve(response([]))
@@ -99,22 +100,21 @@ it.each(['Test Mentor', 'Details'])('opens employee details from %s before the r
   detailRequest.mockImplementation(() => new Promise(resolve => { resolveDetail = resolve }))
   await mount()
   fireEvent.click(screen.getByRole('button', { name }))
-  expect(screen.getByText('Employee details')).toBeInTheDocument()
-  expect(screen.getByRole('status')).toHaveTextContent('Loading employee details')
+  expect(await screen.findByRole('status', { name: 'Loading employee details' })).toBeInTheDocument()
   expect(detailRequest).toHaveBeenCalledWith(expect.objectContaining({ url: '/api/hr/employees/42', method: 'GET' }))
   await act(async () => resolveDetail(response({ ...employee, phone: '1234567890' })))
   expect(screen.getByText('1234567890')).toBeInTheDocument()
 })
 
-it('shows a failed lookup in the dialog and retries successfully', async () => {
-  detailRequest.mockRejectedValueOnce({ response: { status: 404 } })
+it('shows a failed detail page lookup and retries successfully', async () => {
+  detailRequest.mockRejectedValueOnce({ response: { status: 500 } })
   await mount()
   fireEvent.click(screen.getByRole('button', { name: 'Details' }))
-  expect(await screen.findByRole('alert')).toHaveTextContent('Requested resource was not found')
+  expect(await screen.findByRole('alert')).toHaveTextContent('Unable to load employee details')
   fireEvent.click(screen.getByRole('button', { name: 'Retry' }))
   await waitFor(() => expect(screen.queryByRole('alert')).not.toBeInTheDocument())
   expect(detailRequest).toHaveBeenCalledTimes(2)
-  expect(screen.getByText('Employee details')).toBeInTheDocument()
+  expect(await screen.findByRole('heading', { name: 'Test Mentor' })).toBeInTheDocument()
 })
 
 it('opens Edit with fetched values and saves to the same employee', async () => {
@@ -123,7 +123,7 @@ it('opens Edit with fetched values and saves to the same employee', async () => 
   const firstName = await screen.findByLabelText('First Name')
   expect(firstName).toHaveValue('Test')
   fireEvent.change(firstName, { target: { value: 'Updated' } })
-  fireEvent.click(screen.getByRole('button', { name: 'Save', exact: true }))
+  fireEvent.click(screen.getByRole('button', { name: /^Save(?: Changes)?$/, exact: true }))
   await waitFor(() => expect(saveRequest).toHaveBeenCalledWith(expect.objectContaining({ method: 'PUT', url: '/api/hr/employees/42', data: expect.objectContaining({ firstName: 'Updated', email: employee.email, role: 'Mentor' }) })))
   await waitFor(() => expect(screen.queryByText('Edit Employee')).not.toBeInTheDocument())
 })
@@ -133,18 +133,19 @@ it('keeps Edit errors visible without allowing a partial record to be saved', as
   await mount()
   fireEvent.click(screen.getByRole('button', { name: 'Edit', exact: true }))
   expect(await screen.findByRole('alert')).toHaveTextContent('permission')
-  expect(screen.queryByRole('button', { name: 'Save', exact: true })).not.toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: /^Save(?: Changes)?$/, exact: true })).not.toBeInTheDocument()
   expect(saveRequest).not.toHaveBeenCalled()
 })
 
-it('does not reopen a dialog after closing a pending lookup', async () => {
+it('does not restore an employee detail page after leaving a pending lookup', async () => {
   let resolveDetail
   detailRequest.mockImplementation(() => new Promise(resolve => { resolveDetail = resolve }))
   await mount()
   fireEvent.click(screen.getByRole('button', { name: 'Details' }))
+  await waitFor(() => expect(detailRequest).toHaveBeenCalled())
   const signal = detailRequest.mock.calls[0][0].signal
-  fireEvent.click(screen.getByRole('button', { name: 'Close modal' }))
+  fireEvent.click(screen.getByRole('link', { name: 'Back to Employees' }))
   expect(signal.aborted).toBe(true)
   await act(async () => resolveDetail(response(employee)))
-  expect(screen.queryByText('Employee details')).not.toBeInTheDocument()
+  expect(screen.queryByRole('heading', { name: 'Test Mentor' })).not.toBeInTheDocument()
 })

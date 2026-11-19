@@ -14,6 +14,9 @@ import { notificationService } from '@shared/services/notificationService'
 import { useAuth } from '@shared/hooks/useAuth'
 import toast from 'react-hot-toast'
 import { classScheduleNotification } from '@shared/utils/classScheduleNotification'
+import { mentorNotificationRecipient, subscribeNotificationRefresh } from '@shared/utils/notificationRefresh'
+import MentorAnnouncementDialog from '../components/MentorAnnouncementDialog'
+import { notificationLoadError } from '@shared/utils/notificationLoadError'
 
 const PAGE_SIZE = 12
 // Backend notifications carry a PascalCase `notificationType` enum (e.g. "LeaveRequestCreated")
@@ -98,27 +101,28 @@ export function NotificationCenter({
   recipientId,
 }) {
   const [items, setItems] = useState([])
+  const [loadError, setLoadError] = useState('')
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null)
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('All')
   const [quick, setQuick] = useState('All')
   const [sort, setSort] = useState('newest')
   const [page, setPage] = useState(1)
   const [loading, setLoading] = useState(true)
-  const [serverUnreadCount, setServerUnreadCount] = useState(null)
   const [menuFor, setMenuFor] = useState(null)
   const [filterOpen, setFilterOpen] = useState(false)
   const [now] = useState(() => Date.now())
   const searchRef = useRef(null)
-  const loadNotifications = useCallback(async () => {
-    if (!recipientType || !recipientId) { setItems([]); setServerUnreadCount(null); setLoading(false); return }
-    setLoading(true)
+  const loadNotifications = useCallback(async (background = false) => {
+    if (!recipientType || !recipientId) { setItems([]); setLoading(false); return }
+    if (!background) setLoading(true)
     try {
-      const fetchPair = recipientType === 'student'
-        ? [notificationService.getStudentNotifications(recipientId), notificationService.getStudentUnreadCount(recipientId)]
+      const rows = await (recipientType === 'student'
+        ? notificationService.getStudentNotifications(recipientId)
         : recipientType === 'organization'
-          ? [notificationService.getOrganizationNotifications(recipientId), notificationService.getOrganizationUnreadCount(recipientId)]
-          : [notificationService.getMentorNotifications(recipientId), notificationService.getMentorUnreadCount(recipientId)]
-      const [rows, unreadPayload] = await Promise.all(fetchPair)
+          ? notificationService.getOrganizationNotifications(recipientId)
+          : notificationService.getMentorNotifications(recipientId, { onError: setLoadError }))
+      if (recipientType !== 'mentor') setLoadError('')
 
       const serverItems = rows.map((item) => {
         const schedule = recipientType === 'student' ? classScheduleNotification(item) : null
@@ -135,12 +139,14 @@ export function NotificationCenter({
         }
       })
       setItems(serverItems)
-      const unreadValue = unreadPayload?.unreadCount ?? unreadPayload?.count ?? unreadPayload?.totalUnread ?? unreadPayload
-      setServerUnreadCount(Number.isFinite(Number(unreadValue)) ? Number(unreadValue) : null)
-    } catch (error) { toast.error(error?.response?.data?.message || 'Unable to load notifications.') }
+    } catch (error) { setLoadError(notificationLoadError(error)) }
     finally { setLoading(false) }
   }, [recipientType, recipientId])
   useEffect(() => { queueMicrotask(loadNotifications) }, [loadNotifications])
+  useEffect(() => {
+    if (!recipientId) return undefined
+    return subscribeNotificationRefresh(() => loadNotifications(true))
+  }, [recipientId, loadNotifications])
   useEffect(() => {
     if (menuFor == null && !filterOpen) return undefined
     const close = () => { setMenuFor(null); setFilterOpen(false) }
@@ -150,7 +156,7 @@ export function NotificationCenter({
 
   useEffect(() => { const fn = (e) => { if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); searchRef.current?.focus() } }; addEventListener('keydown', fn); return () => removeEventListener('keydown', fn) }, [])
 
-  const unread = serverUnreadCount ?? 0
+  const unread = items.filter((item) => item.unread).length
   const critical = items.filter((n) => n.priority === 'Critical').length
   const counts = useMemo(() => Object.fromEntries(notificationCategories.map((c) => [c, c === 'All' ? items.length : c === 'Unread' ? unread : items.filter((n) => n.category === c).length])), [items, notificationCategories, unread])
   const distribution = useMemo(() => Object.entries(counts).filter(([k, v]) => !['All', 'Unread'].includes(k) && v).map(([name, value]) => ({ name, value })), [counts])
@@ -179,6 +185,7 @@ export function NotificationCenter({
   }
   const markRead = async (notificationId) => {
     const item = items.find((notice) => notice.id === notificationId)
+    if (recipientType === 'mentor' && item?.announcementId != null) setSelectedAnnouncement(item)
     if (!item?.unread) return
     try { await notificationService.markRead(notificationId); setItems((old) => old.map((notice) => notice.id === notificationId ? { ...notice, unread: false } : notice)); await loadNotifications() }
     catch (error) { toast.error(error?.response?.data?.message || 'Unable to update notification.') }
@@ -196,6 +203,7 @@ export function NotificationCenter({
 
   return (
     <div className="w-full space-y-3.5">
+      {selectedAnnouncement && <MentorAnnouncementDialog key={selectedAnnouncement.announcementId} announcement={selectedAnnouncement} onClose={() => setSelectedAnnouncement(null)} />}
       <MentorPageHeader
         icon={Bell}
         title="Notifications"
@@ -236,10 +244,11 @@ export function NotificationCenter({
             <button type="button" onClick={markAllRead} disabled={!unread} className="inline-flex h-11 items-center gap-2 rounded-xl border border-[#dfe7f1] bg-white px-4 text-sm font-semibold text-[#133b5d] disabled:opacity-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"><CheckCheck className="h-4 w-4" />Mark all read</button>
             <button type="button" onClick={loadNotifications} aria-label="Refresh notifications" className="grid h-11 w-11 place-items-center rounded-xl border border-[#dfe7f1] bg-white text-[#133b5d] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"><RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} /></button>
           </div>
+          {loadError && <div role="alert" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900">{loadError}<button type="button" className="ml-3 font-semibold underline" onClick={() => loadNotifications()}>Retry</button></div>}
           <section className="rounded-2xl border border-[#e6edf6] bg-white p-1.5 shadow-[0_4px_16px_rgba(15,42,74,.05)] dark:border-slate-700 dark:bg-slate-900">
             {loading ? <div className="space-y-1 p-1">{Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-[72px] animate-pulse rounded-xl bg-slate-100 dark:bg-slate-800" />)}</div>
               : visible.length ? <AnimatePresence>{visible.map((item, index) => <NoticeCard key={item.id} item={item} index={index} now={now} onRead={markRead} onDelete={deleteNotification} menuOpen={menuFor === item.id} onMenu={setMenuFor} />)}</AnimatePresence>
-                : <div className="py-14 text-center text-sm text-slate-500"><Bell className="mx-auto mb-2 h-8 w-8 text-slate-300" />No notifications match your filters.</div>}
+                : !loadError && <div className="py-14 text-center text-sm text-slate-500"><Bell className="mx-auto mb-2 h-8 w-8 text-slate-300" />No notifications match your filters.</div>}
           </section>
           {pages > 1 && <div className="flex items-center justify-between gap-3">
             <p className="text-sm text-[#4b5f78]">Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, filtered.length)} of {filtered.length}</p>
@@ -280,8 +289,7 @@ export function NotificationCenter({
 
 export default function MentorNotifications() {
   const { user } = useAuth()
-  const mentorId = user?.mentorId
-    ?? localStorage.getItem('mentorId')
+  const mentorId = mentorNotificationRecipient(user)
 
   return <NotificationCenter recipientType="mentor" recipientId={mentorId} />
 }

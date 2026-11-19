@@ -19,6 +19,7 @@ import toast from "react-hot-toast";
 import { useAuth } from "@shared/hooks/useAuth";
 import { useCurrentUserPhoto } from "@shared/hooks/useProfilePhoto";
 import { AvatarPhoto } from "@/components/common/ProfileImage";
+import useOrganizationLogo from "@shared/hooks/useOrganizationLogo";
 import "@styles/chat-viewport.css";
 import Sidebar from "@features/dashboard/components/Sidebar";
 import "./header-search.css";
@@ -29,6 +30,8 @@ import { ROUTES } from "@shared/constants/routeConstants";
 import { notificationService } from "@shared/services/notificationService";
 import { normalizeNotificationTimestamp } from "@shared/services/localScheduleStore";
 import { classScheduleNotification } from "@shared/utils/classScheduleNotification";
+import { mentorNotificationRecipient, subscribeNotificationRefresh } from "@shared/utils/notificationRefresh";
+import { notificationLoadError } from "@shared/utils/notificationLoadError";
 
 // ─── BREADCRUMB GENERATION ──────────────────────────────────────────────────
 
@@ -47,6 +50,7 @@ const BREADCRUMB_MAP = {
   "/super-admin/settings": ["Settings"],
   "/super-admin/profile": ["Profile"],
   "/organization/dashboard": ["Organization", "Dashboard"],
+  "/organization/finance": ["Organization", "Fees & Payments"],
   "/organization/employees": ["Organization", "Employees"],
   "/organization/tutors": ["Organization", "Mentors"],
   "/organization/students": ["Organization", "Students"],
@@ -114,12 +118,14 @@ const BREADCRUMB_MAP = {
   "/mentor/assignments": ["Mentor", "Assignments"],
   "/mentor/assessments": ["Mentor", "Assessments"],
   "/mentor/performance": ["Mentor", "Performance"],
+  "/mentor/reports": ["Mentor", "Reports"],
   "/mentor/calendar": ["Mentor", "Class Schedule"],
   "/mentor/webinars-meetings": ["Mentor", "Webinars & Meetings"],
   "/mentor/messages": ["Mentor", "Messages"],
   "/mentor/notifications": ["Mentor", "Notifications"],
   "/mentor/resources": ["Mentor", "Resources"],
   "/mentor/settings": ["Mentor", "Settings"],
+  "/mentor/profile": ["Mentor", "Settings"],
   "/mentor/attendance": ["Mentor", "My Attendance"],
   "/mentor/leave": ["Mentor", "Leave Requests"],
   "/student/dashboard": ["Student", "Dashboard"],
@@ -248,6 +254,7 @@ function Header({
   const [notifOpen, setNotifOpen] = useState(false);
   const profileMenuRef = useRef(null);
   const notificationMenuRef = useRef(null);
+  const notificationLocationKey = useRef(null);
   const navigate = useNavigate();
   const location = useLocation();
   const hiddenRoleCrumb =
@@ -261,6 +268,8 @@ function Header({
   const visibleBreadcrumbs = hiddenRoleCrumb
     ? breadcrumbs.filter((crumb) => crumb !== hiddenRoleCrumb)
     : breadcrumbs;
+  const isHrDashboard = location.pathname.replace(/\/+$/, '') === ROUTES.EMPLOYEE.HR_DASHBOARD;
+  const headerBreadcrumbs = isHrDashboard ? ['Dashboard'] : visibleBreadcrumbs;
   const { user, superAdmin, logout } = useAuth();
   const recipientId =
     role === "student"
@@ -271,8 +280,7 @@ function Header({
           user?.id ??
           localStorage.getItem("userId"))
         : role === "mentor"
-          ? (user?.mentorId ??
-            user?.MentorId ?? localStorage.getItem("mentorId"))
+          ? mentorNotificationRecipient(user)
           : role === "org-admin"
             ? (user?.organizationId ??
               localStorage.getItem("organizationId") ??
@@ -280,11 +288,16 @@ function Header({
               localStorage.getItem("orgId"))
             : null;
   const [notifications, setNotifications] = useState([]);
+  const [notificationError, setNotificationError] = useState('');
   const [unreadCount, setUnreadCount] = useState(0);
   const roleInfo = getUserDisplayInfo(role === "super-admin" ? superAdmin : user, role);
   // Only Employee/Student/Mentor accounts have a profile photo; the backend
   // rejects /api/v1/profile/photo for OrganizationAdmin and super admins.
-  const headerPhoto = useCurrentUserPhoto({ enabled: ["employee", "student", "mentor"].includes(role) });
+  const userPhoto = useCurrentUserPhoto({ enabled: ["employee", "student", "mentor"].includes(role) });
+  // Organization admins show their organization's logo (Settings → Organization).
+  const organizationLogo = useOrganizationLogo({ enabled: role === "org-admin" });
+  const headerPhoto = role === "org-admin" ? organizationLogo : userPhoto;
+  const headerPhotoFit = role === "org-admin" ? "contain" : "cover";
   const dashboardPath =
     role === "super-admin"
       ? ROUTES.SUPER_ADMIN.DASHBOARD
@@ -296,10 +309,15 @@ function Header({
             ? ROUTES.STUDENT.DASHBOARD
             : ROUTES.ORG_ADMIN.DASHBOARD;
   useEffect(() => {
-    setNotifOpen(false);
+    if (notificationLocationKey.current === null) { notificationLocationKey.current = location.key; return undefined; }
+    if (notificationLocationKey.current === location.key) return undefined;
+    notificationLocationKey.current = location.key;
+    let active = true;
+    queueMicrotask(() => { if (active) setNotifOpen(false); });
+    return () => { active = false; };
   }, [location]);
 
-  // v23 — HR portal pages carry their own breadcrumb, so the header shows the design's search instead.
+  // HR module pages carry their own breadcrumb; the dashboard uses the header breadcrumb.
   const hrPortal = role === "employee" && isHrModuleUser(user) && localStorage.getItem("isDemo") !== "true";
   const showBackButton = location.pathname !== dashboardPath && !hrPortal;
   const handleBack = () => {
@@ -322,7 +340,7 @@ function Header({
       : role === "employee"
         ? ROUTES.EMPLOYEE.SETTINGS
         : role === "mentor"
-          ? ROUTES.MENTOR.SETTINGS
+          ? ROUTES.MENTOR.PROFILE
           : role === "student"
             ? ROUTES.STUDENT.SETTINGS
             : ROUTES.ORG_ADMIN.SETTINGS;
@@ -400,10 +418,11 @@ function Header({
           ? await notificationService.getStudentNotifications(recipientId)
           : role === "org-admin"
             ? await notificationService.getOrganizationNotifications(recipientId)
-            : await notificationService.getMentorNotifications(recipientId);
+            : await notificationService.getMentorNotifications(recipientId, { onError: setNotificationError });
+      if (role !== 'mentor') setNotificationError('');
       setUnreadCount((Array.isArray(rows) ? rows : []).filter((item) => !(item.isRead ?? item.read ?? false)).length);
-    } catch {
-      toast.error("Unable to refresh unread count.", { id: "notification-count" });
+    } catch (error) {
+      setNotificationError(notificationLoadError(error));
     }
   }, [recipientId, role]);
   const loadHeaderNotifications = useCallback(async () => {
@@ -414,7 +433,8 @@ function Header({
           ? await notificationService.getStudentNotifications(recipientId)
           : role === "org-admin"
             ? await notificationService.getOrganizationNotifications(recipientId)
-            : await notificationService.getMentorNotifications(recipientId);
+            : await notificationService.getMentorNotifications(recipientId, { onError: setNotificationError });
+      if (role !== 'mentor') setNotificationError('');
       const allRows = Array.isArray(rows) ? rows : [];
       setUnreadCount(allRows.filter((item) => !(item.isRead ?? item.read ?? false)).length);
       const serverItems = allRows.slice(0, 5).map((item) => {
@@ -438,22 +458,20 @@ function Header({
       });
       setNotifications(serverItems);
     } catch (error) {
-      toast.error(error?.response?.data?.message || 'Unable to load notifications.', { id: 'notification-load' });
+      setNotificationError(notificationLoadError(error));
     }
   }, [recipientId, role]);
   useEffect(() => {
     const refresh = () => {
       if (notifOpen) loadHeaderNotifications();
-      loadUnreadCount();
+      else loadUnreadCount();
     };
-    window.addEventListener("kini:notification-created", refresh);
-    return () => window.removeEventListener("kini:notification-created", refresh);
-  }, [loadHeaderNotifications, loadUnreadCount, notifOpen]);
+    if (!recipientId || role === 'employee') return undefined;
+    return subscribeNotificationRefresh(refresh);
+  }, [loadHeaderNotifications, loadUnreadCount, notifOpen, recipientId, role]);
   useEffect(() => {
     if (!recipientId) return undefined;
     queueMicrotask(loadUnreadCount);
-    const timer = window.setInterval(loadUnreadCount, 45000);
-    return () => window.clearInterval(timer);
   }, [recipientId, loadUnreadCount]);
   const markHeaderNotificationRead = async (notification) => {
     if (!notification.unread) return;
@@ -523,7 +541,7 @@ function Header({
           )}
 
           {/* Breadcrumbs */}
-          {!hrPortal && <nav
+          {(!hrPortal || isHrDashboard) && <nav
             className="flex items-center gap-1.5 text-[13px] min-w-0"
             aria-label="Breadcrumb"
           >
@@ -544,12 +562,12 @@ function Header({
                 <polyline points="9 22 9 12 15 12 15 22" />
               </svg>
             </Link>
-            {visibleBreadcrumbs.map((crumb, i) => (
+            {headerBreadcrumbs.map((crumb, i) => (
               <div key={i} className="flex items-center gap-1.5 min-w-0">
                 <ChevronRight className="w-3.5 h-3.5 text-slate-300 dark:text-slate-600 shrink-0" />
                 <span
                   className={`truncate ${
-                    i === visibleBreadcrumbs.length - 1
+                    i === headerBreadcrumbs.length - 1
                       ? "text-slate-900 dark:text-white font-semibold"
                       : "text-slate-400"
                   }`}
@@ -617,6 +635,7 @@ function Header({
                     </button>
                   </div>
                   <div className="max-h-72 overflow-y-auto">
+                    {notificationError && <p role="alert" className="px-4 py-3 text-xs text-amber-800 dark:text-amber-200">{notificationError}</p>}
                     {notifications.map((n) => (
                       <Link
                         key={n.id}
@@ -653,7 +672,7 @@ function Header({
                         )}
                       </Link>
                     ))}
-                    {!notifications.length && (
+                    {!notifications.length && !notificationError && (
                       <p className="px-4 py-8 text-center text-xs text-slate-400">
                         No notifications found.
                       </p>
@@ -694,7 +713,7 @@ function Header({
               aria-label="Open profile menu"
             >
               <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border-2 border-[#133b5d] bg-[#f39924] text-[18px] font-bold text-[#133b5d] shadow-[0_10px_22px_rgba(19,59,93,.22)] transition-transform duration-200 ease-out group-hover:scale-105 dark:border-slate-900">
-                <AvatarPhoto src={headerPhoto} fallback={<span>{roleInfo.initials}</span>} />
+                <AvatarPhoto src={headerPhoto} fit={headerPhotoFit} alt={role === "org-admin" && headerPhoto ? `${roleInfo.label} logo` : ""} fallback={<span>{roleInfo.initials}</span>} />
               </div>
               <div className="hidden min-w-0 flex-col text-left sm:flex">
                 <p className="truncate text-[18px] font-semibold leading-tight text-slate-900 dark:text-white">
@@ -723,7 +742,7 @@ function Header({
                 >
                   <div className="flex items-center gap-4 border-b border-slate-100 pb-4 dark:border-slate-800">
                     <div className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-full border-2 border-[#133b5d] bg-[#f39924] text-[16px] font-bold text-[#133b5d] shadow-[0_8px_20px_rgba(19,59,93,.18)] dark:border-slate-900">
-                      <AvatarPhoto src={headerPhoto} fallback={roleInfo.initials} />
+                      <AvatarPhoto src={headerPhoto} fit={headerPhotoFit} fallback={roleInfo.initials} />
                     </div>
                     <div className="min-w-0">
                       <p className="truncate text-sm font-bold text-slate-900 dark:text-white">
@@ -735,6 +754,7 @@ function Header({
                     </div>
                   </div>
                   <div className="mt-4 space-y-1">
+                    {role !== "mentor" && (
                     <Link
                       to={profilePath}
                       onClick={() => setProfileOpen(false)}
@@ -747,6 +767,7 @@ function Header({
                     >
                       <User className="h-5 w-5" /> Profile
                     </Link>
+                    )}
                     <Link
                       to={settingsPath}
                       onClick={() => setProfileOpen(false)}
@@ -800,12 +821,13 @@ export default function DashboardLayout() {
     if (!/^\/super-admin\/organizations\/[^/]+$/.test(location.pathname)) return undefined;
     const stateTitle = location.state?.organization?.organizationName
       || location.state?.organization?.name;
-    if (stateTitle) setOrganizationPageTitle(stateTitle);
+    let active = true;
+    if (stateTitle) queueMicrotask(() => { if (active) setOrganizationPageTitle(stateTitle); });
     const handleTitle = (event) => {
       if (event.detail?.name) setOrganizationPageTitle(event.detail.name);
     };
     window.addEventListener("organization-details-loaded", handleTitle);
-    return () => window.removeEventListener("organization-details-loaded", handleTitle);
+    return () => { active = false; window.removeEventListener("organization-details-loaded", handleTitle); };
   }, [location.pathname, location.state]);
   // HR Settings is shared by Organization Admin and HR users. Prefer the
   // authenticated role there so the sidebar width and content offset use the
@@ -815,11 +837,27 @@ export default function DashboardLayout() {
     : detectRole(location.pathname);
   const { isHrUser } = useHrPermissions();
   const isHrLayout = role === 'employee' && isHrUser;
-  const collapsed = sidebarCollapsed;
-  const toggleSidebar = () => setSidebarCollapsed(value => !value);
+  const [hrRailPreference, setHrRailPreference] = useState(() => {
+    try { return JSON.parse(localStorage.getItem('hr-sidebar-collapsed') || 'null'); } catch { return null; }
+  });
+  const [hrTablet, setHrTablet] = useState(() => window.matchMedia('(max-width: 1024px)').matches);
+  useEffect(() => {
+    const query = window.matchMedia('(max-width: 1024px)');
+    const update = () => { setHrTablet(query.matches); setMobileSidebarOpen(false); };
+    query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
+  const collapsed = isHrLayout ? (typeof hrRailPreference === 'boolean' ? hrRailPreference : hrTablet) : sidebarCollapsed;
+  const toggleSidebar = () => {
+    if (!isHrLayout) { setSidebarCollapsed(value => !value); return; }
+    setHrRailPreference(!collapsed);
+    try { localStorage.setItem('hr-sidebar-collapsed', JSON.stringify(!collapsed)); } catch { /* Storage is optional. */ }
+  };
   useEffect(() => {
     if (!isHrLayout || !mobileSidebarOpen) return undefined;
     const previous = document.activeElement;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
     const drawer = hrDrawerRef.current;
     const focusable = () => [...(drawer?.querySelectorAll('a[href], button:not([disabled])') || [])];
     focusable()[0]?.focus();
@@ -831,7 +869,7 @@ export default function DashboardLayout() {
       else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first?.focus(); }
     };
     drawer?.addEventListener('keydown', trap);
-    return () => { drawer?.removeEventListener('keydown', trap); previous?.focus?.(); };
+    return () => { document.body.style.overflow = previousOverflow; drawer?.removeEventListener('keydown', trap); previous?.focus?.(); };
   }, [isHrLayout, mobileSidebarOpen]);
   const isDashboardHome = [
     ROUTES.SUPER_ADMIN.DASHBOARD,
@@ -1056,6 +1094,8 @@ export default function DashboardLayout() {
                     role === "org-admin" ||
                     role === "super-admin"
                   ? "organization-workspace p-0 pb-16"
+                  : isHrLayout && [ROUTES.EMPLOYEE.HR_ATTENDANCE, ROUTES.EMPLOYEE.HR_LEAVE, ROUTES.EMPLOYEE.ATTENDANCE].includes(location.pathname)
+                  ? "organization-workspace px-3 pt-3 pb-6 sm:px-5 sm:pt-4 sm:pb-8"
                   : role === "employee"
                   ? "organization-workspace p-0 pb-6 sm:pb-8"
                   : role === "student"

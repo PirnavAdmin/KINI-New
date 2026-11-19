@@ -33,6 +33,7 @@ export default function HrApiSettings({ profileOnly = false }) {
   const [dialog, setDialog] = useState(null)
   const [busy, setBusy] = useState(false)
   const [uploadedPhoto, setUploadedPhoto] = useState('')
+  const [countryCode, setCountryCode] = useState(user?.countryCode || '')
   const lock = useRef(false)
   useEffect(() => {
     if (!allowed || permissions.isLoading) return
@@ -41,6 +42,8 @@ export default function HrApiSettings({ profileOnly = false }) {
     if (tab === 'permissions') jobs.push(hrRequest('GET', '/api/hr/settings/permissions/modules', { signal: controller.signal }))
     Promise.allSettled(jobs).then(results => {
       if (controller.signal.aborted) return
+      const code = hrField(results[0].value, 'countryCode', 'phoneCountryCode', 'dialCode')
+      if (tab === 'profile' && code != null && code !== '') setCountryCode(String(code))
       setState({ loading: false, value: results[0].value, error: results[0].status === 'rejected' ? hrError(results[0].reason) : null, modules: results[1]?.value, modulesError: results[1]?.status === 'rejected' ? hrError(results[1].reason) : null })
     })
     return () => controller.abort()
@@ -58,14 +61,14 @@ export default function HrApiSettings({ profileOnly = false }) {
   if (!allowed) return <p role="alert">{permissions.error ? hrError(permissions.error) : 'You do not have permission to access this module.'}</p>
   const refreshButton = <button type="button" className="hrp-btn hrp-btn--white" disabled={state.loading || busy} onClick={refresh}><RefreshCw className={state.loading ? 'animate-spin' : ''} />Refresh</button>
   const hero = profileOnly ? null : <>
-    <HrBreadcrumb items={[{ label: 'Home', to: '/employee/hr-dashboard' }, { label: 'Organization' }, { label: 'HR Settings' }]} />
+    <HrBreadcrumb items={[{ label: 'Settings' }]} />
     <HrHero {...heroProps('settings')} actions={refreshButton} />
   </>
   return <HRPage moduleId={profileOnly ? 'profile' : 'settings'} title={profileOnly ? 'Profile' : 'Settings'} className="hst-page" icon={Settings} hero={hero} actions={<Button variant="secondary" icon={RefreshCw} disabled={state.loading || busy} onClick={refresh}>Refresh</Button>}>
     {!profileOnly && <div role="tablist" aria-label="Settings sections" className="hst-tabs">{Object.entries(tabs).map(([key, label]) => { const Icon = TAB_ICONS[key]; return <button type="button" key={key} role="tab" aria-selected={key === tab} onClick={() => { setDialog(null); setState({ loading: true }); setTab(key) }}><Icon aria-hidden="true" />{label}</button> })}</div>}
     <section className="space-y-5 rounded-2xl border border-slate-200 bg-white p-5 text-slate-900 dark:bg-slate-900 dark:text-white">
       {state.loading ? <p role="status">Loading {tabs[tab].toLowerCase()}...</p> : state.error ? <p role="alert">{state.error}</p> : <>
-        {tab === 'sessions' ? <div className="space-y-3">{hrList(state.value).map(session => <div key={session.sessionId} className="flex flex-wrap justify-between gap-3 rounded-xl border p-3"><HrRecord value={session} />{editable && session.sessionId != null && <Button variant="secondary" disabled={busy} onClick={() => setDialog({ kind: 'revoke', id: session.sessionId })}>Revoke session</Button>}</div>)}{!hrList(state.value).length && <p>No active sessions available.</p>}</div> : tab === 'profile' ? <ProfilePanel value={state.value} photoOverride={uploadedPhoto || embeddedPhotoUrl(state.value) || embeddedPhotoUrl(user)} onEdit={editable ? () => edit(`PUT ${pathFor('profile')}`) : null} onPhoto={editable ? () => edit('POST /api/hr/settings/profile/photo') : null} /> : <HrRecord value={state.value} />}
+        {tab === 'sessions' ? <div className="space-y-3">{hrList(state.value).map(session => <div key={session.sessionId} className="flex flex-wrap justify-between gap-3 rounded-xl border p-3"><HrRecord value={session} />{editable && session.sessionId != null && <Button variant="secondary" disabled={busy} onClick={() => setDialog({ kind: 'revoke', id: session.sessionId })}>Revoke session</Button>}</div>)}{!hrList(state.value).length && <p>No active sessions available.</p>}</div> : tab === 'profile' ? <ProfilePanel countryCode={countryCode} value={state.value} photoOverride={uploadedPhoto || embeddedPhotoUrl(state.value) || embeddedPhotoUrl(user)} onEdit={editable ? () => edit(`PUT ${pathFor('profile')}`) : null} onPhoto={editable ? () => edit('POST /api/hr/settings/profile/photo') : null} /> : <HrRecord value={state.value} />}
         {tab === 'permissions' && <><h2 className="font-semibold">Available modules</h2>{state.modulesError ? <p role="alert">{state.modulesError}</p> : <HrRecord value={state.modules} />}{permissions.can('permissions', 'edit') && <HrPermissionEditor />}</>}
         {editable && tab === 'notifications' && <Button onClick={() => edit(`PUT ${pathFor(tab)}`)}>Edit {tabs[tab].toLowerCase()}</Button>}
         {editable && tab === 'security' && <div className="flex flex-wrap gap-2"><Button onClick={() => edit('PUT /api/hr/settings/security/password')}>Change password</Button><Button variant="secondary" disabled={busy} onClick={() => setDialog({ kind: state.value?.twoFactorEnabled ? 'disable2fa' : 'enable2fa' })}>{state.value?.twoFactorEnabled ? 'Disable' : 'Enable'} two-factor authentication</Button></div>}
@@ -86,7 +89,9 @@ export default function HrApiSettings({ profileOnly = false }) {
       const saved = await hrRequest(method, path, { data })
       if (path === '/api/hr/settings/profile') {
         const profile = { ...data, ...(saved && typeof saved === 'object' ? saved : {}) }
-        updateStoredUser({ firstName: profile.firstName, lastName: profile.lastName, fullName: [profile.firstName, profile.lastName].filter(Boolean).join(' '), email: profile.email, phone: profile.phone })
+        const savedCountryCode = hrField(saved, 'countryCode', 'phoneCountryCode', 'dialCode') || data.countryCode || countryCode
+        setCountryCode(String(savedCountryCode || ''))
+        updateStoredUser({ firstName: profile.firstName, lastName: profile.lastName, fullName: [profile.firstName, profile.lastName].filter(Boolean).join(' '), email: profile.email, phone: profile.phone, countryCode: savedCountryCode })
       }
       if (path === '/api/hr/settings/profile/photo') {
         const returned = extractProfilePhotoUrl(saved)
@@ -146,7 +151,7 @@ function HrPermissionEditor() {
 }
 
 /* v22 — Profile tab laid out as in the HR Settings design. */
-function ProfilePanel({ value = {}, photoOverride, onEdit, onPhoto }) {
+function ProfilePanel({ value = {}, photoOverride, onEdit, onPhoto, countryCode }) {
   const text = (...keys) => {
     const raw = hrField(value, ...keys)
     return raw == null || raw === '' ? '—' : typeof raw === 'object' ? (hrField(raw, 'name', 'title', 'label') ?? '—') : String(raw)
@@ -161,7 +166,7 @@ function ProfilePanel({ value = {}, photoOverride, onEdit, onPhoto }) {
   const joinedText = joined && !Number.isNaN(new Date(joined).getTime()) ? new Date(joined).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) : '—'
   const rows = [
     [User, 'First Name', first], [User, 'Last Name', last],
-    [Mail, 'Email', text('email')], [Globe, 'Country Code', text('countryCode')],
+    [Mail, 'Email', text('email')], [Globe, 'Country Code', (() => { const code = hrField(value, 'countryCode', 'phoneCountryCode', 'dialCode') || countryCode; return code ? String(code).startsWith('+') ? String(code) : `+${code}` : '—' })()],
     [Phone, 'Phone', text('phone', 'mobileNumber')], [Droplets, 'Role', text('role', 'userRole')],
     [Briefcase, 'Designation', text('designation')], [Landmark, 'Department', text('department', 'departmentName')],
   ]

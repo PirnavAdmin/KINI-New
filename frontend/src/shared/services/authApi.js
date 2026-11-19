@@ -25,6 +25,7 @@ export const sendOtp = (emailOrPayload) => authService.sendOtp(
 export const verifyOtp = authService.verifyOtp;
 export const forgotPassword = (identifier, otpType) => authService.forgotPassword(identifier, otpType);
 export const resetPassword = authService.resetPassword;
+export const resetVerifiedPassword = authService.resetVerifiedPassword;
 export const changePassword = authService.changePassword;
 export const logoutUser = authService.logout;
 export const listUsers = authService.getUsers;

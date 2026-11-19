@@ -1,5 +1,7 @@
-﻿
+
 ﻿using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using TalentSphereAPI.Data;
 using TalentSphereAPI.DTOs.Employee;
 using TalentSphereAPI.Enums;
 using TalentSphereAPI.Helpers;
@@ -15,6 +17,7 @@ namespace TalentSphereAPI.Services
     public class EmployeeService : IEmployeeService
     {
         private readonly IEmployeeRepository _repository;
+        private readonly ApplicationDbContext? _context;
         private readonly IEmailService _emailService;
         private readonly INotificationService _notificationService;
         private readonly IJwtService _jwtService;
@@ -26,8 +29,10 @@ namespace TalentSphereAPI.Services
     INotificationService notificationService,
     IJwtService jwtService,
     IAuthRepository authRepository,
-    IConfiguration configuration)
+    IConfiguration configuration,
+    ApplicationDbContext? context = null)
         {
+            _context = context;
             _repository = repository;
             _authRepository = authRepository;
             _emailService = emailService;
@@ -175,9 +180,12 @@ namespace TalentSphereAPI.Services
             var (employees, totalCount) =
                 await _repository.GetAllAsync(query);
 
+            var profiles = await ProfileFieldsAsync(employees.Select(x => x.EmployeeId));
             var result = employees.Select(x =>
                 new EmployeeResponseDto
                 {
+                    JoiningDate = profiles.TryGetValue(x.EmployeeId, out var p) ? p.JoiningDate : null,
+                    Designation = profiles.TryGetValue(x.EmployeeId, out var d) ? d.Designation : null,
                     EmployeeId = x.EmployeeId,
                     FirstName = x.FirstName,
                     LastName = x.LastName,
@@ -206,8 +214,13 @@ namespace TalentSphereAPI.Services
             if (employee == null)
                 return null;
 
+            var profile = (await ProfileFieldsAsync(new[] { employee.EmployeeId }))
+                .GetValueOrDefault(employee.EmployeeId);
+
             return new EmployeeResponseDto
             {
+                JoiningDate = profile.JoiningDate,
+                Designation = profile.Designation,
                 EmployeeId = employee.EmployeeId,
                 UserId = employee.UserId,
                 FirstName = employee.FirstName,
@@ -384,6 +397,9 @@ namespace TalentSphereAPI.Services
                     employee.FirstName,
                     employee.LastName,
                     temporaryPassword);
+
+            // Joining date / designation live on EmployeeProfiles.
+            await SaveProfileFieldsAsync(employee, dto.JoiningDate, dto.Designation);
 
             // ======================================
             // 9. Return Employee
@@ -565,6 +581,9 @@ namespace TalentSphereAPI.Services
                 }
             }
 
+            // Joining date / designation live on EmployeeProfiles.
+            await SaveProfileFieldsAsync(employee, dto.JoiningDate, dto.Designation);
+
             var updatedEmployee =
      await GetByIdAsync(id);
 
@@ -635,6 +654,58 @@ namespace TalentSphereAPI.Services
             }
 
                 return updatedEmployee;
+        }
+
+        // ==========================================
+        // PROFILE FIELDS (JoiningDate, Designation)
+        // Stored on EmployeeProfiles; the row is created on first use with
+        // the same EmployeeCode convention as EmployeeProfileService (P{id}).
+        // ==========================================
+
+        private async Task<Dictionary<int, (DateTime? JoiningDate, string? Designation)>> ProfileFieldsAsync(IEnumerable<int> employeeIds)
+        {
+            var ids = employeeIds.Distinct().ToList();
+            if (_context == null || ids.Count == 0)
+                return new Dictionary<int, (DateTime?, string?)>();
+
+            var rows = await _context.EmployeeProfiles
+                .AsNoTracking()
+                .Where(p => ids.Contains(p.EmployeeId) && !p.IsDeleted)
+                .Select(p => new { p.EmployeeId, p.JoiningDate, p.Designation })
+                .ToListAsync();
+
+            return rows
+                .GroupBy(r => r.EmployeeId)
+                .ToDictionary(g => g.Key, g => (g.First().JoiningDate, g.First().Designation));
+        }
+
+        private async Task SaveProfileFieldsAsync(Employee employee, DateTime? joiningDate, string? designation)
+        {
+            designation = string.IsNullOrWhiteSpace(designation) ? null : designation.Trim();
+            if (_context == null || (!joiningDate.HasValue && designation == null))
+                return;
+
+            var profile = await _context.EmployeeProfiles
+                .FirstOrDefaultAsync(p => p.EmployeeId == employee.EmployeeId && p.OrganizationId == employee.OrganizationId && !p.IsDeleted);
+
+            if (profile == null)
+            {
+                profile = new TalentSphereAPI.Models.EmployeeProfile.EmployeeProfile
+                {
+                    OrganizationId = employee.OrganizationId,
+                    EmployeeId = employee.EmployeeId,
+                    EmployeeCode = $"P{employee.EmployeeId}"
+                };
+                _context.EmployeeProfiles.Add(profile);
+            }
+
+            // Calendar date only (the form sends a date; avoid timezone shifts).
+            if (joiningDate.HasValue)
+                profile.JoiningDate = DateTime.SpecifyKind(joiningDate.Value.Date, DateTimeKind.Unspecified);
+            if (designation != null)
+                profile.Designation = designation;
+
+            await _context.SaveChangesAsync();
         }
 
         // ==========================================

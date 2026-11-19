@@ -15,7 +15,7 @@ it('shows course batches and submits the batch ID rather than its course ID', as
   expect(batch).toHaveValue('19')
   fireEvent.change(screen.getByLabelText('2. Batch'), { target: { value: '19' } })
   fireEvent.click(screen.getByRole('button', { name: 'Confirm assignment' }))
-  await waitFor(() => expect(tutorService.assign).toHaveBeenCalledWith({ tutorId: 8, courseId: 4, batchId: 19 }))
+  await waitFor(() => expect(tutorService.assign).toHaveBeenCalledWith({ tutorId: 8, mentorId: 8, courseId: 4, batchId: 19 }))
 })
 it('displays a batch loading error instead of silently showing an empty list', async () => {
   tutorService.courses.mockResolvedValue([{ courseId: 4, courseName: 'Python' }])

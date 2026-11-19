@@ -1,11 +1,21 @@
 import { expect, it } from 'vitest'
 import {
-  attendanceSeries, attendanceToday, departmentShares, filterLeaves, leaveDays, leaveStatusKey, upcomingItems,
+  attendanceSeries, attendanceToday, departmentShares, filterLeaves, leaveDays, leaveStatusKey, upcomingItems, onLeaveToday,
 } from '../../src/features/hr/services/hrDashboardInsights'
 
 // Test-only rows in the HR API shapes.
 const TODAY = new Date(2026, 9, 21, 10, 0)
 const att = (date, status) => ({ date: `${date}T09:00:00`, status })
+
+it('counts approved leave covering today once per employee, including leave without attendance', () => {
+  const leave = (employeeId, status, fromDate = '2026-10-20', toDate = '2026-10-22') => ({ employeeId, status, fromDate, toDate })
+  expect(onLeaveToday([{ ...att('2026-10-21', 'OnLeave'), employeeId: 1 }], [
+    leave(1, 'Approved'), leave(2, 'Approved'), leave(2, 'Approved'),
+    leave(3, 'Pending'), leave(4, 'Rejected'), leave(5, 'Approved', '2026-10-22', '2026-10-23'),
+    leave(6, 'Approved', '2026-10-19', '2026-10-20'),
+  ], TODAY)).toBe(2)
+  expect(onLeaveToday([], [], TODAY)).toBe(0)
+})
 
 it('counts only today for the Present / On Leave KPIs', () => {
   const history = [att('2026-10-21', 'Present'), att('2026-10-21', 'WFH'), att('2026-10-21', 'OnLeave'), att('2026-10-21', 'Absent'), att('2026-10-20', 'Present')]

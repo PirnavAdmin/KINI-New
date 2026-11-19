@@ -1,3 +1,4 @@
+import { normalizeLiveClass } from '@features/live-classes/utils/liveClassMappers';
 import {
   getMentorDashboard, getMentorDashboardToday, getMentorDashboardUpcoming,
   getMentorDashboardAttendance, getMentorDashboardCourses, getMentorDashboardBatches,
@@ -46,7 +47,7 @@ export const loadMentorDashboardSources = ({ mentorId, employeeId }) => {
 };
 
 export const classDate = (item) => String(item.classDate ?? item.scheduledDate ?? item.date
-  ?? item.dateKey ?? item.startDateTime ?? '').slice(0, 10);
+  ?? item.dateKey ?? item.startAt ?? item.startDateTime ?? '').slice(0, 10);
 
 export const selectDashboardClasses = (classes, now = new Date()) => {
   const todayKey = [now.getFullYear(), String(now.getMonth() + 1).padStart(2, '0'), String(now.getDate()).padStart(2, '0')].join('-');
@@ -54,9 +55,15 @@ export const selectDashboardClasses = (classes, now = new Date()) => {
   return {
     today: active.filter((item) => classDate(item) === todayKey),
     upcoming: active.filter((item) => {
-      const state = String(item.status ?? item.classStatus ?? '').toLowerCase();
+      const state = String(item.status ?? item.classStatus ?? 'scheduled').trim().toLowerCase();
       const date = classDate(item);
-      return ['scheduled', 'upcoming'].includes(state) && (!date || date >= todayKey);
+      if (!['scheduled', 'upcoming'].includes(state) || !date || date < todayKey) return false;
+      const hasTime = Boolean(item.startTime || item.endTime || item.startAt || item.endAt || item.startDateTime || item.endDateTime);
+      if (!hasTime) return date >= todayKey;
+      const normalized = normalizeLiveClass(item);
+      const end = Date.parse(normalized.endAt);
+      const start = Date.parse(normalized.startAt);
+      return Number.isFinite(end) ? end > now.getTime() : Number.isFinite(start) && start >= now.getTime();
     }),
   };
 };

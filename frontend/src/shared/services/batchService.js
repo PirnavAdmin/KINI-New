@@ -33,7 +33,7 @@ const normalizeBatchStudentsResponse = (response, requestedBatchId) => {
     ? source
     : Array.isArray(source.students)
       ? source.students
-      : [];
+      : Array.isArray(source.items) ? source.items : Array.isArray(source.records) ? source.records : [];
   const normalizedStudents = students.map((student) => ({
     ...student,
     id: student.studentId ?? student.id,
@@ -49,6 +49,7 @@ const normalizeBatchStudentsResponse = (response, requestedBatchId) => {
   // to the actual rows instead of a stale aggregate stored on the batch.
   const enrolledStudents = normalizedStudents.length;
   return {
+    ...(!Array.isArray(source) ? source : {}),
     batchId: source.batchId ?? requestedBatchId,
     batchName: source.batchName ?? "",
     courseName: source.courseName ?? "",

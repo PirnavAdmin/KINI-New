@@ -139,7 +139,7 @@ function Home() {
                 <CareerRoadmapGenerator/>
               </AnimatedSection>
               <AnimatedSection>
-                <FeaturedCourses />
+                <FeaturedCourses limit={6} /* first 6 courses + View All Courses (/programs) */ />
               </AnimatedSection>
               <AnimatedSection>
                 <TrustedCompanies />

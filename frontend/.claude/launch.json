@@ -8,6 +8,12 @@
       "port": 5173
     },
     {
+      "name": "dev-5174",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["vite", "--port", "5174"],
+      "port": 5174
+    },
+    {
       "name": "dev-running",
       "url": "http://localhost:5173",
       "port": 5173

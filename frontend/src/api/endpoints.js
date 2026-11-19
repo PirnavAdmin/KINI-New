@@ -33,6 +33,33 @@ export const API_ENDPOINTS = {
     order: (orderId) => `/api/v1/orders/${encodeURIComponent(orderId)}`,
     history: "/api/v1/payments/history",
   },
+  // UPI backend contract; absent from the configured live Swagger as checked
+  // in ORGANIZATION_UPI_ROUTE_DIAGNOSIS.md. Staff routes require auth; guest
+  // enrollment uses the separate capability-based guestEnrollmentApi adapter.
+  upi: {
+    paymentSettings: "/api/v1/organization/payment-settings",
+    enrollments: "/api/v1/enrollments",
+    enrollment: (enrollmentId) => `/api/v1/enrollments/${encodeURIComponent(enrollmentId)}`,
+    enrollmentPayment: (enrollmentId) => `/api/v1/enrollments/${encodeURIComponent(enrollmentId)}/payment`,
+    submitPayment: (enrollmentId) => `/api/v1/enrollments/${encodeURIComponent(enrollmentId)}/payments`,
+    studentEnrollments: "/api/v1/student/enrollments",
+    studentApprovedEnrollments: "/api/v1/student/enrollments/approved",
+    studentPayments: "/api/v1/student/payments",
+    studentPaymentInvoice: (paymentId) => `/api/v1/student/payments/${encodeURIComponent(paymentId)}/invoice`,
+    studentPayment: (paymentId) => `/api/v1/student/payments/${encodeURIComponent(paymentId)}`,
+    studentPaymentHistory: (enrollmentId) => `/api/v1/student/enrollments/${encodeURIComponent(enrollmentId)}/payment-history`,
+    orgPayments: "/api/v1/organization/payments",
+    orgPendingPayments: "/api/v1/organization/payments/pending",
+    orgPayment: (paymentId) => `/api/v1/organization/payments/${encodeURIComponent(paymentId)}`,
+    orgPaymentScreenshot: (paymentId) => `/api/v1/organization/payments/${encodeURIComponent(paymentId)}/screenshot`,
+    orgVerifyPayment: (paymentId) => `/api/v1/organization/payments/${encodeURIComponent(paymentId)}/verify`,
+    orgRejectPayment: (paymentId) => `/api/v1/organization/payments/${encodeURIComponent(paymentId)}/reject`,
+    orgPendingApprovals: "/api/v1/organization/enrollments/pending-approval",
+    orgApprovedEnrollments: "/api/v1/organization/enrollments/approved",
+    orgApprovalBatches: (enrollmentId) => `/api/v1/organization/enrollments/${encodeURIComponent(enrollmentId)}/batches`,
+    orgApproveEnrollment: (enrollmentId) => `/api/v1/organization/enrollments/${encodeURIComponent(enrollmentId)}/approve`,
+    orgRejectEnrollment: (enrollmentId) => `/api/v1/organization/enrollments/${encodeURIComponent(enrollmentId)}/reject`,
+  },
   ai: {
     chat: "/api/AI/chat",
     generateAssessment: "/api/AI/assessment/generate",
@@ -165,6 +192,7 @@ export const API_ENDPOINTS = {
     byId: (courseId) => `/api/v1/courses/${encodeURIComponent(courseId)}`,
     pdf: (courseId) => `/api/v1/courses/${encodeURIComponent(courseId)}/pdf`,
     uploadPdf: (courseId) => `/api/v1/courses/${encodeURIComponent(courseId)}/upload-pdf`,
+    poster: (courseId) => `/api/v1/courses/${encodeURIComponent(courseId)}/poster`,
   },
   assessments: {
     base: "/api/Assessment",
@@ -250,6 +278,12 @@ export const API_ENDPOINTS = {
     markAllMentorRead: (mentorId) => `/api/v1/notifications/mentor/${encodeURIComponent(mentorId)}/read-all`,
     markAllOrganizationRead: (organizationId) => `/api/v1/notifications/organization/${encodeURIComponent(organizationId)}/read-all`,
     remove: (notificationId) => `/api/v1/notifications/${encodeURIComponent(notificationId)}`,
+  },
+  leaveAttachments: {
+    list: (leaveId) => `/api/hr/leave/${encodeURIComponent(leaveId)}/attachments`,
+    upload: (leaveId) => `/api/hr/leave/${encodeURIComponent(leaveId)}/attachments`,
+    view: (attachmentId) => `/api/hr/leave/attachments/${encodeURIComponent(attachmentId)}/view`,
+    download: (attachmentId) => `/api/hr/leave/attachments/${encodeURIComponent(attachmentId)}/download`,
   },
   leaveRequests: {
     base: "/api/v1/leave-requests",

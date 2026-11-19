@@ -580,6 +580,9 @@ export default function LiveClasses() {
           live.closeDetails();
         }}
         onAttendance={(record) => live.openAttendance(record)}
+        attendanceRows={live.selectedAttendance}
+        attendanceLoading={live.selectedAttendanceLoading}
+        attendanceError={live.selectedAttendanceError}
         onNotes={(record) => live.openPdf(record)}
         onRecording={(record) => live.openRecording(record)}
         onCopy={async (value) => {
@@ -628,6 +631,7 @@ export default function LiveClasses() {
         open={live.attendanceOpen}
         onClose={() => live.setAttendanceOpen(false)}
         loading={live.selectedAttendanceLoading}
+        error={live.selectedAttendanceError}
         rows={live.selectedAttendance}
         dashboard={live.selectedAttendanceDashboard}
         edits={live.attendanceEdits}

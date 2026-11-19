@@ -1,4 +1,5 @@
 import { createPortal } from "react-dom";
+import toast from 'react-hot-toast';
 import { personNameError } from "@shared/utils/personName";
 import { useEffect, useState } from "react";
 import {
@@ -135,7 +136,9 @@ function TrainerFormContent({
       await onSave({ ...values, name: values.name.trim(), changedFields }, trainer?.id);
       onClose();
     } catch (error) {
-      setSaveError(getApiErrorMessage(error, "Unable to save mentor. Please check the entered details."));
+      const message = getApiErrorMessage(error, "Unable to save mentor. Please check the entered details.");
+      setSaveError(message);
+      toast.error(message);
     } finally {
       setSaving(false);
     }

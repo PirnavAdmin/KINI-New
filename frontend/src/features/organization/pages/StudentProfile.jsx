@@ -252,12 +252,20 @@ function StudentProfileContent() {
       return () => { active = false; };
     }
     studentsApi.getById(studentId)
-      .then((response) => {
+      .then(async (response) => {
         const responseStudentId = studentIdOf(response.data);
         if (responseStudentId !== undefined && String(responseStudentId) !== String(studentId)) {
           throw new Error("Student response identity does not match.");
         }
-        if (active) setStudent(response.data);
+        let profile = response.data;
+        if (!profile.country || !profile.address) {
+          try {
+            const roster = await studentsApi.list();
+            const sameStudent = roster.data.find(row => String(studentIdOf(row)) === String(studentId));
+            if (sameStudent) profile = { ...profile, country: profile.country || sameStudent.country, address: profile.address || sameStudent.address };
+          } catch { /* Detailed profile remains usable if the roster is unavailable. */ }
+        }
+        if (active) setStudent(profile);
       })
       .catch(async (requestError) => {
         try {

@@ -30,7 +30,7 @@ const pickDashboardStats = (dashboard) => {
     .filter(Boolean);
 };
 
-export function AttendanceModal({ open, onClose, loading, rows, dashboard, edits, onEditChange, saving, onSubmit, generating, onGenerate, exporting, onExport }) {
+export function AttendanceModal({ open, onClose, loading, error, rows, dashboard, edits, onEditChange, saving, onSubmit, generating, onGenerate, exporting, onExport }) {
   const stats = pickDashboardStats(dashboard);
   return (
     <Modal
@@ -84,7 +84,7 @@ export function AttendanceModal({ open, onClose, loading, rows, dashboard, edits
       )}
       {loading ? (
         <CardSkeleton count={2} />
-      ) : rows.length === 0 ? (
+      ) : error ? <p role="alert" className="text-sm text-red-600">{error}</p> : rows.length === 0 ? (
         <EmptyState compact title="No attendance data" description="Attendance entries will appear here once students join the class, or use Generate from Join Logs." icon={Inbox} />
       ) : (
         <div className="overflow-hidden rounded-xl border border-slate-200/70 dark:border-slate-700/60">

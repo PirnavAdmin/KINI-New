@@ -2,6 +2,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import {
   Check,
   Download,
+  Eye,
+  EyeOff,
   LockKeyhole,
   Mail,
   ShieldCheck,
@@ -25,7 +27,7 @@ const toggleRows = [
 ];
 
 export default function ProfilePage() {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
   const [tab, setTab] = useState("Profile Details");
   const [employee, setEmployee] = useState(null);
   const [departmentOptions, setDepartmentOptions] = useState([]);
@@ -98,6 +100,23 @@ export default function ProfilePage() {
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { loadEmployee(); }, [loadEmployee]);
+
+  // The header reads the shared session, while this page reads the employee
+  // profile. Publish saved identity fields to the session on load and edits.
+  useEffect(() => {
+    if (!employee) return;
+    const fullName = [employee.firstName, employee.lastName].filter(Boolean).join(" ").trim();
+    if (!fullName) return;
+    const identity = {
+      firstName: employee.firstName ?? "",
+      lastName: employee.lastName ?? "",
+      fullName,
+      name: fullName,
+    };
+    if (Object.entries(identity).some(([key, value]) => user?.[key] !== value)) {
+      updateUser(identity);
+    }
+  }, [employee, user, updateUser]);
 
   // ── Initial photo load ────────────────────────────────────────────────
   // Service now guarantees string | null, so we only need a type check.
@@ -492,6 +511,7 @@ function Personal({ employee }) {
 }
 
 function Security({ password, setPassword, onSave }) {
+  const [visible, setVisible] = useState({});
   return (
     <div className="max-w-xl">
       <SectionHead
@@ -500,34 +520,31 @@ function Security({ password, setPassword, onSave }) {
         description="Use a strong password and secure your account with two-factor authentication."
       />
       <div className="mt-6 space-y-4">
-        <Field label="Current password">
-          <input
-            type="password"
-            className="field"
-            value={password.current}
-            onChange={(e) =>
-              setPassword({ ...password, current: e.target.value })
-            }
-          />
-        </Field>
-        <Field label="New password">
-          <input
-            type="password"
-            className="field"
-            value={password.next}
-            onChange={(e) => setPassword({ ...password, next: e.target.value })}
-          />
-        </Field>
-        <Field label="Confirm new password">
-          <input
-            type="password"
-            className="field"
-            value={password.confirm}
-            onChange={(e) =>
-              setPassword({ ...password, confirm: e.target.value })
-            }
-          />
-        </Field>
+        {[["current", "Current password"], ["next", "New password"], ["confirm", "Confirm new password"]].map(([key, label]) => (
+          <div key={key}>
+            <label htmlFor={`mentor-password-${key}`} className="mb-1.5 block text-sm font-semibold text-slate-700 dark:text-slate-200">{label}</label>
+            <div className="relative">
+              <input
+                id={`mentor-password-${key}`}
+                type={visible[key] ? "text" : "password"}
+                autoComplete={key === "current" ? "current-password" : "new-password"}
+                className="field"
+                style={{ paddingRight: 48 }}
+                value={password[key]}
+                onChange={(e) => setPassword({ ...password, [key]: e.target.value })}
+              />
+              <button
+                type="button"
+                aria-label={`${visible[key] ? "Hide" : "Show"} ${label.toLowerCase()}`}
+                aria-pressed={Boolean(visible[key])}
+                onClick={() => setVisible((current) => ({ ...current, [key]: !current[key] }))}
+                className="absolute inset-y-0 right-0 flex w-11 items-center justify-center rounded-r-xl text-slate-500 hover:text-slate-800 focus-visible:outline-2 focus-visible:outline-blue-500 dark:text-slate-400"
+              >
+                {visible[key] ? <EyeOff className="h-5 w-5" aria-hidden="true" /> : <Eye className="h-5 w-5" aria-hidden="true" />}
+              </button>
+            </div>
+          </div>
+        ))}
         <Toggle
           label="Two-factor authentication"
           description="Require a verification code when signing in."

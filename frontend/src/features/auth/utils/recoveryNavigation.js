@@ -4,16 +4,18 @@ export const RECOVERY_STORAGE_KEYS = {
   returnTo: "passwordResetReturnTo",
   // The email the backend confirmed the code for (POST /api/Auth/verify-otp).
   verifiedFor: "passwordResetVerifiedFor",
+  tokenExpiresAt: "passwordResetTokenExpiresAt",
 };
 
 // Verification state from an earlier code or another email must never carry
 // over to a new code.
 export const clearRecoveryVerification = () => {
-  ["passwordResetOtp", "passwordResetToken", "passwordResetVerified", RECOVERY_STORAGE_KEYS.verifiedFor]
+  ["passwordResetOtp", "passwordResetToken", "passwordResetVerified", RECOVERY_STORAGE_KEYS.verifiedFor, RECOVERY_STORAGE_KEYS.tokenExpiresAt]
     .forEach((key) => sessionStorage.removeItem(key));
 };
 
 const LOGIN_ROUTES = new Set([
+  "/Auth/login",
   "/login",
   "/mentor/login",
   "/employee/login",
@@ -23,7 +25,8 @@ const LOGIN_ROUTES = new Set([
 
 export const getSafeLoginRoute = (candidate) => {
   const route = String(candidate || "").trim();
-  return LOGIN_ROUTES.has(route) ? route : "/login";
+  if (route === "/login") return "/Auth/login";
+  return LOGIN_ROUTES.has(route) ? route : "/Auth/login";
 };
 
 export const getRecoveryReturnTo = (candidate) => getSafeLoginRoute(

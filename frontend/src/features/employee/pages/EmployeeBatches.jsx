@@ -10,6 +10,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import toast from 'react-hot-toast'
 import Modal from '@shared/components/Modal'
 import { batchService } from '@shared/services/batchService'
+import { loadBatchRosterCounts } from '@shared/services/batchRosterService'
 import useEmployeeTotal from '../hooks/useEmployeeTotal'
 import usePermission from '@shared/hooks/usePermission'
 import BatchManagement from '@features/organization/pages/BatchManagement'
@@ -61,7 +62,7 @@ async function findBatchesByMentorFullName(search) {
   // Search the scoped collection locally when the API cannot match mentors.
   const rows = new Map()
   let pageNumber = 1
-  let lastPage = 1
+  let lastPage
   do {
     const response = await batchService.getAll({ pageNumber, pageSize: 100 })
     for (const batch of response?.data ?? []) {
@@ -108,7 +109,7 @@ function BatchCard({ batch, onView, onManage, onEdit, onDelete, index }) {
         </div>
       </header>
       <ul className="hrb-meta">
-        <li><Users aria-hidden="true" />{batch.employees} Employees</li>
+        <li><Users aria-hidden="true" />{batch.employees == null ? 'Student count unavailable' : `${batch.employees} Students`}</li>
         <li><UserCheck aria-hidden="true" />{batch.mentor}</li>
         <li><BookOpen aria-hidden="true" />{batch.sessions} Sessions</li>
         <li><Calendar aria-hidden="true" />{new Date(batch.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</li>
@@ -190,7 +191,8 @@ export default function EmployeeBatches() {
         }
       }
       const rawData = response?.data ?? []
-      const normalized = rawData.map(normalizeApiBatch)
+      const counts = await loadBatchRosterCounts(rawData)
+      const normalized = rawData.map(batch => ({ ...normalizeApiBatch(batch), employees: counts[String(batchIdOf(batch))] ?? null }))
       setAllBatches(normalized)
       setTotalApiPages(Math.max(1, Number(response?.totalPages ?? 1)))
       setTotalApiRecords(Number(response?.totalRecords ?? rawData.length))
@@ -215,6 +217,12 @@ export default function EmployeeBatches() {
       loadBatches(searchQuery)
     }, 300)
     return () => clearTimeout(timer)
+  }, [loadBatches, searchQuery])
+
+  useEffect(() => {
+    const refreshCounts = () => { void loadBatches(searchQuery) }
+    window.addEventListener('kini:student-updated', refreshCounts)
+    return () => window.removeEventListener('kini:student-updated', refreshCounts)
   }, [loadBatches, searchQuery])
 
   // Client-side filter/sort on top of API data (for course/mode/date which API may not support)
@@ -325,7 +333,7 @@ export default function EmployeeBatches() {
 
   return (
     <div className="hrp-page hrb-page mx-auto max-w-[1500px] px-4 py-4 sm:px-5">
-      <HrBreadcrumb items={[{ label: 'Home', to: '/employee/hr-dashboard' }, { label: 'Employee', to: '/employee/hr-employees' }, { label: 'Batches' }]} />
+      <HrBreadcrumb items={[{ label: 'Batches' }]} />
       <HrHero
         {...heroProps('batches')}
         actions={(

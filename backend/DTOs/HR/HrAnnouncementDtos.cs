@@ -1,4 +1,4 @@
-﻿namespace TalentSphereAPI.DTOs.HR;
+namespace TalentSphereAPI.DTOs.HR;
 
 public class HrAnnouncementFilterDto
 {
@@ -103,6 +103,9 @@ public class HrAnnouncementSummaryDto
 
     public int Drafts { get; set; }
 
+    // Published with a future publish date.
+    public int Scheduled { get; set; }
+
     public int Expired { get; set; }
 
     public int RecentlyPublished { get; set; }
@@ -114,4 +117,7 @@ public class HrAnnouncementOptionsDto
     public List<string> Audiences { get; set; } = new();
 
     public List<string> Statuses { get; set; } = new();
+
+    // Values accepted by the list Status filter (includes derived SCHEDULED / EXPIRED).
+    public List<string> FilterStatuses { get; set; } = new();
 }

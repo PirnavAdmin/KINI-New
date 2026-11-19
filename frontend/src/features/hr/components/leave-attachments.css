@@ -1,0 +1,110 @@
+/* Supporting documents of a leave request (HR leave details + mentor request details). */
+.lad {
+  margin-top: 1.25rem;
+  border: 1px solid #f5e6d3;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #fffaf3 0%, #fffdf9 100%);
+  padding: 1rem;
+}
+.lad__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .75rem;
+}
+.lad__head-icon {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 12px;
+  background: #fff1df;
+  color: #f39924;
+}
+.lad__head-icon svg { width: 1.25rem; height: 1.25rem; }
+.lad__title {
+  margin: 0;
+  flex: 1 1 auto;
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #0f2a4a;
+}
+.lad__error { margin: .75rem 0 0; font-size: .875rem; color: #e11d48; }
+.lad__empty { margin: .75rem 0 0; font-size: .875rem; color: #64748b; }
+.lad__list { margin: .875rem 0 0; padding: 0; list-style: none; display: grid; gap: .625rem; }
+.lad__item {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .75rem 1rem;
+  border: 1px solid #edf1f7;
+  border-radius: 14px;
+  background: #fff;
+  padding: .75rem .875rem;
+  box-shadow: 0 2px 8px rgba(15, 42, 74, .04);
+}
+.lad__file-icon {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  flex: none;
+  border-radius: 12px;
+  background: #eef4fd;
+  color: #2f6fe4;
+}
+.lad__file-icon svg { width: 1.5rem; height: 1.5rem; }
+.lad__name {
+  min-width: 0;
+  flex: 1 1 12rem;
+  overflow-wrap: anywhere;
+  font-size: .95rem;
+  font-weight: 600;
+  color: #0f2a4a;
+}
+.lad__size {
+  flex: none;
+  border-radius: 999px;
+  background: #eef2f7;
+  padding: .25rem .75rem;
+  font-size: .8rem;
+  font-weight: 700;
+  color: #334a66;
+}
+.lad__actions { display: flex; flex-wrap: wrap; gap: .625rem; margin-left: auto; }
+.lad__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  min-height: 2.5rem;
+  border-radius: 999px;
+  padding: 0 1.25rem;
+  font-size: .9rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color .15s ease, box-shadow .15s ease, transform .15s ease;
+  cursor: pointer;
+}
+.lad__btn svg { width: 1.05rem; height: 1.05rem; }
+.lad__btn:focus-visible { outline: 2px solid #2f6fe4; outline-offset: 2px; }
+.lad__btn:disabled { cursor: not-allowed; opacity: .6; }
+.lad__btn.is-outline { border: 1.5px solid #133b5d; background: #fff; color: #133b5d; }
+.lad__btn.is-outline:not(:disabled):hover { background: #f3f7fc; }
+.lad__btn.is-solid { border: 1.5px solid #f39924; background: #f39924; color: #fff; box-shadow: 0 6px 14px rgba(243, 153, 36, .28); }
+.lad__btn.is-solid:not(:disabled):hover { background: #e48a15; border-color: #e48a15; }
+.lad__add { min-height: 2.25rem; padding: 0 1rem; font-size: .85rem; }
+
+@media (max-width: 520px) {
+  .lad__actions { width: 100%; margin-left: 0; }
+  .lad__actions .lad__btn { flex: 1 1 0; }
+}
+
+.dark .lad { border-color: #334155; background: #0f172a; }
+.dark .lad__title, .dark .lad__name { color: #f1f5f9; }
+.dark .lad__item { border-color: #334155; background: #1e293b; box-shadow: none; }
+.dark .lad__file-icon { background: #1e3a5f; color: #93c5fd; }
+.dark .lad__size { background: #334155; color: #cbd5e1; }
+.dark .lad__btn.is-outline { border-color: #94a3b8; background: transparent; color: #e2e8f0; }
+.dark .lad__btn.is-outline:not(:disabled):hover { background: #334155; }
+.dark .lad__head-icon { background: #3b2a12; }

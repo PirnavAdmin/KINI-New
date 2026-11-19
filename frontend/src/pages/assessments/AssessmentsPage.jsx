@@ -97,6 +97,10 @@ export default function AssessmentsPage() {
     [deleteTarget, setDeleteTarget] = useState(null),
     [deleting, setDeleting] = useState(false);
   useDashboardFormReturn(drawer);
+  const openCreate = () => {
+    setEditing(null);
+    setDrawer(true);
+  };
   useEffect(() => {
     if (searchParams.get("create") !== "true" || loading) return;
     setEditing(null);
@@ -294,7 +298,7 @@ export default function AssessmentsPage() {
           art={<AssessmentArt />}
           motto={["Assess", "Learn", "Improve", "Succeed"]}
           quote={["Better Assessments", "Build Brighter Futures"]}
-          action={null}
+          action={isMentorView ? <button type="button" className="kx-btn kx-btn--primary" onClick={openCreate}><Plus aria-hidden="true" /> Create Assessment</button> : null}
         />
       )}
       <section className="kx-grid kx-grid--5" aria-label="Assessment summary">
@@ -386,7 +390,7 @@ export default function AssessmentsPage() {
                     {Object.keys(DEFAULT_FILTERS).some((key) => filters[key] !== DEFAULT_FILTERS[key]) ? (
                       <OrgEmpty icon={Search} title="No assessments match these filters" text="Try another batch, type, status or date range." action={<button type="button" className="kx-btn kx-btn--ghost kx-btn--sm" onClick={() => setFilters(DEFAULT_FILTERS)}><RotateCcw aria-hidden="true" /> Clear filters</button>} />
                     ) : (
-                      <OrgEmpty icon={ClipboardList} title="No assessments found." text="Create an assessment for a batch to start measuring progress." action={<button type="button" className="kx-btn kx-btn--primary kx-btn--sm" onClick={() => { setEditing(null); setDrawer(true); }}><Plus aria-hidden="true" /> Create Assessment</button>} />
+                      <OrgEmpty icon={ClipboardList} title="No assessments found." text="Create an assessment for a batch to start measuring progress." action={isMentorView ? <button type="button" className="kx-btn kx-btn--primary" onClick={openCreate}><Plus aria-hidden="true" /> Create Assessment</button> : null} />
                     )}
                   </td>
                 </tr>

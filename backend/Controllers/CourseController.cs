@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc;
 using TalentSphereAPI.Authorization;
@@ -237,6 +237,59 @@ namespace TalentSphereAPI.Controllers
             });
         }
         // =====================================================
+        // COURSE POSTER (upload / replace / remove)
+        // Courses -> Edit. Own organization's courses only.
+        // multipart/form-data, field "file": JPG, JPEG, PNG or WebP, max 5 MB.
+        // =====================================================
+
+        [HttpPost("{id:int}/poster")]
+        [HasPermission("Courses", "edit")]
+        [Consumes("multipart/form-data")]
+        [RequestSizeLimit(CoursePosterService.MaxBytes + 64 * 1024)]
+        public async Task<IActionResult> UploadPoster(
+            int id,
+            IFormFile? file,
+            [FromServices] ICoursePosterService posters)
+        {
+            try
+            {
+                var posterUrl = await posters.UploadAsync(id, file, HttpContext.RequestAborted);
+                return Ok(new
+                {
+                    success = true,
+                    message = "Course poster saved successfully.",
+                    data = new { courseId = id, posterUrl }
+                });
+            }
+            catch (CoursePosterException ex)
+            {
+                return StatusCode(ex.StatusCode, new { success = false, message = ex.Message });
+            }
+        }
+
+        [HttpDelete("{id:int}/poster")]
+        [HasPermission("Courses", "edit")]
+        public async Task<IActionResult> RemovePoster(
+            int id,
+            [FromServices] ICoursePosterService posters)
+        {
+            try
+            {
+                var removed = await posters.RemoveAsync(id, HttpContext.RequestAborted);
+                return Ok(new
+                {
+                    success = true,
+                    message = removed ? "Course poster removed." : "This course has no poster.",
+                    data = new { courseId = id, posterUrl = (string?)null }
+                });
+            }
+            catch (CoursePosterException ex)
+            {
+                return StatusCode(ex.StatusCode, new { success = false, message = ex.Message });
+            }
+        }
+
+        // =====================================================
         // OPEN / DOWNLOAD COURSE PDF
         // Courses -> View
         // =====================================================
@@ -406,6 +459,7 @@ namespace TalentSphereAPI.Controllers
                     Level = c.Level,
                     Price = c.Price,
                     PdfUrl = c.PdfUrl,
+                    PosterUrl = c.PosterUrl,
                     Status = c.Status,
                     OrganizationId = c.OrganizationId,
 
@@ -444,6 +498,69 @@ namespace TalentSphereAPI.Controllers
             };
 
             return Ok(response);
+        }
+
+        // =====================================================
+        // PUBLIC COURSE DETAIL (enrollment page)
+        // GET: /api/v1/courses/public/{id}
+        // Anonymous. Same visibility rules as the catalogue,
+        // plus the course's open batches for batch selection.
+        // =====================================================
+
+        [HttpGet("public/{id:int}")]
+        [AllowAnonymous]
+        [ProducesResponseType(typeof(PublicCourseDetailDto), 200)]
+        public async Task<IActionResult> GetPublicCourse(int id)
+        {
+            var course = await _context.Courses
+                .AsNoTracking()
+                .Where(c =>
+                    c.CourseId == id &&
+                    c.Status &&
+                    c.IsPublic &&
+                    !c.IsArchived)
+                .Select(c => new PublicCourseDetailDto
+                {
+                    CourseId = c.CourseId,
+                    CourseName = c.CourseName,
+                    CourseCode = c.CourseCode,
+                    Description = c.Description,
+                    Duration = c.Duration,
+                    Level = c.Level,
+                    Price = c.Price,
+                    PosterUrl = c.PosterUrl,
+                    OrganizationId = c.OrganizationId,
+                    OrganizationName = c.Organization.OrganizationName,
+                    TotalAssessments = c.Assessments.Count(),
+                    OpenBatches = c.Batches
+                        .Where(b =>
+                            b.OrganizationId == c.OrganizationId &&
+                            (b.Status == TalentSphereAPI.Models.BatchStatus.Upcoming ||
+                             b.Status == TalentSphereAPI.Models.BatchStatus.Active) &&
+                            b.EnrolledStudents < b.Capacity)
+                        .OrderBy(b => b.StartDate)
+                        .Select(b => new PublicBatchOptionDto
+                        {
+                            BatchId = b.BatchId,
+                            BatchName = b.BatchName,
+                            BatchType = b.BatchType.ToString(),
+                            StartDate = b.StartDate,
+                            EndDate = b.EndDate,
+                            SeatsAvailable = b.Capacity - b.EnrolledStudents
+                        })
+                        .ToList()
+                })
+                .FirstOrDefaultAsync();
+
+            if (course == null)
+            {
+                return NotFound(new
+                {
+                    message = "This course is not available."
+                });
+            }
+
+            return Ok(course);
         }
     }
 }

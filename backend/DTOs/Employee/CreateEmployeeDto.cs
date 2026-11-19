@@ -1,4 +1,4 @@
-﻿namespace TalentSphereAPI.DTOs.Employee
+namespace TalentSphereAPI.DTOs.Employee
 {
     public class CreateEmployeeDto
     {
@@ -15,5 +15,10 @@
         public string Status { get; set; } = "Active";
 
         public string EmployeeType { get; set; } = string.Empty;
+
+        // Stored on EmployeeProfiles (optional).
+        public DateTime? JoiningDate { get; set; }
+
+        public string? Designation { get; set; }
     }
 }

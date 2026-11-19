@@ -3,8 +3,15 @@ import { EMPLOYEE_STATUS_OPTIONS, normalizeEmployeeStatus } from '../constants/e
 import { STUDENT_STATUS_OPTIONS } from '../constants/studentStatuses'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import useDashboardFormReturn from '@shared/hooks/useDashboardFormReturn'
+import { loadPerformanceHistory } from '../services/hrPerformanceHistory'
+import { resourcePreviewBlob } from '../services/hrResourcePreview'
+import { matchesEmployeeSearch } from '@shared/utils/employeePresentation'
+import { isHrEmployee } from '../services/hrDashboardData'
+import './hr-employee-notifications.css'
+import './portal/hr-announcements-page.css'
 import { employeeDetailsPath, employeeIdOf } from '../services/hrEmployeeDetails'
-import { employeeLeavePath, loadEmployeeLeaveRecords, loadEmployeeLeaveProfile } from '../services/hrEmployeeLeaveData'
+import { employeeLeavePath, loadEmployeeLeaveRecords } from '../services/hrEmployeeLeaveData'
 import { employeeAttendancePath } from '../services/hrEmployeeAttendanceData'
 import { Users, RefreshCw, Plus, Download, GraduationCap, Clock3, UserMinus, CheckCircle2, UserCog, Eye, Pencil, History, Wallet, Trash2, BarChart3, Filter } from 'lucide-react'
 import { toast } from 'sonner'
@@ -28,6 +35,9 @@ import HrApiForm from './HrApiForm'
 import useAddIntent from '../hooks/useAddIntent'
 import { employeeRoleOptions, fieldLabel, optionsFor } from '../services/hrFormOptions'
 import { HrRecord, HrSummary } from './HrApiData'
+import LeaveAttachments from './LeaveAttachments'
+import HrLeaveDetails from './HrLeaveDetails'
+import LeaveBalance from './LeaveBalance'
 import { HR_API_MODULES } from '../constants/hrApiModules'
 import { HR_API_CONTRACT } from '../services/hrApiContract'
 import { hrRequest, hrModuleApi, hrList, hrField, hrText, hrError, downloadHrFile } from '../services/hrApi'
@@ -37,11 +47,12 @@ import { studentIdOf } from '../services/hrStudentDetails'
 import { mentorPhotoLookup, PROFILE_TYPE, toProfileId } from '@shared/services/profilePhotoService'
 import { useProfilePhotoLookup } from '@shared/hooks/useProfilePhoto'
 import { normalizeCalendar, mergeCalendar, loadCalendarEvents, calendarDate, calendarMappingError, calendarStats as normalizeCalendarStats } from '../services/hrCalendarData'
-import { announcementChangedEvent, announcementOptions } from '../services/hrAnnouncementData'
+import { announcementChangedEvent, announcementOptions, formatAnnouncementDate } from '../services/hrAnnouncementData'
 import HrAnnouncementSummary from './HrAnnouncementSummary'
 import StudentForm from '@/pages/students/StudentForm'
 import { studentsApi } from '@/api/students'
-import { loadDashboardList } from '../services/hrDashboardData'
+import { loadHrEmployeeRoster } from '../services/hrEmployeeRoster'
+import { loadEmployeeEditValues, mergeEmployeeEditValues } from '../services/hrEmployeeEditData'
 
 // v23 — table columns, headers and filter copy matching the HR design screens.
 const LIVE_COLUMNS = {
@@ -99,6 +110,7 @@ export default function HrApiModule({ module }) {
   const [revision, setRevision] = useState(0)
   const [state, setState] = useState({ loading: true, rows: [], extras: {}, options: {} })
   const [dialog, setDialog] = useState(null)
+  useDashboardFormReturn(dialog?.kind === 'create')
   const [selected, setSelected] = useState(() => new Set())
   const [reviewTab, setReviewTab] = useState('')
   const [studentLookups, setStudentLookups] = useState({ choices: {}, trend: null })
@@ -113,8 +125,6 @@ export default function HrApiModule({ module }) {
   const detailController = useRef(null)
   const detailRequestKey = useRef(null)
   useEffect(() => { if (!dialog) detailRequestKey.current = null }, [dialog])
-  const unavailableLeaveBalances = useRef(new Set())
-  const resolvedLeaveBalanceIds = useRef(new Map())
   const announcementAuxiliary = useRef(null)
   const calendarGenerated = useRef(null)
   const calendarStatistics = useRef(null)
@@ -128,7 +138,7 @@ export default function HrApiModule({ module }) {
   const [calendarMonth, setCalendarMonth] = useState(() => new Date(new Date().getFullYear(), new Date().getMonth(), 1))
   const params = useMemo(() => {
     const requestQuery = module === 'employees'
-      ? Object.fromEntries(Object.entries(query).filter(([key]) => key !== 'Role'))
+      ? query
       : query
     if (module === 'announcements') {
       const dates = Object.fromEntries(['StartDate', 'EndDate'].filter(key => requestQuery[key]).map(key => [key, new Date(`${requestQuery[key]}T${key === 'EndDate' ? '23:59:59.999' : '00:00:00'}`).toISOString()]))
@@ -153,13 +163,13 @@ export default function HrApiModule({ module }) {
       const statsKey = JSON.stringify([revision, calendarIdentity])
       const calendarStats = module === 'calendar' && calendarStatistics.current?.key === statsKey ? calendarStatistics.current.value : null
       const jobs = [
-        ['list', () => module === 'students' ? loadHrStudentRoster(api, currentParams, signal) : module === 'calendar' ? loadCalendarEvents(api, currentParams, signal) : api.list(currentParams, signal)],
+        ['list', () => module === 'employees' ? loadHrEmployeeRoster(api, definition, signal) : module === 'students' ? loadHrStudentRoster(api, currentParams, signal) : module === 'calendar' ? loadCalendarEvents(api, currentParams, signal) : api.list(currentParams, signal)],
         ...(!cached && !calendarStats && !['departments', 'students'].includes(module) ? [['summary', () => api.summary(signal)]] : []),
         ...Object.entries(config.extras ?? {}).filter(([name]) => (!generated || name === 'Upcoming events') && (!calendarStats || name !== 'Upcoming events')).map(([name, suffix]) => [name, () => hrRequest('GET', suffix.startsWith('/') ? suffix : `${api.path}/${suffix}`, { signal, params: { ...currentParams, fromDate: currentParams.FromDate, toDate: currentParams.ToDate, date: currentParams.Date } })]),
         ...Object.entries(cached ? {} : config.options ?? {}).map(([name, path]) => [`option:${name}`, () => hrRequest('GET', path, { signal })]),
         // v23 — one wider read (first 200 rows, Status ignored) feeds the tab counts, charts and growth chip.
-        ...(['employees', 'leave', 'performance'].includes(module) ? [['analytics', () => module === 'employees' ? loadDashboardList(api, definition, signal) : (() => { const { Status, ...rest } = currentParams; void Status; return api.list({ ...rest, [pageKey]: 1, [sizeKey]: 200 }, signal) })()]] : []),
-        ...(['performance', 'leave'].includes(module) && canReadEmployees ? [['employeeLookup', () => loadDashboardList(hrModuleApi('employees'), HR_API_CONTRACT['GET /api/hr/employees'], signal)]] : []),
+        ...(['leave', 'performance'].includes(module) ? [['analytics', () => (() => { const { Status, ...rest } = currentParams; void Status; return api.list({ ...rest, [pageKey]: 1, [sizeKey]: 200 }, signal) })()]] : []),
+        ...(['performance', 'leave', 'attendance'].includes(module) && canReadEmployees ? [['employeeLookup', () => loadHrEmployeeRoster(hrModuleApi('employees'), HR_API_CONTRACT['GET /api/hr/employees'], signal)]] : []),
       ]
       const results = await Promise.allSettled(jobs.map(([, request]) => request()))
       if (signal.aborted) return
@@ -172,6 +182,24 @@ export default function HrApiModule({ module }) {
         const error = result.status === 'rejected' ? hrError(result.reason, module) : null
         if (key === 'list') {
           next.rows = hrList(result.value); next.raw = result.value; next.error = error
+          if (module === 'employees' && !error) {
+            next.analytics = next.rows
+            const roleKey = value => String(value ?? '').toLowerCase().replace(/[\s_-]/g, '')
+            const filtered = next.rows.filter(row => {
+              const role = hrField(row, 'role', 'roleName', 'designation')
+              const roleName = typeof role === 'object' ? hrField(role, 'name', 'roleName') : role
+              if (!matchesEmployeeSearch({ ...row, fullName: hrField(row, 'fullName', 'employeeName', 'name'), firstName: hrField(row, 'firstName'), lastName: hrField(row, 'lastName'), email: hrField(row, 'email', 'employeeEmail'), role: roleName }, currentParams.Search)) return false
+              if (currentParams.Role && !(currentParams.Role === 'HR' ? isHrEmployee(row) : roleKey(roleName) === roleKey(currentParams.Role))) return false
+              if (currentParams.Status && normalizeEmployeeStatus(hrField(row, 'status')) !== normalizeEmployeeStatus(currentParams.Status)) return false
+              const joined = String(hrField(row, 'joiningDate', 'dateOfJoining', 'joinDate') || '').slice(0, 10)
+              return (!currentParams.StartDate || joined >= currentParams.StartDate) && (!currentParams.EndDate || (joined && joined <= currentParams.EndDate))
+            })
+            const totalPages = Math.max(1, Math.ceil(filtered.length / 10))
+            const currentPage = Math.min(currentParams[pageKey], totalPages)
+            next.rows = filtered.slice((currentPage - 1) * 10, currentPage * 10)
+            next.raw = { totalCount: filtered.length, totalPages }
+            if (currentPage !== currentParams[pageKey]) setPage(currentPage)
+          }
           if (module === 'calendar') {
             next.raw = { items: result.value ?? [] }
             next.eventsStatus = error ? result.reason?.name === 'CalendarMappingError' ? 'mapping-error' : 'API-error' : null
@@ -211,7 +239,7 @@ export default function HrApiModule({ module }) {
       if (module === 'leave') {
         next.rows = enrichLeaveEmployeeEmails(next.rows, hrList(next.employeeLookup))
       }
-      if (module === 'performance') {
+      if (['performance', 'attendance'].includes(module)) {
         if (next.employeeLookup) next.options.employees = hrList(next.employeeLookup).map(row => ({
           value: employeeStatusIdOf(row) ?? employeeIdOf(row),
           label: hrField(row, 'fullName', 'employeeName', 'name') || [hrField(row, 'firstName'), hrField(row, 'lastName')].filter(Boolean).join(' ') || `Employee ${hrField(row, 'employeeId', 'id')}`,
@@ -279,6 +307,7 @@ export default function HrApiModule({ module }) {
     finally { actionLock.current = false; setBusy(false) }
   }
   const recordId = row => module === 'employees' ? employeeIdOf(row) : module === 'students' ? studentIdOf(row) : hrField(row, api.idKey, 'id')
+  const selectionKey = row => recordId(row) ?? `row:${module}:${JSON.stringify(row)}:${state.rows.indexOf(row)}`
   const closeDetail = () => {
     detailController.current?.abort()
     detailRequestKey.current = null
@@ -323,8 +352,21 @@ export default function HrApiModule({ module }) {
         setDialog({ ...pending, loading: false, error: 'The server returned no record details. Please try again.' })
         return
       }
-      setDialog({ kind: edit ? 'edit' : 'view', value, id })
+      const formValues = module === 'employees' ? edit ? await loadEmployeeEditValues(row, value, controller.signal) : mergeEmployeeEditValues(value, row) : module === 'leave' ? { ...row, ...value } : value
+      if (controller.signal.aborted) return
+      setDialog({ kind: edit ? 'edit' : 'view', value: formValues, id })
     } catch (error) {
+      if (!controller.signal.aborted && module === 'employees' && edit && error.response?.status === 404) {
+        // The directory row can populate the edit form if the deployed detail GET is absent.
+        // Saving still uses the documented PUT and reports any server failure.
+        try {
+          const formValues = await loadEmployeeEditValues(row, {}, controller.signal)
+          if (!controller.signal.aborted) setDialog({ kind: 'edit', value: formValues, id })
+        } catch (failure) {
+          if (!controller.signal.aborted) setDialog({ ...pending, loading: false, error: hrError(failure, module) })
+        }
+        return
+      }
       if (!controller.signal.aborted) setDialog({ ...pending, loading: false, error: hrError(error, module) })
     }
   }
@@ -346,18 +388,18 @@ export default function HrApiModule({ module }) {
     setDialog(null); refresh(module !== 'calendar'); toast.success('Changes saved.')
   }
   const history = (id, kind = module) => action(async () => {
+    if (kind === 'performance') {
+      const rows = await loadPerformanceHistory(id, { readEmployees: canReadEmployees })
+      setDialog({ kind: 'view', title: 'Performance history', value: rows.length ? rows : { message: 'No performance history for this employee.' } })
+      return
+    }
     if (kind === 'leave') {
       const result = await loadEmployeeLeaveRecords(id, { readEmployee: canReadEmployees })
       setDialog({ kind: 'view', title: 'Leave history', value: { employeeId: id, items: result.rows } })
       return
     }
     if (kind === 'balance') {
-      const controller = new AbortController()
-      detailController.current?.abort()
-      detailController.current = controller
-      const result = await loadEmployeeLeaveProfile(id, { readEmployee: canReadEmployees, signal: controller.signal, unavailableBalances: unavailableLeaveBalances.current, resolvedBalanceIds: resolvedLeaveBalanceIds.current })
-      if (!result || controller.signal.aborted) return
-      setDialog({ kind: 'view', title: 'Leave balance', value: result.balance ?? { message: result.balanceUnavailable ? 'Leave balance is not available for this employee.' : result.balanceError ?? result.employeeError ?? result.historyError ?? 'Leave balance is not available for this employee.' } })
+      setDialog({ kind: 'balance', id })
       return
     }
     const path = kind === 'balance' ? '/api/hr/leave/balance/{employeeId}' : kind === 'enrollments' ? '/api/students/{studentId}/enrollments' : `/api/hr/${kind}/employee/{employeeId}`
@@ -404,8 +446,8 @@ export default function HrApiModule({ module }) {
     date: row => isoDay(hrField(row, 'date', 'attendanceDate')) ?? '—',
     fromDate: row => isoDay(hrField(row, 'fromDate', 'startDate')) ?? '—',
     toDate: row => isoDay(hrField(row, 'toDate', 'endDate')) ?? '—',
-    publishDate: row => formatDay(hrField(row, 'publishDate')) ?? '—',
-    expiryDate: row => formatDay(hrField(row, 'expiryDate')) ?? '—',
+    publishDate: row => (module === 'announcements' ? formatAnnouncementDate(hrField(row, 'publishDate')) : formatDay(hrField(row, 'publishDate'))) ?? '—',
+    expiryDate: row => (module === 'announcements' ? formatAnnouncementDate(hrField(row, 'expiryDate')) : formatDay(hrField(row, 'expiryDate'))) ?? '—',
     audience: row => <TagPill value={hrField(row, 'audience')} tone="purple" />,
     checkOut: row => hrField(row, 'checkOut', 'checkOutTime') ?? <span className="hrl-muted">Not supplied</span>,
     workingHours: row => hrField(row, 'workingHours', 'totalHours', 'hoursWorked') ?? '—',
@@ -461,10 +503,13 @@ export default function HrApiModule({ module }) {
       }
       if (module === 'resources') {
         menu.push({ label: 'Preview', icon: Eye, onClick: () => action(async () => {
-          const response = await hrRequest('GET', `${api.detail}/preview`, { id, binary: true })
-          const type = response.data.type?.split(';')[0]
-          if (!['application/pdf', 'image/png', 'image/jpeg', 'image/webp', 'text/plain'].includes(type)) { downloadHrFile(response, row.name); return }
-          setDialog({ kind: 'preview', blob: response.data })
+          let response
+          try { response = await hrRequest('GET', `${api.detail}/preview`, { id, binary: true }) }
+          catch (error) {
+            if (error.response?.status !== 404) throw error
+            response = await hrRequest('GET', `${api.detail}/download`, { id, binary: true })
+          }
+          setDialog({ kind: 'preview', blob: await resourcePreviewBlob(response) })
         }) })
         menu.push({ label: 'Download', icon: Download, onClick: () => action(async () => downloadHrFile(await hrRequest('GET', `${api.detail}/download`, { id, binary: true }), row.name)) })
       }
@@ -478,13 +523,13 @@ export default function HrApiModule({ module }) {
   const totalPages = hrField(state.raw, 'totalPages') ?? (totalCount != null ? Math.ceil(totalCount / 10) : null)
   const moduleActions = <>
     <Button variant="secondary" icon={RefreshCw} disabled={state.loading || busy} onClick={() => { refresh(); toast.success(`${config.title} refreshed.`) }}>Refresh</Button>
-    {HR_API_CONTRACT[`GET ${api.path}/export`] && (module !== 'announcements' || can('export')) && <Button variant="secondary" icon={Download} disabled={state.loading || busy} onClick={() => action(async () => { await downloadHrFile(await api.export(params), `${module}.csv`); toast.success(`${config.title} exported successfully.`) })}>Export</Button>}
+    {HR_API_CONTRACT[`GET ${api.path}/export`] && (module !== 'announcements' || can('export')) && <Button variant="secondary" icon={Download} disabled={state.loading || busy} onClick={() => action(async () => { await downloadHrFile(await api.export(params), `${module}.csv`); toast.success(`${config.title} exported successfully.`, { id: 'hr-export', className: 'hr-export-toast', position: 'top-right' }) })}>Export</Button>}
     {can('add') && (module === 'students' || HR_API_CONTRACT[createOperation]) && <Button icon={Plus} disabled={busy} onClick={() => setDialog({ kind: 'create' })}>{module === 'attendance' ? 'Mark Attendance' : `Add ${config.singular}`}</Button>}
   </>
   // v21 — HR portal hero for every live HR module (art/script per module).
   const heroCrumb = MODULE_HEROES[module]
   const studentHero = heroCrumb ? <>
-    <HrBreadcrumb items={[...(['announcements', 'resources'].includes(module) ? [{ label: 'Employee' }] : []), { label: heroCrumb, to: module === 'employees' ? '/employee/hr-employees' : undefined }]} />
+    <HrBreadcrumb items={[{ label: heroCrumb, to: module === 'employees' ? '/employee/hr-employees' : undefined }]} />
     {/* v24 — Employees (image 11) keeps its actions on the table toolbar instead of the hero */}
     <HrHero {...heroProps(module)} actions={module === 'employees' ? undefined : moduleActions} />
   </> : null
@@ -498,7 +543,7 @@ export default function HrApiModule({ module }) {
   const hasSearch = definition.params.some(p => p.name === 'Search')
   const filterField = param => {
     const key = filterOptions[param.name]
-    let choices = (module === 'employees' && key === 'status' ? EMPLOYEE_STATUS_OPTIONS : module === 'employees' && key === 'role' ? employeeRoleOptions(state.options) : key ? module === 'announcements' ? announcementOptions(key, state.options) : optionsFor(key, state.options) : []).filter(item => key !== 'audience' || item.label !== 'All')
+    let choices = (module === 'employees' && key === 'status' ? EMPLOYEE_STATUS_OPTIONS : module === 'employees' && key === 'role' ? employeeRoleOptions(state.options) : key ? module === 'announcements' ? announcementOptions(key === 'status' ? 'filterStatus' : key, state.options) : optionsFor(key, state.options) : []).filter(item => key !== 'audience' || item.label !== 'All')
     if (module === 'students' && STUDENT_LOOKUPS[param.name]) choices = studentLookups.choices[param.name] ?? []
     if (module !== 'announcements' && !choices.length && param.name === 'Status' && STATUS_FALLBACK[module]) choices = STATUS_FALLBACK[module].map(value => ({ value, label: value }))
     if (module === 'students' && param.name === 'Status') choices = STUDENT_STATUS_OPTIONS
@@ -511,9 +556,9 @@ export default function HrApiModule({ module }) {
   const employeeKpiClick = module === 'employees' ? (key, label = '') => {
     const normalized = `${key} ${label}`.toLowerCase().replace(/[^a-z]/g, '')
     if (normalized.includes('total')) return resetFilters
-    if (normalized.includes('mentor')) return () => { setFilter('Role', 'Mentor'); document.querySelector('.hrp-table, .hrl-table, [role="table"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }
-    if (normalized === 'hr' || normalized.includes('hr') || normalized.includes('humanresource')) return () => { setFilter('Role', 'HR Executive'); document.querySelector('.hrp-table, .hrl-table, [role="table"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }
-    if (normalized.includes('leave')) return () => navigate('/employee/hr-dashboard')
+    if (normalized.includes('mentor')) return () => { setPage(1); setQuery({ Role: 'Mentor' }); document.querySelector('.hrp-table, .hrl-table, [role="table"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }
+    if (normalized === 'hr' || normalized.includes('hr') || normalized.includes('humanresource')) return () => { setPage(1); setQuery({ Role: 'HR' }); document.querySelector('.hrp-table, .hrl-table, [role="table"]')?.scrollIntoView({ behavior: 'smooth', block: 'start' }) }
+    if (normalized.includes('leave')) return () => navigate('/employee/hr-leave')
     return () => {}
   } : undefined
   const performanceExtra = module === 'performance' && <>
@@ -546,16 +591,15 @@ export default function HrApiModule({ module }) {
       const actualRole = normalizedRole(hrField(row, 'role', 'roleName', 'designation'))
       const requestedRole = normalizedRole(selectedRole)
       return requestedRole === 'hr'
-        ? actualRole === 'hr' || actualRole === 'hrexecutive'
+        ? isHrEmployee(row)
         : actualRole === requestedRole
     })
     : module === 'performance' && reviewTab ? state.rows.filter(row => statusOf(row) === reviewTab) : state.rows
-  const selectedRows = visibleRows.filter(row => selected.has(recordId(row)))
+  const selectedRows = visibleRows.filter(row => selected.has(selectionKey(row)))
   const exportSelected = () => {
     if (module === 'announcements' && !can('export')) return
     exportCSV({ filename: `${module}-selected`, headers: columns.map(column => column.header), rows: selectedRows.map(row => tableKeys.map(key => { const value = hrField(row, key, ...(aliases[key] ?? [])); return value == null ? '' : hrText(value) })) })
-    toast.success(`${config.title} exported successfully.`)
-    toast.success(`Exported ${selectedRows.length} ${selectedRows.length === 1 ? 'record' : 'records'}.`)
+    toast.success(`Exported ${selectedRows.length} ${selectedRows.length === 1 ? 'record' : 'records'}.`, { id: 'hr-export', className: 'hr-export-toast', position: 'top-right' })
   }
   const emptyTitle = module === 'performance' ? 'No performance reviews found' : module === 'announcements' ? 'No announcements found' : `No ${config.title.toLowerCase()} records found`
   const emptyText = module === 'announcements' ? 'Try adjusting your search or filters, or create a new announcement to get started.' : module === 'performance' ? (Object.values(query).some(Boolean) ? 'No reviews match these filters. Clear the filters to see all reviews.' : 'Employee totals come from the directory. Performance scores appear after reviews are added.') : 'Try adjusting your search or filters.'
@@ -565,8 +609,12 @@ export default function HrApiModule({ module }) {
   const paged = definition.params.some(p => p.name === pageKey)
 
   const dialogs = <>
-    {['detail', 'view'].includes(dialog?.kind) && !(module === 'leave' && dialog.kind === 'detail' && dialog.loading && !dialog.edit) && <Modal open size="lg" motionPreset={module === 'leave' ? 'rise' : 'default'} title={dialog.title ?? (dialog.edit ? `Edit ${config.singular}` : `${config.singular} details`)} onClose={closeDetail}>
-      {dialog.kind === 'view' ? <HrRecord value={dialog.value} /> : <>
+    {dialog?.kind === 'balance' && <Modal open trapFocus title={<span id="hr-leave-balance-title">Leave balance</span>} ariaLabelledBy="hr-leave-balance-title" onClose={closeDetail}>
+      <LeaveBalance key={dialog.id} identifier={dialog.id} employees={hrList(state.employeeLookup)} />
+    </Modal>}
+    {module === 'leave' && dialog?.kind === 'view' && dialog.id != null && <HrLeaveDetails value={dialog.value} leaveId={dialog.id} onClose={closeDetail} />}
+    {['detail', 'view'].includes(dialog?.kind) && !(module === 'leave' && dialog.kind === 'detail' && dialog.loading && !dialog.edit) && !(module === 'leave' && dialog.kind === 'view' && dialog.id != null) && <Modal open size="lg" motionPreset={module === 'leave' ? 'rise' : 'default'} title={dialog.title ?? (dialog.edit ? `Edit ${config.singular}` : `${config.singular} details`)} onClose={closeDetail}>
+      {dialog.kind === 'view' ? <><HrRecord value={dialog.value} />{module === 'leave' && dialog.id != null && <LeaveAttachments value={dialog.value} />}</> : <>
         {dialog.loading ? <p role="status">Loading {config.singular.toLowerCase()} details...</p> : <div className="space-y-3"><p role="alert" className="text-red-700">{dialog.error}</p><Button variant="secondary" onClick={() => showDetail(dialog.value, dialog.edit)}>Retry</Button></div>}
         {!dialog.edit && <div className="mt-4"><p className="mb-2 text-sm text-slate-500">Information from the list</p><HrRecord value={dialog.value} /></div>}
       </>}
@@ -642,11 +690,11 @@ export default function HrApiModule({ module }) {
         <LiveTable
           columns={columns}
           rows={visibleRows}
-          rowKey={row => recordId(row)}
+          rowKey={selectionKey}
           loading={visualLoading}
           actions={rowActions}
           selected={selected}
-          onSelect={setSelected}
+          onSelect={module === 'announcements' && !can('export') ? undefined : setSelected}
           empty={<EmptyState title={emptyTitle} description={emptyText} action={emptyAction} icon={module === 'announcements' ? 'megaphone' : 'box'} />}
           footer={paged && (state.rows.length > 0 || page > 1) ? <Pager page={page} pageSize={module === 'announcements' ? state.raw?.limit : 10} totalPages={totalPages} totalCount={totalCount} shown={state.rows.length} label={PAGER_LABELS[module] ?? 'records'} disabled={state.loading} onPage={value => { setSelected(new Set()); setPage(value) }} /> : null}
         />
@@ -659,6 +707,12 @@ export default function HrApiModule({ module }) {
 
 function HrPreview({ blob, onClose }) {
   const frame = useRef(null)
-  useEffect(() => { const objectUrl = URL.createObjectURL(blob); if (frame.current) frame.current.src = objectUrl; return () => URL.revokeObjectURL(objectUrl) }, [blob])
-  return <Modal open title="Resource preview" size="xl" onClose={onClose}><iframe ref={frame} sandbox="" title="Resource preview" className="h-[65vh] w-full" /></Modal>
+  const external = useRef(null)
+  useEffect(() => {
+    const objectUrl = URL.createObjectURL(blob)
+    if (frame.current) frame.current.src = objectUrl
+    if (external.current) external.current.href = objectUrl
+    return () => URL.revokeObjectURL(objectUrl)
+  }, [blob])
+  return <Modal open title="Resource preview" size="xl" onClose={onClose}><a ref={external} target="_blank" rel="noopener noreferrer" className="mb-3 inline-block text-sm font-semibold text-blue-600">Open document in a new tab</a><iframe ref={frame} sandbox={blob.type.split(';')[0] === 'application/pdf' ? undefined : ''} title="Resource preview" className="h-[65vh] w-full" /></Modal>
 }

@@ -35,7 +35,7 @@ export const getConversations = () =>
 // already has a conversation returns the existing conversation ("Conversation
 // ready.") instead of creating a duplicate.
 export const createConversation = (payload) =>
-  sendRequest('POST', API_ENDPOINTS.chat.conversations, () => apiClient.post(API_ENDPOINTS.chat.conversations, payload), payload)
+  sendRequest('POST', API_ENDPOINTS.chat.conversations, () => apiClient.post(API_ENDPOINTS.chat.conversations, payload, { skipAuthRedirect: 'unless-expired' }), payload)
 
 // GET /api/v1/chat/conversations/{conversationId}/messages — Swagger-confirmed
 // query params: page (default 1), pageSize (default 50).

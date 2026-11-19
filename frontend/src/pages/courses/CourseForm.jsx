@@ -10,6 +10,7 @@ import CoursesPage from "./CoursesPage";
 import CourseSyllabusImportSection from "./CourseSyllabusImportSection";
 import { validateCoursePdf } from "./coursePdf";
 import "./course-form-modal.css";
+import CoursePoster from './CoursePoster.jsx';
 
 const empty = { courseName: "", duration: "", level: "", price: "", status: true };
 const LEVELS = ["Beginner", "Intermediate", "Advanced"];
@@ -43,6 +44,9 @@ export default function CourseForm() {
   const [submitError, setSubmitError] = useState("");
   const [syllabusFile, setSyllabusFile] = useState(null);
   const [validatingPdf, setValidatingPdf] = useState(false);
+  const [posterFile, setPosterFile] = useState(null);
+  const [posterRemoved, setPosterRemoved] = useState(false);
+  const [savedPosterUrl, setSavedPosterUrl] = useState('');
 
   useEffect(() => {
     if (!editing) return;
@@ -58,13 +62,14 @@ export default function CourseForm() {
       };
       setForm(loaded);
       setInitial(loaded);
+      setSavedPosterUrl(c.posterUrl ?? c.coursePosterUrl ?? '');
     }).catch(() => toast.error("Unable to load course details."))
       .finally(() => active && setLoading(false));
     return () => { active = false; };
   }, [courseId, editing]);
 
   const busy = saving || deleting || validatingPdf;
-  const dirty = Boolean(syllabusFile) || Object.keys(empty).some((key) => String(form[key]) !== String(initial[key]));
+  const dirty = Boolean(syllabusFile || posterFile || posterRemoved) || Object.keys(empty).some((key) => String(form[key]) !== String(initial[key]));
 
   // Close with the exit animation, then leave the route.
   const leave = (destination = closeDestination) => {
@@ -100,6 +105,7 @@ export default function CourseForm() {
     savingRef.current = true;
     setSaving(true);
     setSubmitError("");
+    let stage = "course";
     try {
       const payload = {
         courseName: form.courseName.trim(),
@@ -124,11 +130,32 @@ export default function CourseForm() {
         }
         if (syllabusFile) await courseService.uploadPdf(createdIdRef.current, syllabusFile);
       }
+      // Poster goes to the saved course (a new course first needs its returned id).
+      if (posterFile || posterRemoved) {
+        stage = "poster";
+        const targetId = editing ? courseId : createdIdRef.current;
+        if (targetId == null) throw new Error("No course ID was returned. Open the course from the list to add its poster.");
+        if (posterFile) {
+          const url = await courseService.uploadPoster(targetId, posterFile);
+          setSavedPosterUrl(url);
+        } else {
+          await courseService.removePoster(targetId);
+          setSavedPosterUrl("");
+        }
+        setPosterFile(null);
+        setPosterRemoved(false);
+      }
       toast.success(editing ? "Course updated successfully." : "Course created successfully.");
       leave();
     } catch (error) {
-      const reason = error?.response?.status === 413 ? "The PDF exceeds the server upload limit." : error?.response?.data?.message || "Unable to save course or upload PDF.";
-      const message = createdIdRef.current != null ? `Course created. ${reason} Retry to finish saving this course.` : reason;
+      let message;
+      if (stage === "poster") {
+        const reason = error?.response?.status === 413 ? "The image exceeds the server upload limit." : error?.response?.data?.message || error?.message || "The poster request failed.";
+        message = `${editing ? "Course details saved" : "Course created"}, but the poster was not ${posterFile ? "saved" : "removed"}: ${reason} Retry to save the poster.`;
+      } else {
+        const reason = error?.response?.status === 413 ? "The PDF exceeds the server upload limit." : error?.response?.data?.message || "Unable to save course or upload PDF.";
+        message = createdIdRef.current != null ? `Course created. ${reason} Retry to finish saving this course.` : reason;
+      }
       setSubmitError(message);
       toast.error(message);
     } finally {
@@ -259,6 +286,7 @@ export default function CourseForm() {
                   <option value="draft">Draft</option>
                 </select>
               </Field>
+              <CoursePoster savedUrl={savedPosterUrl} file={posterFile} removed={posterRemoved} disabled={busy} onChange={(file, removed) => { setPosterFile(file); setPosterRemoved(removed); setSubmitError(''); }} />
             </div>
 
             <div className="mt-5 border-t border-[#E8EEF6] pt-4 dark:border-slate-700">

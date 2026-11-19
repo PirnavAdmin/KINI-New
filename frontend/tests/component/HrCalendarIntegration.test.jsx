@@ -19,7 +19,8 @@ const normalizeCalendar = (items, source) => normalizeResponse({ items }, source
 let records
 beforeEach(() => {
   vi.clearAllMocks(); HTMLElement.prototype.scrollTo = vi.fn(); records = [event]
-  vi.spyOn(Date, 'now').mockReturnValue(new Date('2026-10-02T08:00:00').getTime())
+  vi.useFakeTimers({ toFake: ['Date'] })
+  vi.setSystemTime(new Date('2026-10-02T08:00:00'))
   apiClient.request.mockImplementation(async request => {
     const { url, method, data } = request
     if (url === `${base}/events/42`) {
@@ -36,7 +37,7 @@ beforeEach(() => {
     return response({ items: [] })
   })
 })
-afterEach(() => { cleanup(); vi.restoreAllMocks() })
+afterEach(() => { cleanup(); vi.useRealTimers(); vi.restoreAllMocks() })
 // The fixtures are in October 2026; Month view shows them whatever today is.
 const showMonth = () => fireEvent.click(screen.getByRole('button', { name: 'Month', exact: true }))
 const upcomingList = () => document.querySelector('.hcw-upcoming')

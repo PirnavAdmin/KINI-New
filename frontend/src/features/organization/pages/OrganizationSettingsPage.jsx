@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  AlertTriangle, Bell, Building2, FileText, Globe, Settings2, ShieldCheck,
+  AlertTriangle, Bell, Building2, FileText, Globe, QrCode, Settings2, ShieldCheck,
 } from 'lucide-react'
 import usePermission from '@shared/hooks/usePermission'
 import { SETTINGS_TABS } from '@features/organization/data/settingsConstants'
@@ -14,10 +14,12 @@ import EmailTemplatesTab from '@features/organization/components/settings/EmailT
 import GeneralTab from '@features/organization/components/settings/GeneralTab'
 import RolesPermissionsTab from '@features/organization/components/settings/RolesPermissionsTab'
 import NotificationsTab from '@features/organization/components/settings/NotificationsTab'
+import PaymentsTab from '@features/organization/components/settings/PaymentsTab'
 
 const TAB_ICONS = {
   organization: Building2,
   invoice: FileText,
+  payments: QrCode,
   'email-templates': Globe,
   general: Settings2,
   roles: ShieldCheck,
@@ -28,6 +30,8 @@ const TAB_ICONS = {
 const TAB_PERMISSIONS = {
   organization: { view: 'settings', edit: 'settings.editOrganization' },
   invoice: { view: 'settings', edit: 'settings.editInvoice' },
+  // Fee collection details: the same edit right as invoice settings.
+  payments: { view: 'settings', edit: 'settings.editInvoice' },
   'email-templates': { view: 'settings', edit: 'settings.editEmail' },
   general: { view: 'settings', edit: 'settings.editGeneral' },
   roles: { view: 'roles.view', edit: 'roles.managePermissions' },
@@ -103,6 +107,8 @@ const OrganizationSettingsPage = () => {
         return <OrganizationTab {...commonProps} />
       case 'invoice':
         return <InvoiceTab {...commonProps} />
+      case 'payments':
+        return <PaymentsTab {...commonProps} />
       case 'email-templates':
         return <EmailTemplatesTab {...commonProps} />
       case 'general':

@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { ROUTES } from "@shared/constants/routeConstants";
 import { BRAND } from "../theme";
-import { KiniWordmark } from "./EnrollmentNavbar";
 
 // Real routes from src/landing/landingRoutes.jsx. Social links are left out
 // until the project has configured profile URLs.
@@ -22,7 +21,7 @@ export default function EnrollmentFooter({ isDark }) {
     >
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-5 sm:flex-row sm:px-6 lg:px-8">
         <div className="flex items-center gap-4">
-          <KiniWordmark color={isDark ? "#FFFFFF" : BRAND.primary} className="h-8 w-auto" />
+          <img src="/assets/kini-logo-transparent-cropped.png" alt="KINI — Learn. Innovate. Lead." className="h-10 w-auto shrink-0 object-contain" />
           <span className="text-xs" style={{ color: isDark ? "#94A3B8" : "#64748B" }}>
             © {new Date().getFullYear()} KINI Edutech. All rights reserved.
           </span>

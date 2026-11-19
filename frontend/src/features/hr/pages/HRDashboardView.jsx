@@ -21,7 +21,7 @@ import { normalizeLiveClassList } from '@features/live-classes/utils/liveClassMa
 import { HR_API_CONTRACT } from '../services/hrApiContract'
 import { announcementChangedEvent, loadDashboardAnnouncements } from '../services/hrAnnouncementData'
 import { dashboardError, isHrEmployee, loadDashboardList } from '../services/hrDashboardData'
-import { attendanceToday } from '../services/hrDashboardInsights'
+import { attendanceToday, onLeaveToday } from '../services/hrDashboardInsights'
 
 const E = ROUTES.EMPLOYEE
 const greetingFor = (date) => (date.getHours() < 12 ? 'Good morning' : date.getHours() < 17 ? 'Good afternoon' : 'Good evening')
@@ -103,6 +103,7 @@ export default function HRDashboardView() {
   const employees = data.employees || []
   const history = data.attendance || []
   const today = attendanceToday(history)
+  const leaveCount = onLeaveToday(history, data.leave || [])
   const count = {
     active: employees.filter(row => String(hrField(row, 'status')).toLowerCase() === 'active').length,
     mentors: employees.filter(row => /mentor|trainer/i.test(String(hrField(row, 'role', 'designation')))).length,
@@ -117,7 +118,7 @@ export default function HRDashboardView() {
     { module: 'employees', label: 'Active Employees', value: count.active, trend: share(count.active, employees.length), icon: UserCheck, tone: 'green', to: E.HR_EMPLOYEES, sub: 'Currently active' },
     { module: 'employees', label: 'Mentors', value: count.mentors, trend: share(count.mentors, employees.length), icon: GraduationCap, tone: 'purple', to: `${E.HR_EMPLOYEES}?role=Mentor`, sub: 'Teaching team' },
     { module: 'employees', label: 'HR Employees', value: count.hr, trend: share(count.hr, employees.length), icon: Users, tone: 'orange', to: E.HR_EMPLOYEES, sub: 'Human resources team' },
-    { module: 'attendance', label: 'On Leave Today', value: today.recorded ? today.onLeave : '—', trend: share(today.onLeave, today.recorded), icon: CalendarDays, tone: 'red', to: E.HR_ATTENDANCE, sub: attendanceSub ?? 'Currently on leave' },
+    { module: canModule('leave') ? 'leave' : 'attendance', label: 'On Leave Today', value: leaveCount, icon: CalendarDays, tone: 'red', to: canModule('leave') ? E.HR_LEAVE : E.HR_ATTENDANCE, sub: 'Approved leave for today' },
     { module: 'attendance', label: 'Present Today', value: today.recorded ? today.present : '—', trend: share(today.present, today.recorded), icon: UserCheck, tone: 'blue', to: E.HR_ATTENDANCE, sub: attendanceSub ?? 'Today\u2019s attendance' },
   ].filter(card => canModule(card.module))
   const now = new Date()
@@ -149,7 +150,7 @@ export default function HRDashboardView() {
     </section>
     {kpis.length > 0 && (
       <HrKpis
-        columns={6}
+        columns={3} /* 3 per row on desktop at every zoom; 2 on phones (hr-dashboard.css) */
         items={kpis.map(({ module, label, value, trend, icon, tone, to, sub }) => ({ key: label, label, value: metric(module, value), trend: errors.includes(module) || state.pending.includes(module) ? undefined : trend ?? undefined, trendDir: 'flat', icon, tone, sub: errors.includes(module) ? 'Data unavailable' : sub, onClick: () => navigate(to) }))}
       />
     )}

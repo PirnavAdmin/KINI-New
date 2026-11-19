@@ -7,6 +7,7 @@ import useStudents from "@/hooks/useStudents";
 import usePendingEnrollmentApprovals from "@/hooks/usePendingEnrollmentApprovals";
 import { getApiErrorMessage } from "@shared/services/apiServices";
 import { invoiceService } from "@shared/services/invoiceService";
+import { studentsApi } from '@/api/students';
 import StudentList from "./StudentList";
 import ApprovalQueue from "./ApprovalQueue";
 import { buildApprovalQueue } from "./studentApproval";
@@ -114,6 +115,17 @@ export default function StudentsPage() {
     setOpenedEditId(String(editTargetId));
     setForm({ open: true, student: editTarget });
   }
+  useEffect(() => {
+    if (!editTargetId || loading || openedEditId === String(editTargetId) || editTarget) return;
+    let active = true;
+    studentsApi.getById(editTargetId).then(({ data }) => {
+      if (!active) return;
+      if (String(data.studentId ?? data.id) !== String(editTargetId)) throw new Error('Student record could not be verified.');
+      setOpenedEditId(String(editTargetId));
+      setForm({ open: true, student: data });
+    }).catch(error => { if (active) setToast(getApiErrorMessage(error, 'Unable to open this student for editing.')); });
+    return () => { active = false; };
+  }, [editTargetId, loading, openedEditId, editTarget]);
   // /organization/students/:studentId/assign used to open the old in-page
   // profile; it now goes to the canonical profile page.
   useEffect(() => {

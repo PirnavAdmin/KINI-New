@@ -1,4 +1,5 @@
 import { hrField, hrList } from './hrApi'
+import { studentStatusOf } from '@shared/utils/studentStatus'
 
 // Read every page: a summary must never count just the ten visible rows.
 async function readHrStudentRoster(api, params, signal) {
@@ -14,7 +15,7 @@ async function readHrStudentRoster(api, params, signal) {
       if (id == null) throw new Error('Student identifier missing')
       if (seen.has(String(id))) continue
       seen.add(String(id))
-      students.push(row)
+      students.push({ ...row, status: studentStatusOf(row, 'Active') })
       added++
     }
     const total = hrField(result, 'totalCount', 'totalRecords', 'total')
@@ -55,7 +56,7 @@ export async function loadHrStudentRoster(api, params = {}, signal) {
 export function summarizeHrStudents(students) {
   const counts = { totalStudents: students.length, activeStudents: 0, pendingStudents: 0, inactiveStudents: 0, completedStudents: 0, otherStudents: 0 }
   for (const student of students) {
-    const status = String(hrField(student, 'status') ?? '').trim().toLowerCase().replace(/[_-]+/g, ' ').replace(/\s+/g, ' ')
+    const status = studentStatusOf(student).toLowerCase()
     const category = status === 'active' ? 'activeStudents'
       : ['pending', 'pending approval', 'awaiting approval'].includes(status) ? 'pendingStudents'
       : ['inactive', 'disabled'].includes(status) ? 'inactiveStudents'

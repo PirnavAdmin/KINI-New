@@ -1,8 +1,9 @@
 import { AssistantProvider } from "../contexts/AssistantContext";
 import { useKiniAssistantState } from "../hooks/useKiniAssistant";
 import ChatWindow from "./ChatWindow";
+import { useAuth } from '@shared/hooks/useAuth';
 
-export default function KiniAssistant() {
+function AssistantSession() {
   const assistant = useKiniAssistantState();
 
   return (
@@ -10,4 +11,10 @@ export default function KiniAssistant() {
       <ChatWindow />
     </AssistantProvider>
   );
+}
+
+export default function KiniAssistant() {
+  const { user, role, isAuthenticated, loading } = useAuth();
+  const identity = isAuthenticated && !loading ? `${role}:${user?.userId ?? user?.id ?? user?.email}` : 'guest';
+  return <AssistantSession key={identity} />;
 }

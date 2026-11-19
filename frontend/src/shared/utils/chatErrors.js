@@ -21,6 +21,9 @@ export const chatErrorMessage = (error, fallback = "Something went wrong. Please
     case 400:
       return backendMessage || "That request wasn't valid. Please check and try again.";
     case 401:
+      if (error?.config?.skipAuthRedirect === 'unless-expired') {
+        return backendMessage || "Unable to start this conversation. Please check your mentor assignment or try again.";
+      }
       return "Your session has expired. Please sign in again.";
     case 403:
       return backendMessage || "You don't have permission to do that.";

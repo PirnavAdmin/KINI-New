@@ -27,17 +27,17 @@ const loaded = () => screen.findByText('Existing enrollment', { selector: 'span'
 
 it("loads and locks actual existing assignments, then disables React in a new row by ID", async () => {
   open(); await loaded();
-  expect(screen.getByLabelText(/^Course/)).toBeDisabled();
-  expect(screen.getByLabelText(/^Batch/)).toHaveValue("20");
+  expect(screen.queryByRole("combobox", { name: /^Course/ })).not.toBeInTheDocument();
+  expect(screen.getByText("React Morning")).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Save Changes" })).toBeDisabled();
   fireEvent.click(screen.getByRole("button", { name: "Add another course" }));
   const selects = screen.getAllByLabelText(/^Course/);
-  expect(within(selects[1]).getByRole("option", { name: /reACT.*Already Enrolled/ })).toBeDisabled();
-  fireEvent.change(selects[1], { target: { value: "3" } });
+  expect(within(selects[0]).getByRole("option", { name: /reACT.*Already Enrolled/ })).toBeDisabled();
+  fireEvent.change(selects[0], { target: { value: "3" } });
   const batches = screen.getAllByLabelText(/^Batch/);
-  expect(within(batches[1]).getByRole("option", { name: /Python Evening/ })).toBeInTheDocument();
-  expect(within(batches[1]).queryByRole("option", { name: /React Morning/ })).not.toBeInTheDocument();
-  fireEvent.change(batches[1], { target: { value: "30" } });
+  expect(within(batches[0]).getByRole("option", { name: /Python Evening/ })).toBeInTheDocument();
+  expect(within(batches[0]).queryByRole("option", { name: /React Morning/ })).not.toBeInTheDocument();
+  fireEvent.change(batches[0], { target: { value: "30" } });
   await waitFor(() => expect(screen.getByRole("button", { name: "Save Changes" })).toBeEnabled());
   fireEvent.click(screen.getByRole("button", { name: "Save Changes" }));
   await waitFor(() => expect(onClose).toHaveBeenCalledOnce());
@@ -49,7 +49,7 @@ it("loads and locks actual existing assignments, then disables React in a new ro
 it("prepopulates all enrolled courses instead of only the primary course", async () => {
   enrollments.push({ courseId: 3, batchId: 30 });
   open(); await screen.findByText("All available courses are already assigned.");
-  expect(screen.getAllByLabelText(/^Course/).map(select => select.value)).toEqual(["2", "3"]);
+  expect(screen.queryByRole("combobox", { name: /^Course/ })).not.toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Add another course" })).toBeDisabled();
   expect(screen.queryByRole("button", { name: /Remove course/ })).not.toBeInTheDocument();
 });
@@ -81,7 +81,7 @@ it("retains assignments and entered details after an update API error", async ()
   fireEvent.click(screen.getByRole("button", { name: "Save Changes" }));
   await screen.findByText("Update service unavailable");
   expect(screen.getByLabelText(/^Last Name/)).toHaveValue("Changed");
-  expect(screen.getByLabelText(/^Course/)).toHaveValue("2");
+  expect(screen.getByText("React")).toBeInTheDocument();
   expect(onClose).not.toHaveBeenCalled();
 });
 
@@ -89,7 +89,7 @@ it("preserves an existing assignment and permits detail edits when its course is
   courseService.getCourses.mockResolvedValue({ data: [] });
   batchService.getOrganizationBatches.mockResolvedValue({ data: [] });
   open(); await loaded();
-  expect(screen.getByLabelText(/^Course/)).toHaveValue("2");
+  expect(screen.getByText("React")).toBeInTheDocument();
   expect(screen.getByRole("button", { name: "Add another course" })).toBeDisabled();
   fireEvent.change(screen.getByLabelText(/^Last Name/), { target: { value: "Changed" } });
   await waitFor(() => expect(screen.getByRole("button", { name: "Save Changes" })).toBeEnabled());
@@ -108,6 +108,6 @@ it("disables saving when required personal details are missing", async () => {
 it("includes additional memberships reported by batch rosters when the student enrollment response omits them", async () => {
   batchService.getStudents.mockImplementation(async batchId => ({ students: batchId === 30 ? [{ studentId: 7, batchId: 20 }] : [], capacity: 25 }));
   open(); await screen.findByText("All available courses are already assigned.");
-  expect(screen.getAllByLabelText(/^Course/).map(select => select.value)).toEqual(["2", "3"]);
-  expect(screen.getAllByLabelText(/^Batch/).map(select => select.value)).toEqual(["20", "30"]);
+  expect(screen.queryByRole("combobox", { name: /^Course/ })).not.toBeInTheDocument();
+  expect(screen.queryByRole("combobox", { name: /^Batch/ })).not.toBeInTheDocument();
 });

@@ -31,6 +31,11 @@ export const invoiceService = {
     responseType: 'blob',
     headers: { Accept: 'application/pdf' },
   }).then(pdfFromResponse),
+  /** Invoice PDF for the signed-in student's own verified UPI payment. */
+  downloadUpiPaymentPdf: (paymentId) => apiClient.get(API_ENDPOINTS.upi.studentPaymentInvoice(paymentId), {
+    responseType: 'blob',
+    headers: { Accept: 'application/pdf' },
+  }).then(pdfFromResponse),
   sendEmail: (invoiceId, payload = {}) => apiClient
     .post(API_ENDPOINTS.invoices.sendEmail(invoiceId), payload)
     .then(getPayload),

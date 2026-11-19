@@ -8,13 +8,14 @@ export default function ChatInput({
   onKeyDown,
   isSending,
   textareaRef,
+  isPublic = false,
 }) {
   return (
     <div className="border-t border-slate-200 bg-white/95 px-3 py-3 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/95 sm:px-4">
       <div className="mb-2 flex items-center justify-between gap-3 px-1 text-[11px] text-slate-400 dark:text-slate-500">
         <span className="inline-flex items-center gap-1.5">
           <Sparkles className="h-3.5 w-3.5 text-[#5CA347]" />
-          Ask anything about your learning, courses, assessments, mentors, placements, and more.
+          {isPublic ? 'Ask about courses, enrollment, or contacting Kini EduHub.' : 'Ask about your learning, courses, assessments, mentors, and more.'}
         </span>
         <span className="hidden rounded-full border border-slate-200 bg-slate-50 px-2 py-1 font-medium text-slate-500 dark:border-slate-800 dark:bg-slate-900 sm:inline-flex">
           Enter to send
@@ -55,7 +56,7 @@ export default function ChatInput({
             onChange={(event) => onInputChange(event.target.value)}
             onKeyDown={onKeyDown}
             rows={1}
-            placeholder="Ask anything about your learning..."
+            placeholder={isPublic ? 'Ask about courses or enrollment...' : 'Ask anything about your learning...'}
             className="max-h-36 w-full resize-none border-0 bg-transparent px-2 py-2 text-[15px] leading-6 text-slate-900 outline-none placeholder:text-slate-400 dark:text-white"
           />
         </div>
@@ -65,7 +66,7 @@ export default function ChatInput({
           onClick={onSubmit}
           disabled={!input.trim() || isSending}
           aria-label="Send message"
-          className="grid h-12 w-12 shrink-0 place-items-center rounded-[1.1rem] bg-gradient-to-br from-[#085FA7] to-[#5CA347] text-white shadow-[0_14px_30px_rgba(8,95,167,0.22)] transition hover:scale-[1.02] hover:shadow-[0_16px_36px_rgba(8,95,167,0.28)] disabled:cursor-not-allowed disabled:scale-100 disabled:opacity-40"
+          className="grid h-12 w-12 shrink-0 place-items-center rounded-[1.1rem] bg-gradient-to-br from-[#143A5B] to-[#FF981B] text-white shadow-[0_14px_30px_rgba(8,95,167,0.22)] transition hover:scale-[1.02] hover:shadow-[0_16px_36px_rgba(8,95,167,0.28)] disabled:cursor-not-allowed disabled:scale-100 disabled:opacity-40"
         >
           <Send className="h-4.5 w-4.5" />
         </button>

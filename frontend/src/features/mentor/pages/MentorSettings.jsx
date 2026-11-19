@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { User, Bell, Shield, Palette, Save, RotateCcw, Key, Settings } from 'lucide-react'
+import { User, Bell, Shield, Palette, Save, RotateCcw, Key, Settings, Eye, EyeOff } from 'lucide-react'
 import toast from 'react-hot-toast'
 import MentorPageHeader from '../components/MentorPageHeader'
 import { SettingsArt } from '../components/MentorHeroArt'
@@ -9,12 +9,13 @@ export default function MentorSettings() {
   const [activeTab, setActiveTab] = useState('profile')
   const [saving, setSaving] = useState(false)
   const [passwordModal, setPasswordModal] = useState(false)
+  const [visiblePasswords, setVisiblePasswords] = useState({})
   const [passwordForm, setPasswordForm] = useState({ current: '', newPass: '', confirm: '' })
   const [profileForm, setProfileForm] = useState({
     firstName: 'Mentor',
     lastName: 'User',
     email: 'mentor@kinieduhub.io',
-    phone: '+1 (555) 123-4567',
+    phone: '',
     bio: 'Experienced mentor passionate about helping students master full-stack development and data science.',
   })
   const [notificationPrefs, setNotificationPrefs] = useState({
@@ -38,6 +39,12 @@ export default function MentorSettings() {
   ]
 
   const handleSaveProfile = async () => {
+    if (!/^[\p{L}][\p{L}\p{M}\s'.-]*$/u.test(profileForm.firstName.trim())) {
+      toast.error('First name must contain letters only'); return
+    }
+    if (profileForm.phone && !/^[6-9]\d{9}$/.test(profileForm.phone)) {
+      toast.error('Phone number must be 10 digits and start with 6, 7, 8, or 9'); return
+    }
     if (!profileForm.firstName.trim() || !profileForm.email.trim()) {
       toast.error('First name and email are required')
       return
@@ -57,7 +64,7 @@ export default function MentorSettings() {
       firstName: 'Mentor',
       lastName: 'User',
       email: 'mentor@kinieduhub.io',
-      phone: '+1 (555) 123-4567',
+      phone: '',
       bio: 'Experienced mentor passionate about helping students master full-stack development and data science.',
     })
     toast.success('Profile reset to defaults')
@@ -70,8 +77,9 @@ export default function MentorSettings() {
   const handleChangePassword = async () => {
     if (!passwordForm.current) { toast.error('Current password is required'); return }
     if (!passwordForm.newPass) { toast.error('New password is required'); return }
-    if (passwordForm.newPass.length < 6) { toast.error('Password must be at least 6 characters'); return }
-    if (passwordForm.newPass !== passwordForm.confirm) { toast.error('Passwords do not match'); return }
+    if (passwordForm.newPass.length < 6) { toast.error('New password must be at least 6 characters'); return }
+    if (!passwordForm.confirm) { toast.error('Confirm new password is required'); return }
+    if (passwordForm.newPass !== passwordForm.confirm) { toast.error('Confirm new password does not match the new password'); return }
     setSaving(true)
     await new Promise(r => setTimeout(r, 500))
     toast.success('Password updated successfully')
@@ -136,8 +144,8 @@ export default function MentorSettings() {
                   ].map((field) => (
                     <div key={field.key}>
                       <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">{field.label}</label>
-                      <input type={field.type} value={profileForm[field.key]}
-                        onChange={(e) => setProfileForm(p => ({ ...p, [field.key]: e.target.value }))}
+                      <input aria-label={field.label} type={field.type} value={profileForm[field.key]} maxLength={field.key === 'phone' ? 10 : undefined} inputMode={field.key === 'phone' ? 'numeric' : undefined}
+                        onChange={(e) => { const value = e.target.value; if (field.key === 'firstName' && /[^\p{L}\p{M}\s'.-]/u.test(value)) return; if (field.key === 'phone' && !/^\d{0,10}$/.test(value)) return; setProfileForm(p => ({ ...p, [field.key]: value })); }}
                         className="w-full px-3 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#F39924]/25 focus:border-[#F39924] transition-all" />
                     </div>
                   ))}
@@ -209,9 +217,12 @@ export default function MentorSettings() {
                   ].map((field) => (
                     <div key={field.key}>
                       <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">{field.label}</label>
-                      <input type={field.type} value={passwordForm[field.key]} placeholder="••••••••"
+                      <div className="relative">
+                      <input aria-label={field.label} type={visiblePasswords[field.key] ? 'text' : 'password'} value={passwordForm[field.key]} placeholder="••••••••"
                         onChange={(e) => setPasswordForm(p => ({ ...p, [field.key]: e.target.value }))}
-                        className="w-full px-3 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#F39924]/25 focus:border-[#F39924] transition-all" />
+                        className="w-full pl-3 pr-12 py-2.5 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#F39924]/25 focus:border-[#F39924] transition-all" />
+                      <button type="button" aria-label={`${visiblePasswords[field.key] ? 'Hide' : 'Show'} ${field.label.toLowerCase()}`} aria-pressed={Boolean(visiblePasswords[field.key])} onClick={() => setVisiblePasswords(p => ({ ...p, [field.key]: !p[field.key] }))} className="absolute right-3 top-3 text-slate-500">{visiblePasswords[field.key] ? <EyeOff size={18} /> : <Eye size={18} />}</button>
+                      </div>
                     </div>
                   ))}
                 </div>

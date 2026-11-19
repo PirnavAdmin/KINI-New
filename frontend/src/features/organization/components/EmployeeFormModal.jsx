@@ -1,6 +1,7 @@
 import { personNameError } from "@shared/utils/personName";
 import { useState } from "react";
-import { Loader2, Mail, Phone, Plus, Users } from "lucide-react";
+import { CalendarDays, Loader2, Mail, Phone, Plus, Users } from "lucide-react";
+import { employeeJoiningDate, joiningDateError } from '@shared/utils/employeeJoiningDate';
 import toast from "react-hot-toast";
 import Modal from "@shared/components/Modal";
 import { Button, Input, Select } from "@shared/components/FormElements";
@@ -17,6 +18,7 @@ const EMPTY_FORM = {
   role: "",
   employmentType: "Full-time",
   status: "active",
+  joiningDate: "",
 };
 const ROLE_OPTIONS = [
   { value: "mentor", label: "Mentor" },
@@ -62,6 +64,7 @@ export default function EmployeeFormModal({ open, onClose, onCreated }) {
     if (!/^[6-9]\d{9}$/.test(form.phone)) next.phone = "Enter a valid Indian mobile number starting with 6, 7, 8, or 9";
     if (!form.role) next.role = "Role is required";
     if (!form.employmentType) next.employmentType = "Employment type is required";
+    if (joiningDateError(form.joiningDate)) next.joiningDate = joiningDateError(form.joiningDate);
     setErrors(next);
     if (Object.keys(next).length) return;
 
@@ -70,6 +73,7 @@ export default function EmployeeFormModal({ open, onClose, onCreated }) {
       const isHrRole = String(form.role).toLowerCase() === "hr";
       await employeeService.createEmployee({
         ...form,
+        joiningDate: employeeJoiningDate(form.joiningDate),
         firstName: form.firstName.trim(),
         lastName: form.lastName.trim(),
         email: form.email.trim().toLowerCase(),
@@ -137,6 +141,7 @@ export default function EmployeeFormModal({ open, onClose, onCreated }) {
         </p>
         <Select label="Employment Type" required value={form.employmentType} onChange={(e) => change("employmentType", e.target.value)} options={EMPLOYMENT_TYPE_OPTIONS} error={errors.employmentType} />
         <Select label="Status" required value={form.status} onChange={(e) => change("status", e.target.value)} options={[{ value: "active", label: "Active" }, { value: "inactive", label: "Inactive" }]} />
+        <Input label="Joining Date" aria-label="Joining Date" type="date" icon={CalendarDays} value={form.joiningDate} onChange={e => change('joiningDate', e.target.value)} error={errors.joiningDate} />
         {errors.form && <p role="alert" className="text-sm font-semibold text-red-600 md:col-span-2">{errors.form}</p>}
       </div>
     </Modal>

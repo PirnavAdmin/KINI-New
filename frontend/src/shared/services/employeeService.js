@@ -1,19 +1,19 @@
 import apiClient from './apiClient'
 import { extractApiData, logApiError, logApiRequest, logApiSuccess, withPagedResponse } from './apiModuleHelpers'
 import { API_ENDPOINTS } from '@/api/endpoints'
-import { normalizeEmploymentType } from '@shared/utils/employeePresentation'
+import { matchesEmployeeSearch, normalizeEmploymentType } from '@shared/utils/employeePresentation'
+export { matchesEmployeeSearch }
 
 const EMPLOYEE_ENDPOINT = API_ENDPOINTS.organization.employees
 const normalize = (value) => String(value ?? '').trim().toLowerCase()
 const isMentorRole = (role) => ['mentor', 'tutor'].includes(normalize(role))
 
-export function matchesEmployeeSearch(employee, search) {
-  const term = normalize(search).replace(/\s+/g, ' ')
-  if (!term) return true
-  const fields = [employee.fullName, employee.name, [employee.firstName, employee.lastName].filter(Boolean).join(' '), employee.email, employee.phone, employee.phoneNumber, employee.mobile, employee.designation, employee.role, employee.roleName, employee.employeeCode, employee.employeeId]
-  if (fields.some(value => normalize(value).replace(/\s+/g, ' ').includes(term))) return true
-  const digits = term.replace(/\D/g, '')
-  return /^[+\d\s()-]+$/.test(term) && digits.length > 0 && [employee.phone, employee.phoneNumber, employee.mobile].some(value => String(value ?? '').replace(/\D/g, '').includes(digits))
+export function sortEmployees(rows, field = 'FirstName', descending = false) {
+  const key = Object.keys(rows[0] ?? {}).find(key => key.toLowerCase() === String(field).toLowerCase()) ?? field.charAt(0).toLowerCase() + field.slice(1)
+  return [...rows].sort((a, b) => {
+    const value = row => key === 'firstName' ? [row.firstName, row.lastName].filter(Boolean).join(' ') || row.fullName || row.name || '' : row[key] ?? ''
+    return String(value(a)).localeCompare(String(value(b)), 'en', { sensitivity: 'base', numeric: true }) * (descending ? -1 : 1)
+  })
 }
 
 const buildParams = (params = {}) => ({
@@ -74,7 +74,7 @@ export const employeeService = {
   },
   getEmployees: async (params = {}) => {
     const query = buildParams(params)
-    if (String(query.Search ?? '').trim()) {
+    if (String(query.Search ?? '').trim() || params.sortBy != null || params.SortBy != null) {
       // Server search does not consistently cover the fields displayed in
       // the list. Search the complete organization roster before paginating.
       const fetchPage = async page => {
@@ -85,7 +85,8 @@ export const employeeService = {
       const rows = [...first.data]
       const pages = Number(first.totalRecords) <= rows.length ? 1 : Math.max(Number(first.totalPages) || 1, Math.ceil((Number(first.totalRecords) || 0) / (Number(first.pageSize) || 1000)))
       for (let page = 2; page <= pages; page++) rows.push(...(await fetchPage(page)).data)
-      const matches = rows.filter(employee => matchesEmployeeSearch(employee, query.Search))
+      const unique = [...new Map(rows.map(row => [String(row.employeeId ?? row.id ?? row.email), row])).values()]
+      const matches = sortEmployees(unique.filter(employee => matchesEmployeeSearch(employee, query.Search)), query.SortBy, query.IsDescending)
       const size = Math.max(1, Number(query.PageSize) || 10)
       const totalPages = Math.max(1, Math.ceil(matches.length / size))
       const page = Math.min(Math.max(1, Number(query.PageNumber) || 1), totalPages)

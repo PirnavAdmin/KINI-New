@@ -1,6 +1,7 @@
 import apiClient from '@shared/services/apiClient'
 import { getApiErrorMessage, getListPayload, getPayload } from '@shared/services/apiServices'
 import { API_ENDPOINTS } from './endpoints'
+import { studentStatusOf } from '@shared/utils/studentStatus'
 
 const endpoint = API_ENDPOINTS.organization.students
 const DEFAULT_LIST_PARAMS = { pageNumber: 1, pageSize: 1000 }
@@ -72,9 +73,18 @@ const normalize = (student = {}) => ({
     ?? [student.mentor?.firstName, student.mentor?.lastName].filter(Boolean).join(' '),
   attendance: toOptionalPercentage(student.attendance),
   assessmentsCleared: Number(student.assessmentsCleared ?? 0),
-  status: student.status || 'Active',
+  status: studentStatusOf(student, 'Active'),
   registrationDate: student.registrationDate ?? student.enrollmentDate ?? student.enrolledAt ?? student.enrolledOn ?? student.createdAt ?? student.createdDate ?? '',
-  country: student.countryName ?? student.country?.name ?? student.country ?? student.address?.country ?? '',
+  country: student.countryName ?? student.country?.countryName ?? student.country?.name
+    ?? (typeof student.country === 'string' ? student.country : null)
+    ?? student.address?.countryName ?? student.address?.country?.name ?? student.address?.country ?? '',
+  address: typeof student.address === 'string' ? student.address : student.fullAddress ?? student.addressLine
+    ?? [...new Set([
+      student.address?.addressLine1 ?? student.address?.line1 ?? student.addressLine1 ?? student.streetAddress,
+      student.address?.addressLine2 ?? student.address?.line2 ?? student.addressLine2,
+      student.address?.city ?? student.city, student.address?.state ?? student.state,
+      student.address?.postalCode ?? student.address?.pincode ?? student.postalCode ?? student.pinCode ?? student.pincode,
+    ].filter(value => typeof value === 'string' && value.trim()))].join(', '),
   paymentStatus: student.paymentStatus ?? student.payment?.status ?? '',
 })
 
@@ -129,9 +139,29 @@ export const studentsApi = {
       throw new Error('Enter a valid Indian mobile number starting with 6, 7, 8, or 9.')
     }
     payload.phone = payload.phone.replace(/\D/g, '')
-    return { data: unwrapStudentResponse(await apiClient.put(`${endpoint}/${encodeURIComponent(id)}`, payload)) }
+    const response = await apiClient.put(`${endpoint}/${encodeURIComponent(id)}`, payload)
+    const saved = unwrapStudentResponse(response)
+    return { data: normalize({ ...student, ...saved, id: saved.id ?? id, studentId: saved.studentId ?? id,
+      firstName: saved.firstName ?? payload.firstName, lastName: saved.lastName ?? payload.lastName,
+      email: saved.email ?? payload.email, phone: saved.phone || payload.phone,
+      courseId: saved.courseId ?? payload.courseId, batchId: saved.batchId ?? payload.batchId }) }
   },
   remove: async (id) => ({ data: getPayload(await apiClient.delete(`${endpoint}/${encodeURIComponent(id)}`)) }),
+  updateStatus: async (id, status) => {
+    const response = await apiClient.patch(`/api/students/${encodeURIComponent(id)}/status`, { status })
+    const raw = response?.data
+    if (raw?.success === false || raw?.Success === false || raw?.data?.success === false) {
+      throw new Error(raw?.data?.message ?? raw?.message ?? raw?.Message ?? 'Unable to update student status.')
+    }
+    // Re-read the organization record so an ignored update cannot be reported
+    // as saved or masked by a local status override.
+    const saved = await studentsApi.getById(id, { skipAuthRedirect: true })
+    if (studentStatusOf(saved.data).toLowerCase() !== String(status).trim().toLowerCase()) {
+      throw new Error('The backend did not save the requested student status. Please retry.')
+    }
+    window.dispatchEvent(new CustomEvent('kini:student-updated', { detail: { studentId: id } }))
+    return saved
+  },
   // Verified against Swagger: UpdateStudentDto has no status field.
   deactivate: async (id) => ({
     data: unwrapStudentResponse(await apiClient.patch('/api/students/' + encodeURIComponent(id) + '/status', { status: 'Inactive' })),

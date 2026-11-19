@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useAuth } from "@shared/hooks/useAuth";
+import { useLocation } from 'react-router-dom';
+import { isHrModuleUser } from '@features/hr/constants/hrPermissions';
+import usePermission from '@shared/hooks/usePermission';
 import { buildSmartActions, detectIntent } from "../services/intentEngine";
 import { getAssistantGreeting, getQuickPrompts, sendAssistantQuery } from "../services/assistantApi";
 
-const STORAGE_PREFIX = "pirnav:kini-assistant:v4";
+const STORAGE_PREFIX = "pirnav:kini-assistant:v5";
 const MAX_SAVED_MESSAGES = 20;
 
 const createId = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -45,7 +48,13 @@ const readMessages = ({ storageKey, role, isAuthenticated }) => {
 };
 
 export const useKiniAssistantState = () => {
-  const { user, role, isAuthenticated } = useAuth();
+  const auth = useAuth();
+  const isAuthenticated = Boolean(auth.isAuthenticated && !auth.loading && auth.user);
+  const user = isAuthenticated ? auth.user : null;
+  const role = isAuthenticated ? auth.role === 'employee' && isHrModuleUser(user) ? 'hr' : auth.role || 'guest' : 'guest';
+  const location = useLocation();
+  const { hasPermission } = usePermission();
+  const enrollmentCourseId = location.pathname === '/enrollment' ? new URLSearchParams(location.search).get('courseId') : null;
   const storageKey = useMemo(() => {
     const identity = user?.userId ?? user?.id ?? user?.email ?? "guest";
     return `${STORAGE_PREFIX}:${role || "guest"}:${encodeURIComponent(String(identity))}`;
@@ -126,6 +135,7 @@ export const useKiniAssistantState = () => {
         role,
         isAuthenticated,
         messages: conversationHistory,
+        enrollmentCourseId,
       });
 
       setLastContext(response.context);
@@ -154,7 +164,7 @@ export const useKiniAssistantState = () => {
     } finally {
       setIsSending(false);
     }
-  }, [appendMessage, careerGoal, input, isSending, isAuthenticated, messages, replaceMessage, role, user]);
+  }, [appendMessage, careerGoal, input, isSending, isAuthenticated, messages, replaceMessage, role, user, enrollmentCourseId]);
 
   const retryMessage = useCallback((message) => {
     if (message?.prompt) sendMessage(message.prompt);
@@ -166,8 +176,16 @@ export const useKiniAssistantState = () => {
     );
   }, []);
 
-  const quickPrompts = useMemo(() => getQuickPrompts(role), [role]);
-  const suggestedActions = useMemo(() => buildSmartActions(role, input), [input, role]);
+  const allowedPrompt = useCallback(prompt => {
+    const module = /employees/i.test(prompt) ? 'employees' : /assessments/i.test(prompt) ? 'assessments' : /reports/i.test(prompt) ? 'reports' : /leave/i.test(prompt) ? 'leave' : /attendance/i.test(prompt) ? 'attendance' : null;
+    return !module || role === 'guest' || hasPermission(module);
+  }, [role, hasPermission]);
+  const quickPrompts = useMemo(() => enrollmentCourseId
+    ? ['What is this course fee?', 'What information do I need to enroll?', 'What happens after I apply?', 'Can I talk to an advisor?']
+    : getQuickPrompts(role).filter(allowedPrompt), [role, allowedPrompt, enrollmentCourseId]);
+  const suggestedActions = useMemo(() => enrollmentCourseId
+    ? ['What is this course fee?', 'What information do I need to enroll?', 'What happens after I apply?', 'Can I talk to an advisor?'].map(label => ({ label, prompt: label }))
+    : buildSmartActions(role, input).filter(action => allowedPrompt(action.prompt)), [input, role, enrollmentCourseId, allowedPrompt]);
   const intent = useMemo(() => detectIntent(input), [input]);
 
   return {

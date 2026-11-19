@@ -9,4 +9,7 @@
     public string NewPassword { get; set; } = string.Empty;
 
     public string ConfirmPassword { get; set; } = string.Empty;
+
+    // Reset-only token returned by verify-otp. When present, OtpType/Otp are not used.
+    public string? ResetToken { get; set; }
 }

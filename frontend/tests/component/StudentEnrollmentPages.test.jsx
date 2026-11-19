@@ -1,10 +1,11 @@
-import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
+import { cleanup, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import StudentMyBatch from '../../src/features/student/pages/StudentMyBatch';
 import StudentCourses from '../../src/pages/student/courses/StudentCourses';
 import { normalizeStudentEnrollments } from '../../src/features/student/utils/studentEnrollments';
 import { buildStudentClassScope, partitionClassesByScope } from '../../src/features/student/utils/studentClassAccess';
+import { batchService } from '@shared/services/batchService';
 
 // My Courses and My Batch both read GET /api/v1/student/courses (token-scoped).
 // Its live body is { success, message, studentId, studentName, courses: [...] }.
@@ -41,6 +42,27 @@ beforeEach(() => {
 afterEach(() => cleanup());
 
 describe('Student enrollments on My Batch and My Courses', () => {
+  it('keeps mentor chat accessible when the batch response omits mentor details', async () => {
+    mocks.get.mockResolvedValue(body([{ ...JAVA, mentorId: null, mentorName: '' }]));
+    function LocationProbe() { return <span data-testid="route">{useLocation().pathname}</span>; }
+    render(<MemoryRouter><StudentMyBatch /><LocationProbe /></MemoryRouter>);
+    fireEvent.click(await screen.findByRole('button', { name: 'Chat with Mentor' }));
+    expect(screen.getByTestId('route')).toHaveTextContent('/student/mentor-chat');
+  });
+  it('counts unique eligible roster students instead of stale batch aggregates', async () => {
+    mocks.get.mockResolvedValue(body([{ ...JAVA, enrolledStudents: 99 }]));
+    batchService.getById.mockResolvedValueOnce({ batchId: 1, enrolledStudents: 88, capacity: 20 });
+    batchService.getStudents.mockResolvedValueOnce({ students: [
+      { studentId: 1, status: 'Active' },
+      { studentId: 1, status: 'Active' },
+      { studentId: 2, status: 'Rejected' },
+      { studentId: 3, status: 'Active' },
+    ], enrolledStudents: 4 });
+    renderPage(StudentMyBatch);
+    expect(await screen.findByText('2 Students')).toBeInTheDocument();
+    expect(screen.getByText('10%')).toBeInTheDocument();
+    expect(screen.queryByText('99 Students')).not.toBeInTheDocument();
+  });
   it('requests the token-scoped endpoint without any student id', async () => {
     mocks.get.mockResolvedValue(body([JAVA]));
     renderPage(StudentMyBatch);

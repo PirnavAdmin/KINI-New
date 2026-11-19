@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import toast from 'react-hot-toast';
+import { triggerFileDownload } from '@shared/utils/download';
 import {
   ArrowRight,
   ArrowUpDown,
@@ -56,6 +58,15 @@ function MentorAttendanceContent() {
   const [recordSearch, setRecordSearch] = useState("");
   const [sort, setSort] = useState({ key: "date", dir: "asc" });
   const [filterOpen, setFilterOpen] = useState(false);
+  const filterRef = useRef(null);
+  useEffect(() => {
+    if (!filterOpen) return;
+    const closeOutside = event => { if (!filterRef.current?.contains(event.target)) setFilterOpen(false); };
+    const closeEscape = event => { if (event.key === 'Escape') { setFilterOpen(false); filterRef.current?.querySelector('button')?.focus(); } };
+    document.addEventListener('pointerdown', closeOutside);
+    document.addEventListener('keydown', closeEscape);
+    return () => { document.removeEventListener('pointerdown', closeOutside); document.removeEventListener('keydown', closeEscape); };
+  }, [filterOpen]);
   const [page, setPage] = useState(1);
   const [history, setHistory] = useState(() => mentorWorkAttendance.getHistory());
   const [error, setError] = useState("");
@@ -265,12 +276,12 @@ function MentorAttendanceContent() {
       item.minutes == null ? "-" : formatDuration(item.minutes), item.statusLabel,
     ]);
     const csv = [header, ...lines].map((cells) => cells.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("\n");
-    const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `attendance-${dateKey(selectedRange.start)}-to-${dateKey(selectedRange.end)}.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
+    try {
+      triggerFileDownload(new Blob([csv], { type: 'text/csv;charset=utf-8' }), `attendance-${dateKey(selectedRange.start)}-to-${dateKey(selectedRange.end)}.csv`);
+      toast.success('Attendance export download started.');
+    } catch {
+      toast.error('Unable to export attendance. Please try again.');
+    }
   };
 
   const submitAttendance = async (action) => {
@@ -282,6 +293,7 @@ function MentorAttendanceContent() {
       if (action === "checkIn") await mentorWorkAttendance.checkIn(attendanceIdentity);
       else await mentorWorkAttendance.checkOut(attendanceIdentity);
       setHistory(mentorWorkAttendance.getHistory());
+      toast.success(action === 'checkIn' ? 'Checked in successfully.' : 'Checked out successfully.');
   } catch (requestError) {
     setHistory(mentorWorkAttendance.getHistory());
     setError(describeAttendanceError(requestError, attendanceIdentity, action === "checkIn" ? "Unable to check in." : "Unable to check out."));
@@ -443,7 +455,7 @@ function MentorAttendanceContent() {
                 aria-label="Search attendance records"
               />
             </label>
-            <div className="mv17-menu-wrap">
+            <div className="mv17-menu-wrap" ref={filterRef}>
               <button type="button" className={`mv17-tool-btn ${statusFilter !== "All" ? "is-active" : ""}`} aria-expanded={filterOpen} onClick={() => setFilterOpen((open) => !open)}>
                 <Filter aria-hidden="true" />
                 {statusFilter === "All" ? "Filter" : statusFilter}

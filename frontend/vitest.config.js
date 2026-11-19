@@ -16,6 +16,7 @@ export default defineConfig({
       "@shared": path.resolve(__dirname, "./src/shared"),
       "@styles": path.resolve(__dirname, "./src/styles"),
       "@assets": path.resolve(__dirname, "./src/assets"),
+      "@landing-shared": path.resolve(__dirname, "./src/landing/shared"),
     },
   },
   test: {

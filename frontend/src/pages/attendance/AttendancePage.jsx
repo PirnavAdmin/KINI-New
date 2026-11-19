@@ -404,7 +404,7 @@ function EmployeeAttendanceView() {
     ["Mani Teja", "HR", "09:18 AM", "06:05 PM", "8h 47m", "Late"],
     ["Narendra Kumar", "Training", "08:56 AM", "05:48 PM", "8h 52m", "Present"],
     ["Poorna Sai", "Training", "—", "—", "—", "On leave"],
-    ["Srinivas Sree", "Academic", "—", "—", "—", "Absent"],
+    ["Demo Employee", "Academic", "—", "—", "—", "Absent"],
   ];
   const visibleEmployees = apiEmployees;
   const tones = {

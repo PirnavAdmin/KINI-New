@@ -20,14 +20,14 @@ const getProfileInitials = (name) => {
  * size, shape and colours). Falls back when there is no src or it fails to load,
  * so a broken image is never shown.
  */
-export function AvatarPhoto({ src, fallback, alt = "" }) {
+export function AvatarPhoto({ src, fallback, alt = "", fit = "cover" }) {
   const [failedSrc, setFailedSrc] = useState(null);
   if (!src || failedSrc === src) return fallback;
   return (
     <img
       src={src}
       alt={alt}
-      className="h-full w-full rounded-[inherit] object-cover"
+      className={`h-full w-full rounded-[inherit] ${fit === "contain" ? "bg-white object-contain p-1" : "object-cover"}`}
       loading="lazy"
       onError={() => setFailedSrc(src)}
     />

@@ -8,6 +8,8 @@ import assessmentService from "@/services/assessmentService";
 import { dashboardApi } from "@shared/services/apiServices";
 import { useAuth } from "@shared/hooks/useAuth";
 import { useAssignedMentor } from "@features/student/hooks/useAssignedMentor";
+import { useCurrentUserPhoto } from "@shared/hooks/useProfilePhoto";
+import { canLoadImage, notifyProfilePhotoChanged, profilePhotoService } from "@shared/services/profilePhotoService";
 import {
   buildProfilePayload,
   getProfileErrorMessage,
@@ -39,6 +41,10 @@ export default function StudentProfile() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const currentPhoto = useCurrentUserPhoto();
+  const [uploadedPhoto, setUploadedPhoto] = useState("");
+  const [photoBusy, setPhotoBusy] = useState(false);
+  const displayPhoto = uploadedPhoto || currentPhoto || form.profileImage;
   const [learning, setLearning] = useState({ courses: null, certificates: null, assessments: null });
 
   const loadProfile = useCallback(async () => {
@@ -138,7 +144,23 @@ export default function StudentProfile() {
 
   const handleSave = async () => {
     if (!userId || !profile) return;
-    const payload = buildProfilePayload(form, profile.raw);
+    const name = String(form.fullName || "").trim();
+    const phone = String(form.phoneNumber || "").trim();
+    if (!/^[\p{L}\p{M}]+(?:[ .'’-][\p{L}\p{M}]+)*$/u.test(name)) {
+      setError("Enter a valid full name using letters, without numbers.");
+      return;
+    }
+    if (!/^[6-9]\d{9}$/.test(phone)) {
+      setError("Enter a valid 10-digit Indian mobile number starting with 6, 7, 8 or 9.");
+      return;
+    }
+    let payload;
+    try {
+      payload = buildProfilePayload({ ...form, fullName: name, phoneNumber: phone }, profile.raw);
+    } catch (err) {
+      setError(err.message);
+      return;
+    }
 
     if (Object.keys(payload).length === 0) {
       toast.error("No editable backend-supported fields found.");
@@ -177,15 +199,37 @@ export default function StudentProfile() {
   };
 
   const handleChange = (key, value) => {
+    if (key === "phoneNumber" && !/^\d{0,10}$/.test(value)) return;
     setForm((current) => ({ ...current, [key]: value }));
   };
-  const handleProfilePhoto = (file) => {
-    if (!file) return;
+  const handleProfilePhoto = async (file) => {
+    if (!file || photoBusy) return;
     if (!file.type.startsWith("image/")) { toast.error("Please choose an image file."); return; }
     if (file.size > 5 * 1024 * 1024) { toast.error("Photo must be 5 MB or smaller."); return; }
-    const reader = new FileReader();
-    reader.onload = () => { handleChange("profileImage", String(reader.result)); setEditing(true); };
-    reader.readAsDataURL(file);
+    setPhotoBusy(true);
+    try {
+      const preview = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result));
+        reader.onerror = () => reject(new Error("Unable to read this photo."));
+        reader.readAsDataURL(file);
+      });
+      const result = await profilePhotoService.upload(file);
+      let serverPhoto = result.photoUrl;
+      if (serverPhoto && !/^(data:|blob:)/i.test(serverPhoto)) {
+        const refreshedUrl = new URL(serverPhoto, window.location.origin);
+        refreshedUrl.searchParams.set('_photo', String(Date.now()));
+        serverPhoto = refreshedUrl.href;
+      }
+      const photoUrl = serverPhoto && await canLoadImage(serverPhoto) ? serverPhoto : preview;
+      setUploadedPhoto(photoUrl);
+      notifyProfilePhotoChanged({ photoUrl });
+      toast.success("Profile photo uploaded successfully.");
+    } catch {
+      toast.error("Unable to upload profile photo. Please try again.");
+    } finally {
+      setPhotoBusy(false);
+    }
   };
 
   const fieldByKey = Object.fromEntries(supportedFields.map((field) => [field.key, field]));
@@ -199,7 +243,9 @@ export default function StudentProfile() {
         <field.icon aria-hidden="true" />
         <input
           id={`profile-${field.key}`}
-          type={field.key === "dateOfBirth" ? "date" : "text"}
+          type={field.key === "dateOfBirth" ? "date" : field.key === "phoneNumber" ? "tel" : "text"}
+          inputMode={field.key === "phoneNumber" ? "numeric" : undefined}
+          maxLength={field.key === "phoneNumber" ? 10 : undefined}
           value={form[field.key] || ""}
           onChange={(event) => handleChange(field.key, event.target.value)}
           readOnly={!editing}
@@ -237,14 +283,14 @@ export default function StudentProfile() {
           <div className="ksx-split ksx-split--half">
             <section className="ksl-card ksx-profile-card">
               <label className="ksx-btn-outline ksx-profile-card__upload" style={{ padding: "0.5rem 0.9rem" }}>
-                <Camera /> Upload Photo
-                <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(event) => handleProfilePhoto(event.target.files?.[0])} />
+                <Camera /> {photoBusy ? "Uploading..." : "Upload Photo"}
+                <input type="file" disabled={photoBusy} accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(event) => { handleProfilePhoto(event.target.files?.[0]); event.target.value = ""; }} />
               </label>
               <div className="ksx-avatar">
-                {form.profileImage ? <img src={form.profileImage} alt={form.fullName || "Profile"} /> : initials}
+                {displayPhoto ? <img src={displayPhoto} alt={form.fullName || "Profile"} /> : initials}
                 <label className="ksx-avatar__cam" aria-label="Change photo">
                   <Camera />
-                  <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(event) => handleProfilePhoto(event.target.files?.[0])} />
+                  <input type="file" disabled={photoBusy} accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(event) => { handleProfilePhoto(event.target.files?.[0]); event.target.value = ""; }} />
                 </label>
               </div>
               <h2 className="ksx-profile-card__name">{form.fullName || "Student"}</h2>

@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import { announceOrganizationLogo, fetchOrganizationLogoUrl } from '@shared/hooks/useOrganizationLogo'
+import { resolvePhotoUrl } from '@shared/services/profilePhotoService'
 import { motion } from 'framer-motion'
 import {
   Building2, Globe, Mail, MapPin, Phone, User, Upload, Image as ImageIcon, Trash2, ShieldCheck,
@@ -20,7 +22,7 @@ const normalizePhone = (value) => String(value ?? '').replace(/\D/g, '').slice(0
 const isValidPhone = (value) => /^\d{7,15}$/.test(value)
 
 const MAX_LOGO_SIZE = 2 * 1024 * 1024 // 2 MB
-const ALLOWED_LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml']
+const ALLOWED_LOGO_TYPES = ['image/png', 'image/jpeg', 'image/webp'] // SVG is refused by the backend (it can carry script)
 
 const DEFAULT_FORM = {
   organizationName: '',
@@ -109,7 +111,7 @@ const LogoUploader = ({ logoUrl, onUploaded, onRemove, notify }) => {
 
   const validateFile = (file) => {
     if (!ALLOWED_LOGO_TYPES.includes(file.type)) {
-      return 'Please upload a PNG, JPG, WebP or SVG image.'
+      return 'Please upload a PNG, JPG or WebP image.'
     }
     if (file.size > MAX_LOGO_SIZE) {
       return 'Logo must be 2 MB or smaller.'
@@ -177,13 +179,13 @@ const LogoUploader = ({ logoUrl, onUploaded, onRemove, notify }) => {
       <div className="flex flex-wrap items-center gap-4">
         <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-800/50">
           {displayUrl ? (
-            <img src={displayUrl} alt="Organization logo preview" className="h-full w-full object-contain" />
+            <img src={resolvePhotoUrl(displayUrl)} alt="Organization logo preview" className="h-full w-full object-contain" />
           ) : (
             <ImageIcon className="h-8 w-8 text-slate-300 dark:text-slate-600" />
           )}
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" className="hidden" onChange={handleFile} />
+          <input ref={fileInputRef} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={handleFile} />
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
@@ -206,7 +208,7 @@ const LogoUploader = ({ logoUrl, onUploaded, onRemove, notify }) => {
         </div>
       </div>
       <p className="mt-2 text-xs text-slate-400">
-        PNG, JPG, WebP or SVG · max 2 MB · at least 64×64 px. Used across the navbar, invoices, email templates, reports and PDF exports.
+        PNG, JPG or WebP · max 2 MB · at least 64×64 px. Used across the navbar, invoices, email templates, reports and PDF exports.
       </p>
       {error && <p className="mt-2 text-xs font-medium text-red-600">{error}</p>}
     </div>
@@ -259,8 +261,16 @@ export default function OrganizationTab({ onNotify, onDirtyChange, editable = tr
           const local = readLocalSettings('organization', {})
           extendedValues = normalizeExtendedSettings(local)
         }
+        // The logo lives on GET /api/v1/organization/logo.
+        let logoValues = {}
+        try {
+          const savedLogo = await fetchOrganizationLogoUrl()
+          if (savedLogo) logoValues = { logoUrl: savedLogo }
+        } catch {
+          // No logo endpoint or no logo: keep any value from the other sources.
+        }
         if (active) {
-          const merged = mergePopulatedFormValues(sessionValues, apiValues, extendedValues)
+          const merged = mergePopulatedFormValues(sessionValues, apiValues, extendedValues, logoValues)
           setForm(merged)
           baselineRef.current = merged
         }
@@ -340,9 +350,12 @@ export default function OrganizationTab({ onNotify, onDirtyChange, editable = tr
 
   const handleLogoUploaded = (url) => {
     setField('logoUrl', url)
+    // Only a server-confirmed path updates the header avatar (not a local preview).
+    if (url && !url.startsWith('blob:')) announceOrganizationLogo(url)
   }
   const handleLogoRemoved = () => {
     setField('logoUrl', '')
+    announceOrganizationLogo('')
   }
 
   if (loading) return <SettingsSkeleton />

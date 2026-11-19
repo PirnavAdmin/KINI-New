@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { studentsApi } from '@/api/students'
+import { recordStudentDeletion } from '@features/organization/utils/recentActivity'
+import { readStoredOrganizationId } from '@shared/services/apiServices'
 
 export default function useStudents() {
   const [students, setStudents] = useState([])
@@ -31,7 +33,10 @@ export default function useStudents() {
 
   const removeStudent = async (id) => {
     await studentsApi.remove(id)
-    setStudents((items) => items.filter((item) => item.id !== id))
+    const student = students.find((item) => String(item.id) === String(id))
+    recordStudentDeletion(readStoredOrganizationId(), student ?? { id })
+    setStudents((items) => items.filter((item) => String(item.id) !== String(id)))
+    window.dispatchEvent(new CustomEvent('kini:student-updated', { detail: { studentId: id } }))
   }
 
   const saveStudent = async (student, id) => {

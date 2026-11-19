@@ -4,6 +4,14 @@ import { employeeService, matchesEmployeeSearch } from '@shared/services/employe
 vi.mock('@shared/services/apiClient', () => ({ default: { get: vi.fn() } }))
 afterEach(() => vi.clearAllMocks())
 const employee = { employeeId: 3, firstName: 'Sai', lastName: 'Purna', email: 'sai@example.com', phone: '9944103404', role: 'HR' }
+it('sorts the complete roster alphabetically before selecting a page even when the server ignores sorting', async () => {
+  const rows = ['narendra', 'nani', 'MANI', 'MAHESH'].map((firstName, index) => ({ employeeId: index + 1, firstName }));
+  apiClient.get.mockResolvedValue({ data: { data: rows, totalRecords: 4, totalPages: 1, pageSize: 1000 } });
+  const result = await employeeService.getEmployees({ sortBy: 'FirstName', pageSize: 2, pageNumber: 1 });
+  expect(result.data.map(row => row.firstName)).toEqual(['MAHESH', 'MANI']);
+  const reverse = await employeeService.getEmployees({ sortBy: 'FirstName', isDescending: true, pageSize: 2, pageNumber: 2 });
+  expect(reverse.data.map(row => row.firstName)).toEqual(['MANI', 'MAHESH']);
+});
 it.each(['sai purna', ' SAI   PURNA ', 'example.com', '99441', '99441 03404', 'hr'])('matches displayed employee fields for %s', term => {
   expect(matchesEmployeeSearch(employee, term)).toBe(true)
   expect(matchesEmployeeSearch(employee, 'unrelated')).toBe(false)

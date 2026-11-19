@@ -67,7 +67,6 @@ export default function MentorStudents() {
   const [statusFilter, setStatusFilter] = useState('all')
   const [batchFilter, setBatchFilter] = useState('all')
   const [courseFilter, setCourseFilter] = useState('all')
-  const [selected, setSelected] = useState(() => new Set())
   const [currentPage, setCurrentPage] = useState(1)
   const [pageSize, setPageSize] = useState(10)
   const { students, setStudents, loading, error: loadError, reload } = useMentorStudents()
@@ -117,10 +116,6 @@ export default function MentorStudents() {
   const activeCount = students.filter(s => accountStatus(s) === 'active').length
   const inactiveCount = students.filter(s => accountStatus(s) === 'inactive').length
   const needsAttentionCount = students.filter(s => s.riskLevel === 'high' || s.status === 'at-risk' || s.performance === 'poor').length
-  const pageKeys = paginatedStudents.map(s => String(s.id))
-  const allOnPageSelected = pageKeys.length > 0 && pageKeys.every(key => selected.has(key))
-  const toggleSelected = (key) => setSelected(prev => { const next = new Set(prev); if (next.has(key)) next.delete(key); else next.add(key); return next })
-  const togglePageSelection = () => setSelected(prev => { const next = new Set(prev); pageKeys.forEach(key => (allOnPageSelected ? next.delete(key) : next.add(key))); return next })
 
   const handleSave = async () => {
     if (!form.name.trim() || !form.email.trim()) {
@@ -284,7 +279,6 @@ export default function MentorStudents() {
             <table data-table-header="plain" className="mv15-table mv15-table--students">
               <thead>
                 <tr>
-                  <th scope="col"><div className="mv15-th mv15-th--slate"><input type="checkbox" aria-label="Select all students on this page" checked={allOnPageSelected} onChange={togglePageSelection} /></div></th>
                   {STUDENT_COLUMNS.map((column) => (
                     <th key={column.label} scope="col"><div className={`mv15-th mv15-th--${column.tone}`}>{column.label}</div></th>
                   ))}
@@ -297,7 +291,6 @@ export default function MentorStudents() {
                   const key = String(student.id)
                   return (
                     <tr key={key} className="cursor-pointer" onClick={() => navigate(`/mentor/students/${student.id}`, { state: { student } })}>
-                      <td onClick={(event) => event.stopPropagation()}><input type="checkbox" aria-label={`Select ${student.name}`} checked={selected.has(key)} onChange={() => toggleSelected(key)} /></td>
                       <td className="mv15-muted-cell">{startRecord + i}</td>
                       <td>
                         <div className="mv15-person">

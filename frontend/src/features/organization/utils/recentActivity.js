@@ -4,6 +4,28 @@
 
 export const RECENT_ACTIVITY_LIMIT = 5;
 
+const deletionKey = organizationId => `kini:student-deletions:${organizationId}`;
+export function readStudentDeletionActivity(organizationId) {
+  if (organizationId == null) return [];
+  try {
+    const rows = JSON.parse(localStorage.getItem(deletionKey(organizationId)) || '[]');
+    return Array.isArray(rows) ? rows : [];
+  } catch { return []; }
+}
+
+export function recordStudentDeletion(organizationId, student) {
+  if (organizationId == null) return;
+  const timestamp = new Date().toISOString();
+  const activity = {
+    key: `student-deleted:${student.studentId ?? student.id}:${timestamp}`,
+    type: 'student', text: `${student.name || 'Student'} deleted`, timestamp,
+    path: '/organization/students',
+  };
+  try {
+    localStorage.setItem(deletionKey(organizationId), JSON.stringify([activity, ...readStudentDeletionActivity(organizationId)].slice(0, 50)));
+  } catch { /* A successful deletion must not fail when browser storage is full. */ }
+}
+
 /** Epoch ms of a valid timestamp, or null when it is missing or unparseable. */
 export const activityTimeOf = (item) => {
   const value = item?.timestamp;

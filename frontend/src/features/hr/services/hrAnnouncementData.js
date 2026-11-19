@@ -1,7 +1,7 @@
 // Bare DTOs documented by live Swagger on 2026-10-02. Unknown envelopes
 // must fail visibly rather than being mistaken for an empty announcement list.
 export const announcementChangedEvent = 'hr:announcements-changed'
-export const announcementSummaryFields = ['totalAnnouncements', 'published', 'drafts', 'expired', 'recentlyPublished']
+export const announcementSummaryFields = ['totalAnnouncements', 'published', 'scheduled', 'drafts', 'expired', 'recentlyPublished']
 const recordFields = ['announcementId', 'title', 'audience', 'status', 'publishDate', 'expiryDate', 'createdBy']
 const contractError = kind => new Error(`The server returned an unsupported announcement ${kind} response.`)
 const object = value => value && typeof value === 'object' && !Array.isArray(value)
@@ -22,7 +22,7 @@ export function normalizeAnnouncementResponse(method, path, value) {
   }
   if (path.endsWith('/options')) {
     if (!object(value) || !['audiences', 'statuses'].some(key => Object.hasOwn(value, key))) throw contractError('options')
-    return Object.fromEntries(['audiences', 'statuses'].map(key => {
+    return Object.fromEntries(['audiences', 'statuses', 'filterStatuses'].map(key => {
       if (value[key] != null && (!Array.isArray(value[key]) || value[key].some(item => typeof item !== 'string'))) throw contractError('options')
       return [key, value[key] ?? []]
     }))
@@ -37,18 +37,40 @@ export function normalizeAnnouncementResponse(method, path, value) {
   return normalizeAnnouncementRecord(value, true)
 }
 
+const titleCase = value => String(value).trim().toLowerCase().replace(/(^|\s)\S/g, letter => letter.toUpperCase())
+
+// key: 'audience' | 'status' (statuses that can be saved) | 'filterStatus' (list filter,
+// adds the date-derived Scheduled and Expired when the server supports them).
 export function announcementOptions(key, options) {
+  if (key === 'filterStatus') {
+    const values = options?.filterStatuses?.length ? options.filterStatuses : options?.statuses ?? []
+    return values.map(value => ({ value, label: titleCase(value) }))
+  }
   return (options?.[key === 'audience' ? 'audiences' : 'statuses'] ?? []).map(value => ({ value, label: value }))
+}
+
+/** Server times are UTC. Older responses omit the zone ("2026-11-19T09:56:00"); read those as UTC too. */
+export function parseAnnouncementDate(value) {
+  if (value == null || value === '') return NaN
+  const text = String(value).trim()
+  return Date.parse(/[zZ]|[+-]\d{2}:?\d{2}$/.test(text) || !/T\d/.test(text) ? text : `${text}Z`)
+}
+
+/** "19 Nov 2026, 3:26 pm" in the viewer's time zone. */
+export function formatAnnouncementDate(value) {
+  const time = parseAnnouncementDate(value)
+  if (!Number.isFinite(time)) return value ? String(value) : null
+  return new Intl.DateTimeFormat('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit' }).format(time)
 }
 
 export function activeAnnouncements(rows, now = Date.now()) {
   return rows.filter(row => {
-    const publish = Date.parse(row.publishDate)
-    const expiry = row.expiryDate == null ? null : Date.parse(row.expiryDate)
+    const publish = parseAnnouncementDate(row.publishDate)
+    const expiry = row.expiryDate == null ? null : parseAnnouncementDate(row.expiryDate)
     return String(row.status ?? '').trim().toLowerCase() === 'published'
       && Number.isFinite(publish) && publish <= now
       && (expiry === null || Number.isFinite(expiry) && expiry > now)
-  }).sort((a, b) => Date.parse(b.publishDate) - Date.parse(a.publishDate) || a.announcementId - b.announcementId)
+  }).sort((a, b) => parseAnnouncementDate(b.publishDate) - parseAnnouncementDate(a.publishDate) || a.announcementId - b.announcementId)
 }
 
 export async function loadDashboardAnnouncements(api, signal) {

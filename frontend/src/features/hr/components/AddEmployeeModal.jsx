@@ -1,11 +1,12 @@
 import { useId, useRef, useState } from 'react'
 import { Dialog, Select } from 'radix-ui'
-import { BriefcaseBusiness, Check, ChevronDown, ChevronUp, LoaderCircle, Mail, Phone, Save, UserRound, UsersRound, X } from 'lucide-react'
+import { BriefcaseBusiness, CalendarDays, Check, ChevronDown, ChevronUp, LoaderCircle, Mail, Phone, Save, UserRound, UsersRound, X } from 'lucide-react'
 import { employeeRoleOptions, optionsFor } from '../services/hrFormOptions'
 import { HR_API_CONTRACT } from '../services/hrApiContract'
 import getApiErrorMessage from '@/utils/getApiErrorMessage'
 import './portal/hr-add-employee.css'
 import '@/shared/components/employee-form.css'
+import { employeeJoiningDate, joiningDateError } from '@shared/utils/employeeJoiningDate'
 
 const FIELDS = [
   ['firstName', 'First Name', UserRound, 'Enter first name', 'text', 'given-name'],
@@ -14,6 +15,7 @@ const FIELDS = [
   ['phone', 'Phone', Phone, 'Enter phone number', 'tel', 'tel'],
   ['role', 'Role', UsersRound, 'Select Role'],
   ['employmentType', 'Employment Type', BriefcaseBusiness, 'Select Employment Type'],
+  ['joiningDate', 'Joining Date', CalendarDays, 'Select joining date', 'date'],
 ]
 // Values already used by the HR employee forms; API-provided options take priority.
 const EMPLOYMENT_TYPES = [{ value: 'Full-Time', label: 'Full Time' }, { value: 'Part-Time', label: 'Part Time' }]
@@ -30,7 +32,8 @@ const validName = value => /^\p{L}\p{M}*[\p{L}\p{M} '\u2019-]*$/u.test(value)
 
 function validate(draft, choices) {
   const errors = {}
-  for (const [key, label] of FIELDS) if (!draft[key]) errors[key] = `Enter ${label.toLowerCase()}.`
+  for (const [key, label] of FIELDS) if (key !== 'joiningDate' && !draft[key]) errors[key] = `Enter ${label.toLowerCase()}.`
+  if (joiningDateError(draft.joiningDate)) errors.joiningDate = joiningDateError(draft.joiningDate)
   if (draft.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(draft.email)) errors.email = 'Enter a valid email address.'
   for (const key of ['firstName', 'lastName']) {
     if (draft[key] && !validName(draft[key])) errors[key] = `Enter a valid ${key === 'firstName' ? 'first' : 'last'} name using letters, spaces, hyphens, or apostrophes.`
@@ -75,6 +78,8 @@ export default function AddEmployeeModal({ options = {}, onSave, onClose }) {
     // Whitelist the existing DTO properties; no view-only fields reach the API.
     const schema = HR_API_CONTRACT['POST /api/hr/employees'].schema
     const payload = Object.fromEntries(Object.entries(values).filter(([key]) => Object.hasOwn(schema.properties, key)))
+    if (values.joiningDate) payload.joiningDate = employeeJoiningDate(values.joiningDate)
+    else delete payload.joiningDate
     submitLock.current = true
     setBusy(true)
     try {
@@ -117,10 +122,10 @@ export default function AddEmployeeModal({ options = {}, onSave, onClose }) {
                 const id = `${prefix}-${key}`
                 const message = errors[key]
                 return <div className="hae-field" key={key}>
-                  <label className="hae-label" htmlFor={id}>{label} <span aria-hidden="true">*</span></label>
+                  <label className="hae-label" htmlFor={id}>{label} {key !== 'joiningDate' && <span aria-hidden="true">*</span>}</label>
                   {type ? <div data-form-control="" className={`hae-input${message ? ' is-invalid' : ''}`}>
                     <span className="hae-field-icon"><Icon aria-hidden="true" /></span>
-                    <input id={id} name={key} type={type} autoComplete={autoComplete} placeholder={key === 'phone' ? '9876543210' : placeholder} inputMode={key === 'phone' ? 'tel' : undefined} maxLength={key === 'phone' ? 13 : key === 'firstName' || key === 'lastName' ? 80 : undefined} value={draft[key]} disabled={busy} required aria-invalid={Boolean(message)} aria-describedby={message ? `${id}-error` : undefined} onChange={event => change(key, key === 'phone' ? limitIndianMobileInput(event.target.value) : key === 'firstName' || key === 'lastName' ? event.target.value.replace(/[^\p{L}\p{M} '\u2019-]/gu, '') : event.target.value)} />
+                    <input id={id} name={key} type={type} autoComplete={autoComplete} placeholder={key === 'phone' ? '9876543210' : placeholder} inputMode={key === 'phone' ? 'tel' : undefined} maxLength={key === 'phone' ? 13 : key === 'firstName' || key === 'lastName' ? 80 : undefined} value={draft[key]} disabled={busy} required={key !== 'joiningDate'} aria-invalid={Boolean(message)} aria-describedby={message ? `${id}-error` : undefined} onChange={event => change(key, key === 'phone' ? limitIndianMobileInput(event.target.value) : key === 'firstName' || key === 'lastName' ? event.target.value.replace(/[^\p{L}\p{M} '\u2019-]/gu, '') : event.target.value)} />
                   </div> : <Select.Root value={draft[key]} onValueChange={value => change(key, value)} disabled={busy || !choices[key].length} required>
                     <Select.Trigger data-form-control="" id={id} className={`hae-select${message ? ' is-invalid' : ''}`} aria-invalid={Boolean(message)} aria-describedby={message ? `${id}-error` : undefined} aria-required="true">
                       <span className="hae-field-icon"><Icon aria-hidden="true" /></span>

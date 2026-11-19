@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import {
   AlertCircle,
   ArrowRight,
@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 import RecoveryShell from "../../components/RecoveryShell";
-import { resetPassword } from "@shared/services/authApi";
+import { resetVerifiedPassword } from "@shared/services/authApi";
 import getApiErrorMessage from "@/utils/getApiErrorMessage";
 import { toast } from "sonner";
 import { clearRecoveryVerification, getRecoveryReturnTo, RECOVERY_STORAGE_KEYS } from "../../utils/recoveryNavigation";
@@ -23,25 +23,7 @@ const PASSWORD_RULES = [
   { label: "Special character", test: (value) => /[^A-Za-z0-9]/.test(value) },
 ];
 
-const RESET_FAILURE_PATTERN = /\b(invalid|expired|incorrect|failed|failure|error|unable)\b/i;
-const OTP_RECOVERY_PATTERN = /\botp\b.*\b(not found|invalid|expired|used)\b|\b(not found|invalid|expired|used)\b.*\botp\b/i;
-
-const assertPasswordResetAccepted = (response) => {
-  const result = response?.data ?? response;
-  const message = typeof result === "string"
-    ? result
-    : String(result?.message || result?.title || result?.error || "");
-  const explicitlyRejected = result?.success === false
-    || result?.isSuccess === false
-    || Boolean(result?.error)
-    || RESET_FAILURE_PATTERN.test(message);
-
-  if (explicitlyRejected) {
-    const error = new Error(message || "Password reset was rejected.");
-    error.code = "PASSWORD_RESET_REJECTED";
-    throw error;
-  }
-};
+const RESET_AUTH_PATTERN = /\b(otp|token|verification|authorization)\b.*\b(not found|invalid|expired|used|missing)\b|\b(not found|invalid|expired|used|missing)\b.*\b(otp|token|verification|authorization)\b/i;
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
@@ -52,19 +34,20 @@ export default function ResetPasswordPage() {
   const otpType = String(location.state?.otpType || sessionStorage.getItem(RECOVERY_STORAGE_KEYS.otpType) || "Email").toLowerCase() === "phone"
     ? "phone"
     : "email";
-  const returnTo = getRecoveryReturnTo(location.state?.returnTo);
-  const otp = String(
-    location.state?.otp || sessionStorage.getItem("passwordResetOtp") || ""
-  ).replace(/\D/g, "").slice(0, 6);
-  const verificationToken = String(
-    location.state?.token || sessionStorage.getItem("passwordResetToken") || ""
-  );
+  const [returnTo] = useState(() => getRecoveryReturnTo(location.state?.returnTo));
+  const resetToken = sessionStorage.getItem("passwordResetToken") || "";
+  const authorizationExpired = () => {
+    const expiry = sessionStorage.getItem(RECOVERY_STORAGE_KEYS.tokenExpiresAt);
+    return Boolean(expiry) && (!Number.isFinite(Date.parse(expiry)) || Date.parse(expiry) <= Date.now());
+  };
   // Set only after POST /api/Auth/verify-otp confirmed the code for this exact
   // email. A UX guard against opening /reset-password directly: the backend
-  // still re-validates the OTP on reset-password itself.
+  // validates the purpose-bound reset authorization on reset-password itself.
   const verified = sessionStorage.getItem("passwordResetVerified") === "true"
     && sessionStorage.getItem(RECOVERY_STORAGE_KEYS.verifiedFor) === email;
 
+  const submitLock = useRef(false);
+  const [authorizationInvalid, setAuthorizationInvalid] = useState(!email || !verified || !resetToken || authorizationExpired());
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -80,23 +63,6 @@ export default function ResetPasswordPage() {
   const allRulesPassed = passedRules.every(Boolean);
   const passwordsMatch = Boolean(confirmPassword) && newPassword === confirmPassword;
 
-  useEffect(() => {
-    // Once reset succeeds, recovery session values are intentionally cleared.
-    // Do not let that cleanup trigger the guard and send the user back to OTP.
-    if (success) return;
-    if (!email) {
-      navigate("/forgot-password", { replace: true });
-    } else if (!verified || otp.length !== 6) {
-      navigate("/verify-otp", { replace: true, state: { identifier: email, otpType, returnTo } });
-    }
-  }, [email, navigate, otp.length, otpType, returnTo, success, verified]);
-
-  useEffect(() => {
-    if (!success) return undefined;
-    const timer = window.setTimeout(() => navigate(returnTo, { replace: true }), 1400);
-    return () => window.clearTimeout(timer);
-  }, [navigate, returnTo, success]);
-
   const clearRecoverySession = () => {
     sessionStorage.removeItem("passwordResetEmail");
     clearRecoveryVerification();
@@ -106,6 +72,11 @@ export default function ResetPasswordPage() {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
+    if (submitLock.current || success) return;
+    if (authorizationInvalid || !email || !verified || !resetToken || authorizationExpired()) {
+      setAuthorizationInvalid(true);
+      return;
+    }
     setError("");
 
     if (!allRulesPassed) {
@@ -117,50 +88,50 @@ export default function ResetPasswordPage() {
       return;
     }
 
+    submitLock.current = true;
     setLoading(true);
 
     try {
       const payload = {
         identifier: email,
-        otpType,
-        otp,
+        resetToken,
         newPassword,
         confirmPassword,
       };
-      if (verificationToken) payload.verificationToken = verificationToken;
-      const response = await resetPassword(payload);
-      // Some legacy API actions return HTTP 200 with an error message in the
-      // response body, so do not show a false success state in that case.
-      assertPasswordResetAccepted(response);
+      // authService rejects HTTP failures and application-level failures.
+      await resetVerifiedPassword(payload);
+      setSuccess(true);
       clearRecoverySession();
       setNewPassword("");
       setConfirmPassword("");
-      setSuccess(true);
-      toast.success("Password updated successfully.");
+      toast.success("Password updated successfully. Please sign in.");
+      navigate(returnTo, { replace: true });
     } catch (requestError) {
       const message = getApiErrorMessage(
         requestError,
         requestError?.message || "We could not reset your password. Please try again."
       );
 
-      if (OTP_RECOVERY_PATTERN.test(message)) {
-        // The server no longer accepts this code (expired, used or superseded):
-        // drop the local verification so the next step is a fresh code.
+      if (RESET_AUTH_PATTERN.test(message) || [401, 403, 410].includes(requestError?.response?.status)) {
         clearRecoveryVerification();
-        toast.error("Your verification code is no longer valid. Request a new code to continue.");
-        navigate("/verify-otp", { replace: true, state: { identifier: email, otpType, returnTo } });
-        return;
+        setAuthorizationInvalid(true);
       }
 
       setError(message);
     } finally {
+      submitLock.current = false;
       setLoading(false);
     }
   };
 
   // After success the recovery session is cleared on purpose; still render the
   // confirmation instead of a blank page.
-  if (!success && (!email || !verified || otp.length !== 6)) return null;
+  if (!success && authorizationInvalid) return (
+    <RecoveryShell step={3} icon={AlertCircle} title="Restart password reset" description="Your reset authorization is missing, invalid, or expired. Request a new code to continue." backTo="/forgot-password" backState={{ returnTo }}>
+      <p role="alert">{error || "Please restart password reset to verify your identity."}</p>
+      <button type="button" className="mt-4 rounded-xl bg-blue-600 px-5 py-3 font-bold text-white" onClick={() => { clearRecoverySession(); navigate("/forgot-password", { replace: true, state: { returnTo } }); }}>Restart password reset</button>
+    </RecoveryShell>
+  );
 
   return (
     <RecoveryShell

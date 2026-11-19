@@ -146,8 +146,12 @@ const HEAD_TONES = ['purple', 'purple', 'blue', 'orange', 'green', 'teal', 'lave
  */
 export function LiveTable({ columns, rows, rowKey, loading, actions, selected, onSelect, empty, footer }) {
   const keys = rows.map(rowKey)
-  const allChecked = keys.length > 0 && keys.every((key) => selected?.has(key))
-  const toggleAll = () => onSelect(allChecked ? new Set() : new Set(keys))
+  const counts = new Map()
+  keys.forEach(key => counts.set(key, (counts.get(key) || 0) + 1))
+  const selectable = key => key != null && key !== '' && counts.get(key) === 1
+  const validKeys = keys.filter(selectable)
+  const allChecked = validKeys.length > 0 && validKeys.every((key) => selected?.has(key))
+  const toggleAll = () => onSelect(allChecked ? new Set() : new Set(validKeys))
   const toggle = (key) => { const next = new Set(selected); if (next.has(key)) next.delete(key); else next.add(key); onSelect(next) }
   return (
     <section className="hrl-table-card">
@@ -155,7 +159,7 @@ export function LiveTable({ columns, rows, rowKey, loading, actions, selected, o
         <table className="hrl-table" data-table-header="plain">
           {(loading || rows.length > 0) && <thead>
             <tr>
-              {onSelect && <th className="hrl-check"><input type="checkbox" aria-label="Select all rows" checked={allChecked} onChange={toggleAll} disabled={!rows.length} /></th>}
+              {onSelect && <th className="hrl-check"><input type="checkbox" aria-label="Select all rows" checked={allChecked} onChange={toggleAll} disabled={!validKeys.length} /></th>}
               {columns.map((column, index) => <th key={column.key} style={column.width ? { width: column.width } : undefined}><span className={`hrl-th is-${column.tone ?? HEAD_TONES[index % HEAD_TONES.length]}`}>{column.header}</span></th>)}
               {actions && <th><span className="hrl-th is-lavender">Actions</span></th>}
             </tr>
@@ -167,8 +171,8 @@ export function LiveTable({ columns, rows, rowKey, loading, actions, selected, o
             {!loading && rows.map((row, index) => {
               const key = keys[index]
               return (
-                <tr key={key ?? index} className={selected?.has(key) ? 'is-selected' : ''}>
-                  {onSelect && <td className="hrl-check"><input type="checkbox" aria-label="Select row" checked={selected.has(key)} onChange={() => toggle(key)} /></td>}
+                <tr key={selectable(key) ? key : `unresolved:${index}`} className={selectable(key) && selected?.has(key) ? 'is-selected' : ''}>
+                  {onSelect && <td className="hrl-check"><input type="checkbox" aria-label="Select row" disabled={!selectable(key)} checked={selectable(key) && selected.has(key)} onChange={() => toggle(key)} /></td>}
                   {columns.map((column) => <td key={column.key}>{column.render(row)}</td>)}
                   {actions && <td className="hrl-actions-cell"><span className="hrl-actions">{actions(row)}</span></td>}
                 </tr>

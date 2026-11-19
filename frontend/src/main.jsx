@@ -18,6 +18,7 @@ import "@styles/app-density.css";
 import "@styles/kini-mentor-v15.css";
 import "@styles/kini-org-v16.css";
 import "@styles/kini-mentor-v17.css";
+import "@styles/hr-sidebar.css";
 
 
 ReactDOM.createRoot(document.getElementById("root")).render(

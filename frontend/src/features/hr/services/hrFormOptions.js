@@ -12,10 +12,10 @@ export function employeeRoleOptions(options) {
 }
 
 export function optionsFor(key, options) {
-  const raw = hrField(options, optionKeys[key] ?? key, key, ...(key === 'performanceFilters' ? ['performanceLevels', 'performanceOptions'] : []))
+  const raw = hrField(options, optionKeys[key] ?? key, key, ...(key === 'performanceFilters' ? ['performanceFilter', 'performanceLevels', 'performanceOptions', 'performanceFilterOptions'] : []))
   const choices = hrList(raw).map(item => typeof item === 'object' ? {
-    value: hrField(item, key, 'value', 'id', 'code', 'name', 'employeeId', 'departmentId', 'roleName', 'leaveType'),
-    label: hrField(item, 'label', 'fullName', 'employeeName', 'departmentName', 'roleName', 'name', 'title', 'leaveType', 'code') ?? ([hrField(item, 'firstName'), hrField(item, 'lastName')].filter(Boolean).join(' ') || hrField(item, 'id')),
+    value: hrField(item, key, 'value', 'filterValue', 'key', 'id', 'code', 'name', 'employeeId', 'departmentId', 'roleName', 'leaveType'),
+    label: hrField(item, 'label', 'filterName', 'text', 'fullName', 'employeeName', 'departmentName', 'roleName', 'name', 'title', 'leaveType', 'code') ?? ([hrField(item, 'firstName'), hrField(item, 'lastName')].filter(Boolean).join(' ') || hrField(item, 'id')),
   } : { value: item, label: item }).filter(item => item.value != null)
   if (key === 'audience') {
     const normalize = value => String(value ?? '').trim().toLowerCase().replace(/s$/, '')

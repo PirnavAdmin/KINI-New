@@ -17,6 +17,7 @@ export default function OtpVerification() {
   const navigate = useNavigate();
   const location = useLocation();
   const otpInputRef = useRef(null);
+  const verifyLock = useRef(false);
   const email = String(
     location.state?.identifier || location.state?.email || sessionStorage.getItem(RECOVERY_STORAGE_KEYS.identifier) || ""
   ).trim().toLowerCase();
@@ -93,6 +94,7 @@ export default function OtpVerification() {
 
   const handleVerify = async (event) => {
     event.preventDefault();
+    if (verifyLock.current || loading || verified || resending) return;
 
     if (code.length !== OTP_LENGTH) {
       setError("Enter all six digits from the email.");
@@ -100,7 +102,7 @@ export default function OtpVerification() {
       return;
     }
 
-    if (loading) return;
+    verifyLock.current = true;
     setLoading(true);
     setError("");
     clearRecoveryVerification();
@@ -108,15 +110,21 @@ export default function OtpVerification() {
     // Six digits only means the input is complete. The backend decides whether
     // this is the latest unexpired code for this email: verifyOtp throws unless
     // POST /api/Auth/verify-otp explicitly confirms it (assertOtpVerified).
-    // reset-password re-checks the same code server-side.
+    // The consumed OTP must be exchanged for reset-only authorization.
     try {
       const result = await verifyOtp({ identifier: email, otpType, otp: code });
-      const token = result?.verificationToken || result?.resetToken || result?.token || "";
-      sessionStorage.setItem("passwordResetOtp", code);
-      if (token) sessionStorage.setItem("passwordResetToken", token);
+      // Target backend contract: resetToken is purpose-bound, never an auth JWT.
+      // Generic verification success alone cannot authorize password creation.
+      const token = result?.resetToken;
+      if (typeof token !== "string" || !token.trim()) {
+        throw new Error("The server verified the code but did not issue password reset authorization. Please contact support before requesting another code.");
+      }
+      sessionStorage.setItem("passwordResetToken", token);
+      if (result.resetTokenExpiresAt) sessionStorage.setItem(RECOVERY_STORAGE_KEYS.tokenExpiresAt, result.resetTokenExpiresAt);
       sessionStorage.setItem("passwordResetVerified", "true");
       sessionStorage.setItem(RECOVERY_STORAGE_KEYS.verifiedFor, email);
       setVerified(true);
+      setOtp(Array(OTP_LENGTH).fill(""));
     } catch (requestError) {
       setError(getApiErrorMessage(
         requestError,
@@ -125,6 +133,7 @@ export default function OtpVerification() {
       setOtp(Array(OTP_LENGTH).fill(""));
       otpInputRef.current?.focusFirst();
     } finally {
+      verifyLock.current = false;
       setLoading(false);
     }
   };

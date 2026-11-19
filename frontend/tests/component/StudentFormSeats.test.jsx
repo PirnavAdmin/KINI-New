@@ -77,6 +77,6 @@ it("permits editing an existing member of a full batch", async () => {
   studentsApi.list.mockResolvedValue({ data: [{ studentId: 9, batchId: 7, status: "Active" }] });
   batchService.getStudents.mockResolvedValue({ capacity: 1, students: [{ studentId: 9 }] });
   render(<StudentForm open student={{ id: 9, courseId: 1, batchId: 7 }} onClose={vi.fn()} onSave={vi.fn()} />);
-  expect(await screen.findByRole("option", { name: /\.Net 1.*Existing enrollment/ })).toHaveValue("7");
-  expect(screen.getByLabelText(/^Batch/)).toBeDisabled();
+  expect(await screen.findByText('.Net 1')).toBeInTheDocument();
+  expect(screen.queryByRole('combobox', { name: /^Batch/ })).not.toBeInTheDocument();
 });

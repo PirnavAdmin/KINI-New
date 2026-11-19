@@ -1,0 +1,75 @@
+﻿import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import PaymentsTab from '@features/organization/components/settings/PaymentsTab';
+import apiClient from '@shared/services/apiClient';
+import { upiPaymentApi } from '@shared/services/upiPaymentService';
+vi.mock('@shared/services/apiClient', () => ({ default: { get: vi.fn(), post: vi.fn(), put: vi.fn() } }));
+const route = '/api/v1/organization/payment-settings';
+const stored = { upiId: 'institute@okaxis', payeeName: 'Institute', qrCodeUrl: 'https://example.test/owning-org-qr.png' };
+const notify = vi.fn();
+beforeEach(() => { vi.resetAllMocks(); });
+afterEach(cleanup);
+const mount = () => render(<PaymentsTab editable onNotify={notify} />);
+it('shows first setup for a successful empty response, creates settings, and reloads saved values', async () => {
+  apiClient.get.mockResolvedValueOnce({ status: 204, data: null }).mockResolvedValue({ data: stored });
+  apiClient.post.mockResolvedValue({ data: stored });
+  mount();
+  const upi = await screen.findByPlaceholderText('institute@okaxis');
+  expect(upi).toHaveValue('');
+  fireEvent.change(upi, { target: { value: stored.upiId } });
+  fireEvent.change(screen.getByPlaceholderText('Kini EduHub Pvt Ltd'), { target: { value: stored.payeeName } });
+  fireEvent.click(screen.getByRole('button', { name: 'Save UPI Settings' }));
+  await waitFor(() => expect(notify).toHaveBeenCalledWith('UPI payment settings saved'));
+  expect(apiClient.post).toHaveBeenCalledOnce();
+  const [url, form] = apiClient.post.mock.calls[0];
+  expect(url).toBe(route);
+  expect(form.get('UpiId')).toBe(stored.upiId);
+  expect(form.get('PayeeName')).toBe(stored.payeeName);
+  expect(form.has('OrganizationId')).toBe(false);
+  expect(apiClient.get).toHaveBeenCalledTimes(2);
+  expect(screen.getByPlaceholderText('institute@okaxis')).toHaveValue(stored.upiId);
+  expect(screen.getByRole('img', { name: 'UPI QR code' })).toHaveAttribute('src', stored.qrCodeUrl);
+  cleanup();
+  mount();
+  expect(await screen.findByPlaceholderText('institute@okaxis')).toHaveValue(stored.upiId);
+});
+it('uses PUT to update an existing organization setting and retains the QR when no replacement is selected', async () => {
+  apiClient.get.mockResolvedValue({ data: stored });
+  apiClient.put.mockResolvedValue({ data: stored });
+  mount();
+  fireEvent.change(await screen.findByPlaceholderText('Kini EduHub Pvt Ltd'), { target: { value: 'Updated Institute' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Save Changes' }));
+  await waitFor(() => expect(notify).toHaveBeenCalledWith('UPI payment settings saved'));
+  expect(apiClient.put).toHaveBeenCalledWith(route, expect.any(FormData));
+  expect(apiClient.put.mock.calls[0][1].has('QrCodeImage')).toBe(false);
+  expect(apiClient.post).not.toHaveBeenCalled();
+});
+it('does not mistake the invalid-id routing failure for validation of the UPI form', async () => {
+  apiClient.get.mockRejectedValue({ response: { status: 400, data: { errors: { id: ["The value 'payment-settings' is not valid."] } } } });
+  mount();
+  await screen.findByText('UPI payment settings are unavailable on the server. Please contact your administrator.');
+  expect(screen.queryByRole('button', { name: 'Save UPI Settings' })).not.toBeInTheDocument();
+});
+it('does not mistake an unimplemented 404 route for first-time setup', async () => {
+  apiClient.get.mockRejectedValue({ response: { status: 404, data: {} } });
+  mount();
+  await screen.findByText('UPI payment settings are unavailable on the server. Please contact your administrator.');
+  expect(screen.queryByPlaceholderText('institute@okaxis')).not.toBeInTheDocument();
+});
+it('supports an explicit backend not-configured response without hiding authorization failures', async () => {
+  apiClient.get.mockRejectedValueOnce({ response: { status: 404, data: { code: 'PAYMENT_SETTINGS_NOT_CONFIGURED' } } });
+  expect(await upiPaymentApi.getSettings()).toMatchObject({ upiId: '', payeeName: '', qrCode: '' });
+  const denied = { response: { status: 403, data: {} } };
+  apiClient.get.mockRejectedValueOnce(denied);
+  await expect(upiPaymentApi.getSettings()).rejects.toBe(denied);
+});
+it('does not announce verified persistence when reload after save fails', async () => {
+  apiClient.get.mockResolvedValueOnce({ status: 204, data: null }).mockRejectedValue({ response: { status: 500, data: {} } });
+  apiClient.post.mockResolvedValue({ data: stored });
+  mount();
+  fireEvent.change(await screen.findByPlaceholderText('institute@okaxis'), { target: { value: stored.upiId } });
+  fireEvent.change(screen.getByPlaceholderText('Kini EduHub Pvt Ltd'), { target: { value: stored.payeeName } });
+  fireEvent.click(screen.getByRole('button', { name: 'Save UPI Settings' }));
+  await waitFor(() => expect(notify).toHaveBeenCalledWith(expect.stringContaining('could not be reloaded'), 'error'));
+  expect(notify).not.toHaveBeenCalledWith('UPI payment settings saved');
+});

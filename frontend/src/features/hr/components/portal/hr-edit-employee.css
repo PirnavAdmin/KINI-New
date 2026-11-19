@@ -1,0 +1,34 @@
+.hee-dialog { --hee-ink: #153754; --hee-muted: #71839b; --hee-line: #f1d4b3; --hee-warm: #fff8f0; border-radius: 24px !important; }
+.hee-dialog .kmh { min-height: 156px; padding: 28px 32px 38px; }
+.hee-dialog .kmh__icon { width: 76px; height: 76px; border-radius: 22px; }
+.hee-dialog .kmh__title { font-size: 32px; letter-spacing: -.035em; }
+.hee-dialog .kmh__subtitle { font-size: 14px; }
+.hee-dialog .hee-body { padding: 0; background: #fff; }
+.hee-form { padding: 24px 26px 0; }
+.hee-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 24px; padding: 20px 22px 24px; border: 1px solid var(--hee-line); border-radius: 23px; background: #fff; box-shadow: 0 12px 35px -26px #9d662c50; }
+.hee-section { display: flex; align-items: center; gap: 12px; grid-column: 1 / -1; padding: 13px 16px; border: 1px solid #f0d4b1; border-radius: 15px; background: linear-gradient(110deg, #fff2df, #fffbf5 65%, #f7e2c3); }
+.hee-section-icon { display: grid; place-items: center; flex-shrink: 0; width: 36px; height: 36px; border-radius: 12px; background: #ce8236; color: #fff; box-shadow: 0 4px 10px #a8692926; }
+.hee-section-icon svg { width: 18px; height: 18px; }
+.hee-section h3 { margin: 0; color: var(--hee-ink); font-size: 13px; font-weight: 750; line-height: 1.4; }
+.hee-section p { margin: 3px 0 0; color: var(--hee-muted); font-size: 11px; line-height: 1.4; }
+.hee-section-note { margin-left: auto; padding: 6px 10px; border: 1px solid #ebc697; border-radius: 20px; color: #a86424; background: #fffbf5; font-size: 10px; font-weight: 650; white-space: nowrap; }
+.hee-section--employment { margin-top: 3px; }
+.hee-field { display: block; min-width: 0; color: #405772; font-size: 12px; font-weight: 600; }
+.hee-label { display: block; margin: 0 0 7px; }
+.hee-field input, .hee-field select, .hee-field textarea { min-height: 46px; width: 100%; padding: 11px 14px; border: 1px solid #edceac; border-radius: 12px; background: var(--hee-warm); color: #233e58; font-family: inherit; font-size: 14px; font-weight: 450; box-shadow: 0 2px 4px #a8692908; transition: border-color .15s, box-shadow .15s; }
+.hee-field input::placeholder { color: #92a0b0; }
+.hee-field input:focus, .hee-field select:focus, .hee-field textarea:focus { outline: none; border-color: #ec9a35; box-shadow: 0 0 0 3px #f5a12b1c; }
+.hee-field [aria-invalid="true"] { background: #fff7f6; }
+.hee-field-icon { position: absolute; z-index: 1; left: 13px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px; color: #8da2bd; pointer-events: none; }
+.hee-field[data-field="email"] input, .hee-field[data-field="phone"] input { padding-left: 39px; }
+.hee-form > [role="alert"] { margin: 16px 0; }
+.hee-footer { position: sticky; bottom: 0; z-index: 2; display: flex; align-items: center; justify-content: flex-end; gap: 10px; margin: 24px -26px 0; padding: 16px 26px; border-top: 1px solid #ecd8c0; background: #fff; box-shadow: 0 -8px 24px #15375405; }
+.hee-footer p { margin: 0 auto 0 0; color: #7b8c9f; font-size: 11px; }
+.hee-footer button { border-radius: 12px; }
+.dark .hee-dialog .hee-body, .dark .hee-fields, .dark .hee-footer { background: #152336; }
+.dark .hee-dialog { --hee-ink: #e3ecf6; --hee-muted: #a7b6c9; --hee-line: #4a4035; --hee-warm: #202d3d; }
+.dark .hee-section { border-color: #65503b; background: #322b24; }
+.dark .hee-field { color: #bdcadd; }
+.dark .hee-field input, .dark .hee-field select { border-color: #65503b; color: #e3ecf6; }
+@media (max-width: 640px) { .hee-dialog .kmh { min-height: 126px; padding: 22px 18px 30px; } .hee-dialog .kmh__icon { width: 52px; height: 52px; border-radius: 16px; } .hee-dialog .kmh__title { font-size: 25px; } .hee-dialog .kmh__subtitle { max-width: 220px; font-size: 12px; } .hee-form { padding: 16px 14px 0; } .hee-fields { grid-template-columns: 1fr; padding: 14px; gap: 16px; border-radius: 18px; } .hee-section { padding: 12px; } .hee-section-note { display: none; } .hee-footer { margin: 18px -14px 0; padding: 14px; } .hee-footer p { display: none; } }
+@media (prefers-reduced-motion: reduce) { .hee-field input, .hee-field select, .hee-field textarea { transition: none; } }

@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { ChevronDown, ChevronLeft, ChevronRight, MoreVertical } from "lucide-react";
 import KPI from "@/components/common/KPI";
 import { HeroWaves } from "./OrgIllustrations";
@@ -345,20 +346,42 @@ export function OrgEmpty({ icon: Icon, title, text, action }) {
 export function OrgRowMenu({ items, label = "More actions", openUp = false }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
+  const menuRef = useRef(null);
+
+  useLayoutEffect(() => {
+    if (!open || !menuRef.current || !ref.current) return;
+    const anchor = ref.current.getBoundingClientRect();
+    const menu = menuRef.current;
+    const { width, height } = menu.getBoundingClientRect();
+    const gap = 6;
+    const below = window.innerHeight - anchor.bottom - gap - 8;
+    const above = anchor.top - gap - 8;
+    const upwards = openUp ? above >= height || above > below : below < height && above > below;
+    menu.style.maxHeight = `${Math.max(0, upwards ? above : below)}px`;
+    menu.style.left = `${Math.max(8, Math.min(anchor.right - width, window.innerWidth - width - 8))}px`;
+    menu.style.top = `${upwards ? Math.max(8, anchor.top - Math.min(height, above) - gap) : anchor.bottom + gap}px`;
+  }, [open, openUp, items]);
 
   useEffect(() => {
     if (!open) return undefined;
     const onPointer = (event) => {
-      if (ref.current && !ref.current.contains(event.target)) setOpen(false);
+      if (ref.current && !ref.current.contains(event.target) && !menuRef.current?.contains(event.target)) setOpen(false);
     };
     const onKey = (event) => {
       if (event.key === "Escape") setOpen(false);
     };
     document.addEventListener("mousedown", onPointer);
     document.addEventListener("keydown", onKey);
+    const close = (event) => {
+      if (!menuRef.current?.contains(event.target)) setOpen(false);
+    };
+    window.addEventListener("scroll", close, true);
+    window.addEventListener("resize", close);
     return () => {
       document.removeEventListener("mousedown", onPointer);
       document.removeEventListener("keydown", onKey);
+      window.removeEventListener("scroll", close, true);
+      window.removeEventListener("resize", close);
     };
   }, [open]);
 
@@ -377,8 +400,9 @@ export function OrgRowMenu({ items, label = "More actions", openUp = false }) {
       >
         <MoreVertical aria-hidden="true" />
       </button>
-      {open && (
-        <div className={`kx-menu__list ${openUp ? "kx-menu__list--up" : ""}`.trim()} role="menu">
+      {open && createPortal(
+        <div className="kx-page" style={{ display: "contents" }}>
+        <div ref={menuRef} className="kx-menu__list" role="menu" style={{ position: "fixed", right: "auto", bottom: "auto", zIndex: 1100, overflowY: "auto", maxWidth: "calc(100vw - 16px)" }}>
           {visible.map(({ label: itemLabel, icon: ItemIcon, onClick, danger, disabled }) => (
             <button
               key={itemLabel}
@@ -396,6 +420,7 @@ export function OrgRowMenu({ items, label = "More actions", openUp = false }) {
             </button>
           ))}
         </div>
+        </div>, document.body,
       )}
     </div>
   );

@@ -29,7 +29,16 @@ async function fill() {
   }
 }
 
-it('validates all six fields, focuses the first error and clears corrected field errors', () => {
+it('includes the selected joining date in the HR create payload', async () => {
+  const save = vi.fn().mockResolvedValue({})
+  open({ onSave: save })
+  await fill()
+  fireEvent.change(screen.getByLabelText('Joining Date'), { target: { value: '2026-11-13' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Save', exact: true }))
+  await waitFor(() => expect(save).toHaveBeenCalledWith(expect.objectContaining({ joiningDate: '2026-11-13T00:00:00.000Z' })))
+})
+
+it('validates required fields, focuses the first error and clears corrected field errors', () => {
   const save = vi.fn()
   open({ onSave: save })
   fireEvent.click(screen.getByRole('button', { name: 'Save', exact: true }))
@@ -112,9 +121,11 @@ it('updates employee status through the authorized status endpoint and refreshes
   await screen.findByRole('button', { name: 'Test Mentor' })
   const menuButton = screen.getByRole('button', { name: 'More actions' })
   fireEvent.click(menuButton)
-  fireEvent.click(await screen.findByRole('menuitem', { name: 'Set Inactive' }))
-  await waitFor(() => expect(status).toBe('Inactive'))
-  await waitFor(() => expect(apiClient.request).toHaveBeenCalledWith(expect.objectContaining({ method: 'PATCH', url: '/api/hr/employees/42/status', data: { status: 'Inactive' } })))
+  fireEvent.click(await screen.findByRole('menuitem', { name: 'Change Status' }))
+  fireEvent.change(within(screen.getByRole('dialog')).getByRole('combobox', { name: 'Status', exact: true }), { target: { value: 'ON_LEAVE' } })
+  fireEvent.click(screen.getByRole('button', { name: 'Save', exact: true }))
+  await waitFor(() => expect(status).toBe('ON_LEAVE'))
+  await waitFor(() => expect(apiClient.request).toHaveBeenCalledWith(expect.objectContaining({ method: 'PATCH', url: '/api/hr/employees/42/status', data: { status: 'ON_LEAVE' } })))
 })
 
 it('limits phone typing and pasting to a 10-digit Indian mobile with optional +91', async () => {
@@ -159,11 +170,12 @@ it('locks submissions and dismissal until the API resolves', async () => {
   expect(close).toHaveBeenCalledTimes(1)
 })
 
-it('does not manufacture roles when API options are missing', () => {
+it('offers the supported employee roles when optional role metadata is missing', async () => {
   open({ options: {} })
-  expect(screen.getByRole('status')).toHaveTextContent('Role options are unavailable')
-  expect(screen.getByRole('combobox', { name: /^Role/ })).toBeDisabled()
-  expect(screen.getByRole('button', { name: 'Save', exact: true })).toBeDisabled()
+  const user = userEvent.setup()
+  await user.click(screen.getByRole('combobox', { name: /^Role/ }))
+  expect(await screen.findByRole('option', { name: 'Mentor', exact: true })).toBeInTheDocument()
+  expect(screen.getByRole('option', { name: 'HR', exact: true })).toBeInTheDocument()
 })
 
 it.each([[401, /session has expired/], [403, /permission/], [500, /server could not complete/]])('shows HTTP %s errors without closing or losing values', async (status, message) => {

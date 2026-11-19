@@ -10,6 +10,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { batchService } from "@shared/services/batchService";
+import { studentsApi } from "@/api/students";
 import {
   ArrowUpDown,
   ChevronDown,
@@ -680,6 +681,9 @@ export default function StudentList({
         if (bulkDialog === "batch") {
           await assignBatchToStudent(student);
         }
+        if (bulkDialog === "status") {
+          await studentsApi.updateStatus(student.studentId ?? student.id, bulkValue);
+        }
         if (bulkDialog !== "notify") {
           nextOverrides[student.id] =
             bulkDialog === "batch" ? { batch: bulkValue } : { status: bulkValue };
@@ -1027,7 +1031,7 @@ export default function StudentList({
                 </option>
                 {(bulkDialog === "batch"
                   ? batches
-                  : ["Active", "Pending", "At Risk", "On Leave", "Inactive"]
+                  : ["Active", "Pending", "Inactive"]
                 ).map((item) => (
                   <option key={item} value={item}>
                     {item}

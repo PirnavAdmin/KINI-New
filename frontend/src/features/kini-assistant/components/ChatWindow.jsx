@@ -12,6 +12,7 @@ import WelcomeState from "@shared/components/kini-assistant/WelcomeState";
 
 export default function ChatWindow() {
   const {
+    isAuthenticated,
     messages,
     input,
     setInput,
@@ -32,6 +33,7 @@ export default function ChatWindow() {
 
   const [open, setOpen] = useState(false);
   const [insightsOpen, setInsightsOpen] = useState(true);
+  const showInsights = isAuthenticated && insightsOpen;
   const [showJumpToBottom, setShowJumpToBottom] = useState(false);
   const [hasOpenDialog, setHasOpenDialog] = useState(false);
   const scrollRef = useRef(null);
@@ -135,7 +137,7 @@ export default function ChatWindow() {
           aria-expanded={open}
           whileHover={{ scale: 1.04 }}
           whileTap={{ scale: 0.97 }}
-          className="fixed bottom-20 right-4 z-[80] grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-[#085FA7] via-[#0A6BB5] to-[#5CA347] text-white shadow-[0_14px_36px_rgba(8,95,167,0.24)] ring-1 ring-white/50 backdrop-blur sm:bottom-6 sm:right-6"
+          className="fixed bottom-20 right-4 z-[80] grid h-12 w-12 place-items-center rounded-2xl bg-gradient-to-br from-[#143A5B] via-[#174D72] to-[#FF981B] text-white shadow-[0_14px_36px_rgba(8,95,167,0.24)] ring-1 ring-white/50 backdrop-blur sm:bottom-6 sm:right-6"
         >
           <span className="grid h-9 w-9 place-items-center rounded-xl bg-white/14">
             <Sparkles className="h-5 w-5" />
@@ -159,6 +161,7 @@ export default function ChatWindow() {
             <div className="relative flex h-full min-h-0 flex-col">
               <AssistantHeader
                 messageCountLabel={messageCountLabel}
+                allowInsights={isAuthenticated}
                 insightsOpen={insightsOpen}
                 onToggleInsights={() => setInsightsOpen((value) => !value)}
                 onClearChat={clearChat}
@@ -166,7 +169,7 @@ export default function ChatWindow() {
               />
 
               <div
-                className={`relative grid min-h-0 flex-1 ${insightsOpen ? "lg:grid-cols-[minmax(0,1fr)_19rem]" : "lg:grid-cols-1"}`}
+                className={`relative grid min-h-0 flex-1 ${showInsights ? "xl:grid-cols-[minmax(0,1fr)_19rem]" : "lg:grid-cols-1"}`}
               >
                 <div className="flex min-h-0 flex-col">
                   <div
@@ -248,6 +251,7 @@ export default function ChatWindow() {
                   </div>
 
                   <ChatInput
+                    isPublic={!isAuthenticated}
                     input={input}
                     onInputChange={setInput}
                     onSubmit={onSend}
@@ -263,7 +267,7 @@ export default function ChatWindow() {
                 </div>
 
                 <AnimatePresence initial={false}>
-                  {insightsOpen ? (
+                  {showInsights ? (
                     <motion.aside
                       initial={{ opacity: 0, x: 12 }}
                       animate={{ opacity: 1, x: 0 }}

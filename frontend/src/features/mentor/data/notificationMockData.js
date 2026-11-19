@@ -4,7 +4,7 @@ const ago = (minutes) => normalizeNotificationTimestamp(new Date(Date.now() - mi
 
 export const MENTOR_NOTIFICATION_CATEGORIES = [
   'All', 'Unread', 'Students', 'Assignments', 'Courses', 'Batches',
-  'Attendance', 'Webinars', 'Meetings', 'Schedule', 'Messages', 'System',
+  'Attendance', 'Webinars', 'Meetings', 'Schedule', 'Messages', 'Announcements', 'System',
 ]
 
 export const MENTOR_NOTIFICATIONS = [

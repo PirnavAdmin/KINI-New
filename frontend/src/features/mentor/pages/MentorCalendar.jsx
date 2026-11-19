@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import { CalendarDays, CheckCircle2, List, Radio, Video } from "lucide-react";
 import { useAuth } from "@shared/hooks/useAuth";
@@ -61,10 +61,12 @@ const classRows = (value) => rows(value).map((item) => {
 }).filter((item) => item.dateKey && item.id != null);
 
 export default function MentorCalendar() {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const mentorIdentity = getMentorSessionIdentity(user);
   const mentorLabel = user?.fullName ?? user?.name ?? user?.email ?? "Logged-in mentor";
   const [params, setParams] = useSearchParams();
+  const [returnToDashboard] = useState(params.get('returnTo') === '/mentor/dashboard');
   const [schedulerOpen, setSchedulerOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState(emptyForm);
@@ -135,7 +137,7 @@ export default function MentorCalendar() {
     });
     setFieldErrors((current) => (current[key] ? { ...current, [key]: "" } : current));
   };
-  const closeScheduler = () => { setSchedulerOpen(false); setForm(emptyForm); setFieldErrors({}); };
+  const closeScheduler = () => { setSchedulerOpen(false); setForm(emptyForm); setFieldErrors({}); if (returnToDashboard) navigate('/mentor/dashboard', { replace: true }); };
   const scheduleClass = async (event) => {
     event.preventDefault();
     // Field-level validation; messages show beside each field and no value is reset.

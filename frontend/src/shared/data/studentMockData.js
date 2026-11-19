@@ -7,8 +7,8 @@
 
 export const STUDENT_PROFILE = {
   id: "stu-001",
-  fullName: "Srinivas Kumar",
-  email: "srinivas.kumar@email.com",
+  fullName: "Demo Student",
+  email: "learner@example.com",
   mobile: "+1 (555) 123-4567",
   avatar: null,
   bio: "Passionate learner exploring full-stack development, cloud technologies, and AI engineering.",

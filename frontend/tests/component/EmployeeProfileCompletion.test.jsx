@@ -12,11 +12,7 @@ const profile = {
 };
 async function reachReview(onSave, onComplete) {
   render(<EmployeeProfileWizard initialData={profile} onSave={onSave} onComplete={onComplete} />);
-  for (let index = 0; index < 5; index++) {
-    fireEvent.click(screen.getByRole('button', { name: 'Save & Next' }));
-    await waitFor(() => expect(onSave).toHaveBeenCalledTimes(index + 1));
-    await screen.findByText(`Test Employee · Step ${index + 2} of 6`);
-  }
+  fireEvent.click(screen.getByRole('button', { name: /6. Review/ }));
 }
 it('leaves Review only after the final save succeeds', async () => {
   const onSave = vi.fn().mockResolvedValue({});

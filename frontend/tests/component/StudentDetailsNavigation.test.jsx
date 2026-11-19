@@ -76,6 +76,20 @@ beforeEach(() => {
 });
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 
+it('opens an edit deep link even when the student is absent from the loaded list', async () => {
+  studentsApi.list.mockResolvedValue({ data: [] });
+  renderApp('/organization/students?edit=4');
+  expect(await screen.findByTestId('student-form')).toHaveTextContent('Editing hari krishna');
+});
+
+it('uses the matching roster contact details when the detail endpoint omits them', async () => {
+  studentsApi.list.mockResolvedValue({ data: [{ ...STUDENTS[4], country: 'India', address: '12 Main Road' }, { ...STUDENTS[9], country: 'Other country' }] });
+  renderApp('/organization/students/4');
+  expect(await screen.findByText('12 Main Road')).toBeTruthy();
+  expect(screen.getByText('India')).toBeTruthy();
+  expect(screen.queryByText('Other country')).toBeNull();
+});
+
 describe("Students list → canonical Student Details page", () => {
   it("clicking a student opens /organization/students/{real id}, not the old in-page profile", async () => {
     renderApp("/organization/students");
@@ -99,6 +113,7 @@ describe("Students list → canonical Student Details page", () => {
     fireEvent.click(screen.getByRole("button", { name: /^Attendance$/ }));
     expect(location()).toBe("/organization/students/4?tab=Attendance");
     expect(await screen.findByText("class of 4")).toBeTruthy();
+    expect(screen.queryByRole('checkbox')).toBeNull();
 
     // A different student, straight onto the Attendance tab.
     act(() => navigation.navigate("/organization/students/9?tab=Attendance"));

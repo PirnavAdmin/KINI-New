@@ -279,8 +279,8 @@ html body [data-dashboard-role] .hr-dashboard.hx {
   .hx-events__date { display: grid; width: 44px; height: 44px; flex: none; place-items: center; align-content: center; border-radius: 10px; background: #eef4fd; color: #1d63d8; line-height: 1; }
   .hx-events__date b { font-size: 18px; font-weight: 800; }
   .hx-events__date small { margin-top: 2px; font-size: 11px; font-weight: 600; }
-  .hx-tabs { display: flex; gap: 6px; margin-bottom: 8px; }
-  .hx-tabs button { display: inline-flex; flex: 1; min-width: 0; height: 28px; align-items: center; justify-content: center; gap: 6px; border: 1px solid #e4dcfb; border-radius: 8px; background: #f6f3ff; color: #6d28d9; font-size: 12px; font-weight: 700; white-space: nowrap; }
+  .hx-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+  .hx-tabs button { display: inline-flex; flex: 1 1 130px; min-width: 0; min-height: 32px; padding: 6px 8px; align-items: center; justify-content: center; gap: 6px; border: 1px solid #e4dcfb; border-radius: 8px; background: #f6f3ff; color: #6d28d9; font-size: 12px; font-weight: 700; white-space: normal; text-align: center; }
   .hx-tabs button svg { width: 14px; height: 14px; flex: none; }
   .hx-tabs button[aria-selected="true"] { border-color: var(--hx-orange); background: var(--hx-orange); color: #fff; }
   .hx-rows { display: grid; margin: 0; padding: 0 2px; list-style: none; }
@@ -349,4 +349,85 @@ html.dark body [data-dashboard-role] .hr-dashboard.hx {
   .hx-donut > span { background: #0f172a; }
   .hx-table tbody tr:hover td { background: #111c33; }
   :is(.hx-table td, .hx-rows li, .hx-reviews li, .hx-files li, .hx-events li) { border-color: #1e293b; }
+}
+
+/* ── Responsive composition (v25) ────────────────────────────────────
+   Same design at Chrome 100% and 75% zoom. Zoom only changes the CSS
+   viewport width (75% of 1366 ≈ 1821px, 75% of 1920 = 2560px), so every
+   rule below keys off width: no zoom/scale, no zoom-specific layouts.
+   Fixes: KPIs flipped between 3 and 6 per row at 1280px; the third chart
+   column (.6fr) and the 4-up cards squeezed their titles into "…"; the
+   quick-action grid pushed Schedule Event onto a second row. */
+html body [data-dashboard-role] .hr-dashboard.hx {
+  /* KPIs: 3 per row from 1024px, 2 on tablets, 1 on small phones — equal heights */
+  > .hrp-kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; }
+  @media (max-width: 1023.98px) { > .hrp-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  @media (max-width: 420px) { > .hrp-kpis { grid-template-columns: minmax(0, 1fr); } }
+
+  /* Panel titles: wrap to a second line instead of "…"; View All stays right */
+  .hx-panel__head h2 {
+    display: -webkit-box;
+    flex: 1 1 auto;
+    overflow: hidden;
+    line-height: 1.25;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  .hx-panel__tools { flex: none; }
+  .hx-panel { min-width: 0; }
+
+  /* Charts row
+     ≥1600px: three columns, the third wide enough for its labels.
+     1200–1599px: department + trend side by side, Today at a Glance as a
+     full-width strip with its four items in one row.
+     <1200px: existing two-column / single-column rules. */
+  @media (min-width: 1600px) {
+    .hx-grid--analytics { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr) minmax(0, .85fr); }
+  }
+  @media (min-width: 1200px) and (max-width: 1599.98px) {
+    .hx-grid--analytics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .hx-grid--analytics > :nth-child(3) { grid-column: 1 / -1; }
+    .hx-grid--analytics > :nth-child(3) .hx-glance__list { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  }
+  .hx-chart { width: 100%; }
+  .hx-dept__name { white-space: normal; overflow-wrap: anywhere; }
+  .hx-glance__text strong { white-space: normal; line-height: 1.25; }
+
+  /* Supporting cards: 4-up only when each card gets ~300px; 2-up below */
+  @media (min-width: 1200px) and (max-width: 1499.98px) {
+    .hx-grid--four { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (min-width: 1500px) {
+    .hx-grid--four { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  }
+  .hx-grid--four > .hx-panel { height: 100%; }
+
+  /* Tablets / narrow content (<960px): one column so titles and charts keep
+     their full width (two columns left panels under ~270px). */
+  @media (max-width: 959.98px) {
+    .hx-grid--analytics, .hx-grid--four { grid-template-columns: minmax(0, 1fr); }
+    .hx-grid > :last-child:nth-child(odd) { grid-column: auto; }
+  }
+  /* Department donut above its legend whenever the panel is half-width */
+  @media (max-width: 1199.98px) {
+    .hx-dept__body { flex-direction: column; align-items: stretch; padding: 0; }
+    .hx-dept__body .hx-donut { align-self: center; }
+    .hx-dept__legend { width: 100%; }
+  }
+
+  /* Leave table: actions never wrap or clip; scroll only when the card is narrower than the table */
+  .hx-table td:last-child { white-space: nowrap; }
+  .hx-actions { flex-wrap: nowrap; gap: 10px; }
+
+  /* Quick actions: all five on one row when there is room (≥1280px),
+     wrapping evenly below that. */
+  /* Below 1280px the buttons get their own full-width row under the heading */
+  .hx-quick > div { min-width: 0; flex: 1 1 100%; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  @media (min-width: 1280px) {
+    .hx-quick { flex-wrap: nowrap; }
+    .hx-quick > div { flex: 1 1 auto; grid-template-columns: repeat(var(--hx-quick-count, 5), minmax(0, 1fr)); gap: 8px; }
+    .hx-quick a { min-width: 0; padding: 0 10px; gap: 7px; font-size: 12.5px; }
+  }
+  .hx-quick a { overflow: hidden; text-overflow: ellipsis; }
 }

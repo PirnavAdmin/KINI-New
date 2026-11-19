@@ -79,6 +79,25 @@ export const leaveStatusKey = (value) => {
   return status
 }
 
+/** Approved leave overlapping today, combined with attendance without counting an employee twice. */
+export function onLeaveToday(history, leaves, today = new Date()) {
+  const date = dayKey(today)
+  const people = new Set()
+  const add = (row, fallback) => {
+    const id = hrField(row, 'employeeId') ?? hrField(row.employee, 'employeeId', 'id')
+    people.add(id != null ? `employee:${id}` : String(hrField(row, 'employeeEmail', 'email') || fallback))
+  }
+  history.forEach((row, index) => {
+    if (attendanceDay(row) === date && attendanceKind(row) === 'onLeave') add(row, `attendance:${index}`)
+  })
+  leaves.forEach((row, index) => {
+    const start = dayKey(hrField(row, 'fromDate', 'startDate'))
+    const end = dayKey(hrField(row, 'toDate', 'endDate')) || start
+    if (date && start && start <= date && date <= end && leaveStatusKey(hrField(row, 'status')) === 'approved') add(row, `leave:${index}`)
+  })
+  return people.size
+}
+
 /** Leave rows matching { query, type, status, from, to }; pending requests first, then newest. */
 export function filterLeaves(rows, { query = '', type = 'all', status = 'all', from = '', to = '' } = {}) {
   const needle = query.trim().toLowerCase()

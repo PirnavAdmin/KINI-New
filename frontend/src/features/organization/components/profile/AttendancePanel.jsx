@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import PropTypes from "prop-types";
+import toast from "react-hot-toast";
 import { CalendarDays, CheckSquare, ChevronLeft, ChevronRight, Clock3, Download, Eye, X, XCircle } from "lucide-react";
 import { StatTile, StatusPill } from "./ProfileKit";
 
@@ -32,7 +33,7 @@ const classifyAttendance = (row) => {
 
 /**
  * Employee attendance (Employee profile › Attendance): KPI tiles, date range,
- * CSV export, selectable rows with a details dialog, and pagination.
+ * CSV export, row details, and pagination.
  * rows: [{ id, date, checkIn, checkOut, status }]; minutesOf(row) → number|null
  */
 export default function AttendancePanel({ rows, minutesOf, fileName = "attendance" }) {
@@ -44,7 +45,7 @@ export default function AttendancePanel({ rows, minutesOf, fileName = "attendanc
   const [to, setTo] = useState(() => toInput(new Date(latest.getFullYear(), latest.getMonth() + 1, 0)));
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(1);
-  const [selected, setSelected] = useState(() => new Set());
+
   const [detail, setDetail] = useState(null);
 
   const filtered = useMemo(() => rows
@@ -62,18 +63,18 @@ export default function AttendancePanel({ rows, minutesOf, fileName = "attendanc
   const pages = Math.max(1, Math.ceil(total / pageSize));
   const current = Math.min(page, pages);
   const pageRows = filtered.slice((current - 1) * pageSize, current * pageSize);
-  const allChecked = pageRows.length > 0 && pageRows.every((row) => selected.has(row.key));
-
-  const toggle = (key) => setSelected((set) => { const next = new Set(set); if (next.has(key)) next.delete(key); else next.add(key); return next; });
-  const toggleAll = () => setSelected((set) => { const next = new Set(set); pageRows.forEach((row) => (allChecked ? next.delete(row.key) : next.add(row.key))); return next; });
-
   const exportCsv = () => {
-    const source = selected.size ? filtered.filter((row) => selected.has(row.key)) : filtered;
+    try {
+    const source = filtered;
     const lines = [["Date", "Check In", "Check Out", "Working Hours", "Status"], ...source.map((row) => [fmtDate(row.date), fmtTime(row.checkIn), fmtTime(row.checkOut), duration(row.minutes), row.label])];
     const url = URL.createObjectURL(new Blob([lines.map((line) => line.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(",")).join("\n")], { type: "text/csv;charset=utf-8" }));
     const link = document.createElement("a");
     link.href = url; link.download = `${fileName}-${from || "all"}-to-${to || "all"}.csv`;
     document.body.appendChild(link); link.click(); link.remove(); URL.revokeObjectURL(url);
+    toast.success("Attendance export download started.");
+    } catch {
+      toast.error('Unable to export attendance. Please try again.');
+    }
   };
   const swap = () => { setFrom(to); setTo(from); setPage(1); };
 
@@ -106,14 +107,14 @@ export default function AttendancePanel({ rows, minutesOf, fileName = "attendanc
             <table className="pk-table">
               <thead>
                 <tr>
-                  <th className="w-12"><input type="checkbox" checked={allChecked} onChange={toggleAll} aria-label="Select all rows on this page" disabled={!pageRows.length} /></th>
+
                   <th className="w-14">#</th><th>Date</th><th>Check In</th><th>Check Out</th><th>Working Hours</th><th>Status</th><th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {pageRows.map((row, index) => (
                   <tr key={row.key}>
-                    <td><input type="checkbox" checked={selected.has(row.key)} onChange={() => toggle(row.key)} aria-label={`Select ${fmtDate(row.date)}`} /></td>
+
                     <td>{(current - 1) * pageSize + index + 1}</td>
                     <td className="font-bold">{fmtDate(row.date)}</td>
                     <td>{fmtTime(row.checkIn)}</td>
@@ -123,7 +124,7 @@ export default function AttendancePanel({ rows, minutesOf, fileName = "attendanc
                     <td><button type="button" className="pk-eye" onClick={() => setDetail(row)} aria-label={`View ${fmtDate(row.date)}`}><Eye /></button></td>
                   </tr>
                 ))}
-                {!pageRows.length && <tr><td colSpan="8" className="py-10 text-center text-slate-500">No attendance records in this date range.</td></tr>}
+                {!pageRows.length && <tr><td colSpan="7" className="py-10 text-center text-slate-500">No attendance records in this date range.</td></tr>}
               </tbody>
             </table>
           </div>

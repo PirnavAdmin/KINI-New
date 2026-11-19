@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, useLocation } from "react-router-dom";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 import MentorCalendar from "../../src/features/mentor/pages/MentorCalendar";
 import { liveClassService } from "../../src/features/live-classes/services/liveClassService";
@@ -50,8 +50,15 @@ beforeEach(() => {
 });
 afterEach(cleanup);
 
-const openDialog = async () => {
-  render(<MemoryRouter><MentorCalendar /></MemoryRouter>);
+function ReturnLocation() { return <p data-testid="return-location">{useLocation().pathname}</p>; }
+it('returns to Mentor Dashboard when a dashboard-launched scheduler is cancelled', async () => {
+  render(<MemoryRouter initialEntries={['/mentor/calendar?create=true&returnTo=%2Fmentor%2Fdashboard']}><MentorCalendar /><ReturnLocation /></MemoryRouter>);
+  fireEvent.click(await screen.findByRole('button', { name: 'Cancel' }));
+  await waitFor(() => expect(screen.getByTestId('return-location')).toHaveTextContent('/mentor/dashboard'));
+});
+
+const openDialog = async (fromDashboard = false) => {
+  render(<MemoryRouter initialEntries={[fromDashboard ? '/mentor/calendar?returnTo=%2Fmentor%2Fdashboard' : '/mentor/calendar']}><MentorCalendar /><ReturnLocation /></MemoryRouter>);
   fireEvent.click(screen.getByRole("button", { name: "Open scheduler" }));
   const dialog = await screen.findByRole("dialog");
   await waitFor(() => expect(within(dialog).getByRole("option", { name: "React" })).toBeTruthy());
@@ -74,7 +81,7 @@ it("keeps focus in Class Title while typing (regression: focus jumped to Course 
 });
 
 it("starts with recording off and sends the backend's recordingEnabled field", async () => {
-  const dialog = await openDialog();
+  const dialog = await openDialog(true);
   const recording = within(dialog).getByRole("switch");
   expect(recording).not.toBeChecked();
 
@@ -97,6 +104,7 @@ it("starts with recording off and sends the backend's recordingEnabled field", a
   // The backend requires the syllabus moduleId (≥ 1) as a number.
   expect(request.moduleId).toBe(1001);
   expect(liveClassService.create.mock.calls[0][0].moduleId).toBe(1001);
+  await waitFor(() => expect(screen.getByTestId('return-location')).toHaveTextContent('/mentor/dashboard'));
 });
 
 it("lists only the selected course's modules, requires one, and clears it when the course changes", async () => {

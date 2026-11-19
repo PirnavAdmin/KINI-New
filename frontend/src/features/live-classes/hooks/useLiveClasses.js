@@ -181,6 +181,8 @@ export default function useLiveClasses() {
   const [selectedPdf, setSelectedPdf] = useState(null);
   const [selectedRecording, setSelectedRecording] = useState(null);
   const [selectedAttendanceLoading, setSelectedAttendanceLoading] = useState(false);
+  const [selectedAttendanceError, setSelectedAttendanceError] = useState('');
+  const detailsRequestRef = useRef(0);
   const [selectedMediaLoading, setSelectedMediaLoading] = useState(false);
   const [formMode, setFormMode] = useState('create');
   // The record being edited, tracked separately from selectedId (the details
@@ -466,8 +468,11 @@ export default function useLiveClasses() {
 
   const loadRecordDetails = useCallback(async (id) => {
     if (!id) return null;
+    const requestId = ++detailsRequestRef.current;
     setSelectedMediaLoading(true);
     setSelectedAttendanceLoading(true);
+    setSelectedAttendance([]);
+    setSelectedAttendanceError('');
     try {
       const [details, attendance, pdf, recording, dashboard] = await Promise.allSettled([
         liveClassService.getById(id),
@@ -482,18 +487,22 @@ export default function useLiveClasses() {
         attendanceService.liveClassDashboard(id).catch(() => null),
       ]);
 
-      const hydrated = details.status === 'fulfilled' ? normalizeLiveClass(details.value) : selectedRecord;
+      if (requestId !== detailsRequestRef.current) return null;
+      const hydrated = details.status === 'fulfilled' ? normalizeLiveClass(details.value) : null;
       if (hydrated) setSelectedRecord(hydrated);
       if (attendance.status === 'fulfilled') setSelectedAttendance(normalizeAttendanceRows(attendance.value || []));
+      else setSelectedAttendanceError(getApiErrorMessage(attendance.reason, 'Unable to load student attendance. Please retry.'));
       if (pdf.status === 'fulfilled') setSelectedPdf(pdf.value || null);
       if (recording.status === 'fulfilled') setSelectedRecording(recording.value || null);
       setSelectedAttendanceDashboard(dashboard.status === 'fulfilled' && dashboard.value && typeof dashboard.value === 'object' ? dashboard.value : null);
       return hydrated;
     } finally {
-      setSelectedMediaLoading(false);
-      setSelectedAttendanceLoading(false);
+      if (requestId === detailsRequestRef.current) {
+        setSelectedMediaLoading(false);
+        setSelectedAttendanceLoading(false);
+      }
     }
-  }, [selectedRecord]);
+  }, []);
 
   const openDetails = useCallback(async (record) => {
     const normalized = normalizeLiveClass(record);
@@ -506,6 +515,7 @@ export default function useLiveClasses() {
   }, [loadRecordDetails]);
 
   const closeDetails = useCallback(() => {
+    detailsRequestRef.current += 1;
     setSelectedId(null);
     setSelectedRecord(null);
     setSelectedAttendance([]);
@@ -891,6 +901,7 @@ export default function useLiveClasses() {
     selectedAttendance,
     selectedAttendanceDashboard,
     selectedAttendanceLoading,
+    selectedAttendanceError,
     selectedId,
     selectedMediaLoading,
     selectedPdf,

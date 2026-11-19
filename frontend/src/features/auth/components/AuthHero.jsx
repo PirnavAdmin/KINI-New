@@ -109,19 +109,9 @@ export default function AuthHero() {
         <p className="mt-2.5 text-xs font-semibold tracking-wide text-blue-100/90 sm:text-sm">
           Enterprise Learning Platform
         </p>
-        <div className="mt-2.5 flex items-center gap-2 text-[9px] font-semibold uppercase tracking-[0.13em] text-cyan-100/60 sm:text-[10px]">
-          <span>Learn</span><span className="h-1 w-1 rounded-full bg-cyan-300/60" />
-          <span>Practice</span><span className="h-1 w-1 rounded-full bg-cyan-300/60" />
-          <span>Get Certified</span>
-        </div>
+
       </motion.div>
 
-      <div className="absolute bottom-[3%] left-[4%] z-30 hidden items-center gap-3 rounded-full border border-indigo-300/25 bg-indigo-500/20 px-4 py-2 shadow-lg backdrop-blur-md sm:flex">
-        <div className="flex -space-x-2">
-          {["K", "E", "H"].map((letter, i) => <span key={letter} className={`grid h-7 w-7 place-items-center rounded-full border-2 border-[#16206a] text-[9px] font-bold ${["bg-cyan-300 text-blue-950", "bg-amber-300 text-amber-950", "bg-violet-300 text-violet-950"][i]}`}>{letter}</span>)}
-        </div>
-        <div><p className="text-[10px] font-bold">Join 50,000+ learners</p><p className="text-[9px] text-amber-300">★★★★★ <span className="ml-1 text-blue-100">4.9/5</span></p></div>
-      </div>
     </section>
   );
 }

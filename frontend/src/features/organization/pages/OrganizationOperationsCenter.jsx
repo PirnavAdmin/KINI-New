@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import UpiEnrollmentApprovals from "@features/organization/components/upi/UpiEnrollmentApprovals";
 import {
   AlertTriangle,
   ArrowLeft,
@@ -579,6 +580,8 @@ export default function OrganizationOperationsCenter({ view = "approvals" }) {
           </div>
         </div>
       )}
+
+      {view === "approvals" && !selectedStudent && <UpiEnrollmentApprovals />}
 
       {view === "approvals" && !selectedStudent && (
         <div className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-slate-700 dark:bg-slate-900">
